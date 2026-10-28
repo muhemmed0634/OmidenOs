@@ -1,0 +1,23 @@
+#!/bin/bash
+# OmidenOs Openbox Autostart
+
+# Set wallpaper
+feh --bg-fill /usr/share/wallpapers/omiden/omiden-wallpaper.png &
+
+# Compositor
+picom --daemon &
+
+# Panel
+tint2 &
+
+# Notification daemon
+dunst &
+
+# Network Manager applet
+nm-applet &
+
+# Polkit agent
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+# Welcome screen
+omiden-welcome &

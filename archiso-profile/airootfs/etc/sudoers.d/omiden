@@ -1,0 +1,4 @@
+## OmidenOs sudoers configuration
+root ALL=(ALL:ALL) ALL
+%wheel ALL=(ALL:ALL) ALL
+omiden ALL=(ALL:ALL) NOPASSWD: ALL

@@ -1,0 +1,27 @@
+# OmidenOs .gitignore
+
+# Large media files (not needed in repo)
+gemini_generated_video_d4938259.mp4
+
+# Build artifacts
+build/
+out/
+work/
+*.iso
+
+# ArchISO work directory
+archiso-profile/work/
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temp files
+tmp/
+temp/

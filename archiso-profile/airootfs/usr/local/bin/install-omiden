@@ -1,0 +1,511 @@
+#!/usr/bin/env bash
+# ============================================================
+# OmidenOs Installer — Custom Bash Installer
+# GitHub: https://github.com/muhemmed0634/OmidenOs
+#
+# NO archinstall dependency — fully self-contained
+# ============================================================
+
+set -euo pipefail
+
+# ─── Colors ──────────────────────────────────────────────────
+R='\033[0;31m'  G='\033[0;32m'  Y='\033[1;33m'
+B='\033[0;34m'  M='\033[0;35m'  C='\033[0;36m'
+W='\033[1;37m'  N='\033[0m'     BOLD='\033[1m'
+
+# ─── State ───────────────────────────────────────────────────
+DISK=""
+ROOT_PART=""
+EFI_PART=""
+BOOT_MODE=""
+HOSTNAME="omidenos"
+USERNAME="user"
+USER_PASS=""
+ROOT_PASS=""
+TIMEZONE="UTC"
+INSTALL_BLACKARCH=false
+INSTALL_DESKTOP=true
+FS_TYPE="ext4"
+
+# ─── Helpers ─────────────────────────────────────────────────
+banner() {
+    clear
+    echo -e "${M}${BOLD}"
+    echo "  ╔══════════════════════════════════════════════════╗"
+    echo "  ║  ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗  ██╗║"
+    echo "  ║ ██╔═══██╗████╗████║██║██╔══██╗██╔════╝████╗ ██║║"
+    echo "  ║ ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗██║║"
+    echo "  ║ ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚████║║"
+    echo "  ║ ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚███║║"
+    echo "  ║  ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚══╝║"
+    echo "  ╠══════════════════════════════════════════════════╣"
+    echo "  ║         Custom Installer  v2.0                   ║"
+    echo "  ║   github.com/muhemmed0634/OmidenOs               ║"
+    echo "  ╚══════════════════════════════════════════════════╝"
+    echo -e "${N}"
+}
+
+info()    { echo -e "  ${G}[✔]${N} $*"; }
+warn()    { echo -e "  ${Y}[!]${N} $*"; }
+err()     { echo -e "  ${R}[✘]${N} $*"; }
+step()    { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
+ask()     { echo -en "  ${W}[?]${N} $*: "; }
+askp()    { echo -en "  ${W}[?]${N} $* (hidden): "; }
+confirm() { echo -en "  ${Y}[?]${N} $* [y/N]: "; read -r __ans; [[ "$__ans" =~ ^[Yy]$ ]]; }
+die()     { err "$*"; exit 1; }
+
+check_root() {
+    [[ $EUID -eq 0 ]] || die "Must be run as root. Try: sudo install-omiden"
+}
+
+check_uefi() {
+    if [[ -d /sys/firmware/efi/efivars ]]; then
+        BOOT_MODE="UEFI"
+    else
+        BOOT_MODE="BIOS"
+    fi
+    info "Boot mode detected: ${BOLD}$BOOT_MODE"
+}
+
+check_internet() {
+    step "Internet Connection"
+    if ping -c1 -W3 archlinux.org &>/dev/null; then
+        info "Internet: Connected"
+    else
+        warn "No internet detected."
+        confirm "Continue without internet?" || die "Aborted."
+    fi
+}
+
+update_mirrors() {
+    step "Updating Mirrors"
+    if command -v reflector &>/dev/null; then
+        info "Running reflector..."
+        reflector --age 12 --protocol https --sort rate \
+                  --save /etc/pacman.d/mirrorlist 2>/dev/null && \
+            info "Mirrors updated." || warn "reflector failed, using existing mirrors."
+    else
+        warn "reflector not found, skipping."
+    fi
+    pacman -Syy --noconfirm &>/dev/null
+    info "Package databases synced."
+}
+
+# ─── Disk Selection ──────────────────────────────────────────
+select_disk() {
+    step "Disk Selection"
+    echo -e "  ${C}Available block devices:${N}\n"
+    lsblk -d -o NAME,SIZE,MODEL,TYPE | grep -v "^loop\|rom\|airoot" | \
+        awk 'NR==1{print "  "$0} NR>1{print "  "$0}'
+    echo ""
+
+    while true; do
+        ask "Target disk (e.g. sda, nvme0n1)"
+        read -r raw_disk
+        DISK="/dev/${raw_disk}"
+        [[ -b "$DISK" ]] && break
+        err "Device $DISK not found. Try again."
+    done
+
+    echo ""
+    echo -e "  ${R}${BOLD}⚠ WARNING: ALL DATA ON ${DISK} WILL BE PERMANENTLY ERASED! ⚠${N}"
+    echo -e "  ${Y}Size: $(lsblk -dn -o SIZE "$DISK")${N}"
+    echo ""
+    ask "Type 'ERASE' to confirm destruction of $DISK"
+    read -r __confirm
+    [[ "$__confirm" == "ERASE" ]] || die "Disk erasure not confirmed. Aborted."
+}
+
+# ─── Filesystem Choice ───────────────────────────────────────
+select_filesystem() {
+    step "Filesystem"
+    echo "  1) ext4   — Stable, widely supported (recommended)"
+    echo "  2) btrfs  — Snapshots, compression, subvolumes"
+    echo "  3) xfs    — High performance"
+    echo ""
+    ask "Choose filesystem [1-3] (default: 1)"
+    read -r __fs
+    case "$__fs" in
+        2) FS_TYPE="btrfs" ;;
+        3) FS_TYPE="xfs" ;;
+        *) FS_TYPE="ext4" ;;
+    esac
+    info "Filesystem: $FS_TYPE"
+}
+
+# ─── Partition & Format ──────────────────────────────────────
+partition_disk() {
+    step "Partitioning $DISK"
+
+    # Wipe existing signatures
+    wipefs -af "$DISK" &>/dev/null
+    sgdisk --zap-all "$DISK" &>/dev/null 2>&1 || \
+        dd if=/dev/zero of="$DISK" bs=512 count=2048 &>/dev/null
+
+    if [[ "$BOOT_MODE" == "UEFI" ]]; then
+        info "Creating GPT partition table (UEFI)..."
+        parted -s "$DISK" \
+            mklabel gpt \
+            mkpart "EFI" fat32 1MiB 513MiB \
+            set 1 esp on \
+            mkpart "OmidenOs" "${FS_TYPE}" 513MiB 100%
+
+        # Partition naming
+        if [[ "$DISK" =~ nvme|mmcblk ]]; then
+            EFI_PART="${DISK}p1"
+            ROOT_PART="${DISK}p2"
+        else
+            EFI_PART="${DISK}1"
+            ROOT_PART="${DISK}2"
+        fi
+
+        info "Formatting EFI: $EFI_PART"
+        mkfs.fat -F32 -n "EFI" "$EFI_PART"
+
+    else
+        info "Creating MBR partition table (BIOS)..."
+        parted -s "$DISK" \
+            mklabel msdos \
+            mkpart primary "${FS_TYPE}" 1MiB 100% \
+            set 1 boot on
+
+        if [[ "$DISK" =~ nvme|mmcblk ]]; then
+            ROOT_PART="${DISK}p1"
+        else
+            ROOT_PART="${DISK}1"
+        fi
+    fi
+
+    # Format root
+    info "Formatting root partition: $ROOT_PART ($FS_TYPE)"
+    case "$FS_TYPE" in
+        btrfs) mkfs.btrfs -f -L "OmidenOs" "$ROOT_PART" ;;
+        xfs)   mkfs.xfs -f -L "OmidenOs" "$ROOT_PART" ;;
+        *)     mkfs.ext4 -F -L "OmidenOs" "$ROOT_PART" ;;
+    esac
+
+    # Mount
+    info "Mounting filesystems..."
+    mount "$ROOT_PART" /mnt
+
+    if [[ "$BOOT_MODE" == "UEFI" ]]; then
+        mkdir -p /mnt/boot/efi
+        mount "$EFI_PART" /mnt/boot/efi
+    fi
+
+    info "Partition layout complete."
+    lsblk "$DISK"
+}
+
+# ─── System Configuration ────────────────────────────────────
+gather_config() {
+    step "System Configuration"
+
+    # Timezone
+    ask "Timezone (e.g. America/New_York, Europe/London)"
+    read -r __tz
+    [[ -f "/usr/share/zoneinfo/$__tz" ]] && TIMEZONE="$__tz" || {
+        warn "Timezone not found, using UTC."
+        TIMEZONE="UTC"
+    }
+
+    # Hostname
+    ask "Hostname [omidenos]"
+    read -r __host
+    HOSTNAME="${__host:-omidenos}"
+
+    # Username
+    ask "Username [user]"
+    read -r __user
+    USERNAME="${__user:-user}"
+
+    # Passwords
+    while true; do
+        askp "Password for $USERNAME"
+        read -rs USER_PASS; echo ""
+        askp "Confirm password"
+        read -rs __confirm; echo ""
+        [[ "$USER_PASS" == "$__confirm" ]] && break
+        err "Passwords do not match. Try again."
+    done
+
+    askp "Root password (leave blank to disable root login)"
+    read -rs ROOT_PASS; echo ""
+
+    # Desktop
+    if confirm "Install Openbox desktop environment?"; then
+        INSTALL_DESKTOP=true
+    else
+        INSTALL_DESKTOP=false
+    fi
+
+    # BlackArch
+    if confirm "Install BlackArch security tools?"; then
+        INSTALL_BLACKARCH=true
+    else
+        INSTALL_BLACKARCH=false
+    fi
+
+    echo ""
+    echo -e "  ${C}${BOLD}Summary:${N}"
+    echo -e "  Disk:      $DISK ($FS_TYPE)"
+    echo -e "  Boot:      $BOOT_MODE"
+    echo -e "  Hostname:  $HOSTNAME"
+    echo -e "  User:      $USERNAME"
+    echo -e "  Timezone:  $TIMEZONE"
+    echo -e "  Desktop:   $INSTALL_DESKTOP"
+    echo -e "  BlackArch: $INSTALL_BLACKARCH"
+    echo ""
+    confirm "Proceed with installation?" || die "Aborted by user."
+}
+
+# ─── Base Install ─────────────────────────────────────────────
+install_base() {
+    step "Installing Base System"
+    info "Running pacstrap (this will take a while)..."
+
+    local PKGS=(
+        base base-devel linux linux-firmware linux-headers
+        networkmanager grub efibootmgr
+        sudo nano vim git curl wget
+        bash zsh zsh-autosuggestions zsh-syntax-highlighting
+        bash-completion man-db man-pages
+        xdg-utils xdg-user-dirs polkit polkit-gnome
+        gvfs udisks2 upower acpid
+        fastfetch btop htop inxi
+        pipewire pipewire-alsa pipewire-pulse wireplumber
+        bluez bluez-utils
+        arch-install-scripts pacman-contrib reflector
+    )
+
+    if [[ "$INSTALL_DESKTOP" == true ]]; then
+        PKGS+=(
+            xorg xorg-server xorg-xinit xf86-video-vesa mesa
+            openbox obconf tint2 rofi dunst feh picom
+            lightdm lightdm-gtk-greeter
+            alacritty thunar thunar-archive-plugin
+            noto-fonts ttf-font-awesome ttf-cascadia-code
+            arc-gtk-theme papirus-icon-theme lxappearance
+            pavucontrol network-manager-applet gparted
+        )
+    fi
+
+    pacstrap -K /mnt "${PKGS[@]}"
+    info "Base system installed."
+}
+
+# ─── Configure Chroot ────────────────────────────────────────
+configure_chroot() {
+    step "Configuring System"
+
+    # fstab
+    genfstab -U /mnt >> /mnt/etc/fstab
+    info "fstab generated."
+
+    arch-chroot /mnt /bin/bash -s "$TIMEZONE" "$HOSTNAME" "$USERNAME" \
+        "$USER_PASS" "$ROOT_PASS" "$BOOT_MODE" "$DISK" \
+        "$INSTALL_DESKTOP" "$INSTALL_BLACKARCH" << 'CHROOT_END'
+
+TIMEZONE="$1"
+HOSTNAME="$2"
+USERNAME="$3"
+USER_PASS="$4"
+ROOT_PASS="$5"
+BOOT_MODE="$6"
+DISK="$7"
+INSTALL_DESKTOP="$8"
+INSTALL_BLACKARCH="$9"
+
+# Timezone
+ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
+hwclock --systohc
+
+# Locale
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
+
+# Hostname
+echo "$HOSTNAME" > /etc/hostname
+cat > /etc/hosts << EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
+EOF
+
+# OS identity
+cat > /etc/os-release << EOF
+NAME="OmidenOs"
+PRETTY_NAME="OmidenOs"
+ID=omidenos
+ID_LIKE=arch
+BUILD_ID=rolling
+HOME_URL="https://github.com/muhemmed0634/OmidenOs"
+SUPPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
+EOF
+
+# Users
+if [[ -n "$ROOT_PASS" ]]; then
+    echo "root:${ROOT_PASS}" | chpasswd
+else
+    passwd -l root
+fi
+
+useradd -m -G wheel,audio,video,storage,optical,network,input \
+    -s /bin/zsh "$USERNAME"
+echo "${USERNAME}:${USER_PASS}" | chpasswd
+echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+
+# Initramfs
+mkinitcpio -P
+
+# Services
+systemctl enable NetworkManager
+systemctl enable acpid
+systemctl enable bluetooth 2>/dev/null || true
+
+if [[ "$INSTALL_DESKTOP" == true ]]; then
+    systemctl enable lightdm
+
+    # LightDM autologin
+    mkdir -p /etc/lightdm
+    cat > /etc/lightdm/lightdm.conf << EOF
+[Seat:*]
+greeter-session=lightdm-gtk-greeter
+user-session=openbox
+autologin-user=${USERNAME}
+autologin-user-timeout=0
+autologin-session=openbox
+
+[LightDM]
+logind-check-graphical=true
+EOF
+
+    groupadd -r autologin 2>/dev/null || true
+    gpasswd -a "$USERNAME" autologin
+
+    # Openbox autostart for installed user
+    USER_HOME="/home/${USERNAME}"
+    mkdir -p "${USER_HOME}/.config/openbox"
+    cat > "${USER_HOME}/.config/openbox/autostart" << 'EOF'
+#!/bin/bash
+feh --bg-fill /usr/share/wallpapers/omiden/omiden-wallpaper.png 2>/dev/null \
+    || feh --bg-fill /usr/share/backgrounds/gnome/adwaita-l.webp 2>/dev/null &
+picom --daemon &
+tint2 &
+dunst &
+nm-applet &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+EOF
+
+    # fastfetch config for installed user
+    mkdir -p "${USER_HOME}/.config/fastfetch"
+    cp /root/.config/fastfetch/config.jsonc "${USER_HOME}/.config/fastfetch/" 2>/dev/null || true
+
+    # zshrc for installed user
+    cat > "${USER_HOME}/.zshrc" << 'EOF'
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups
+
+autoload -Uz compinit && compinit
+zstyle ':completion:*' menu select
+
+[[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && \
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats ' (%b)'
+setopt PROMPT_SUBST
+PROMPT='%F{magenta}%n%f@%F{cyan}%m%f:%F{blue}%~%f%F{yellow}${vcs_info_msg_0_}%f$ '
+
+alias ls='ls --color=auto' ll='ls -alF' la='ls -A'
+alias grep='grep --color=auto' vi='nvim' vim='nvim'
+alias ..='cd ..' df='df -h' free='free -h'
+alias update='sudo pacman -Syu' install='sudo pacman -S'
+
+export PATH="$HOME/.local/bin:$PATH"
+
+fastfetch 2>/dev/null
+EOF
+
+    chown -R "${USERNAME}:${USERNAME}" "$USER_HOME"
+fi
+
+# BlackArch
+if [[ "$INSTALL_BLACKARCH" == true ]]; then
+    curl -O https://blackarch.org/strap.sh 2>/dev/null
+    echo "5ea40d49ecd14c2e024deecf90605426db97ea0c  strap.sh" | sha1sum -c 2>/dev/null && \
+        chmod +x strap.sh && ./strap.sh && rm -f strap.sh || \
+        echo "BlackArch strap checksum failed, skipping."
+fi
+
+# Bootloader
+if [[ "$BOOT_MODE" == "UEFI" ]]; then
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi \
+                 --bootloader-id=OmidenOs --recheck
+else
+    grub-install --target=i386-pc --recheck "$DISK"
+fi
+
+# GRUB config
+sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
+sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+echo 'GRUB_DISTRIBUTOR="OmidenOs"' >> /etc/default/grub
+grub-mkconfig -o /boot/grub/grub.cfg
+
+CHROOT_END
+
+    info "System configuration complete."
+}
+
+# ─── Post Install ─────────────────────────────────────────────
+post_install() {
+    step "Installation Complete!"
+    echo -e "${G}${BOLD}"
+    echo "  ╔══════════════════════════════════════════╗"
+    echo "  ║   OmidenOs installed successfully! 🎉   ║"
+    echo "  ╚══════════════════════════════════════════╝"
+    echo -e "${N}"
+    echo -e "  ${W}Installed to:${N} $DISK"
+    echo -e "  ${W}Hostname:${N}     $HOSTNAME"
+    echo -e "  ${W}User:${N}         $USERNAME"
+    echo -e "  ${W}Boot:${N}         $BOOT_MODE"
+    echo ""
+    echo -e "  ${C}Next steps:${N}"
+    echo -e "  1. Remove the USB/live media"
+    echo -e "  2. Reboot"
+    echo -e "  3. Log in as ${BOLD}$USERNAME${N}"
+    echo ""
+
+    confirm "Unmount and reboot now?" && {
+        umount -R /mnt 2>/dev/null || true
+        reboot
+    } || {
+        info "You can reboot manually when ready."
+        echo -e "  Run: ${BOLD}umount -R /mnt && reboot${N}"
+    }
+}
+
+# ─── Main ─────────────────────────────────────────────────────
+main() {
+    banner
+    check_root
+    check_uefi
+    check_internet
+    update_mirrors
+    gather_config
+    select_disk
+    select_filesystem
+    partition_disk
+    install_base
+    configure_chroot
+    post_install
+}
+
+main "$@"

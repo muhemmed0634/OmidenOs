@@ -1,0 +1,31 @@
+#!/bin/bash
+# OmidenOs - BlackArch Repository Setup
+# Adds BlackArch repo with proper keyring
+
+set -e
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+echo -e "${CYAN}[OmidenOs] Setting up BlackArch repository...${NC}"
+
+# Download and run the official strap
+curl -O https://blackarch.org/strap.sh
+echo "5ea40d49ecd14c2e024deecf90605426db97ea0c  strap.sh" | sha1sum -c || {
+    echo -e "${RED}[ERROR] Checksum mismatch! Aborting.${NC}"
+    rm -f strap.sh
+    exit 1
+}
+
+chmod +x strap.sh
+./strap.sh
+rm -f strap.sh
+
+pacman -Syy
+
+echo -e "${GREEN}[OK] BlackArch repository added successfully.${NC}"
+echo -e "${CYAN}Install a tool: pacman -S <tool-name>${NC}"
+echo -e "${CYAN}Install a category: pacman -S blackarch-recon${NC}"
