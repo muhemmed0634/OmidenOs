@@ -8,7 +8,7 @@
 
 [![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOs?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOs/stargazers)
 [![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOs?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOs/network)
-[![License](https://img.shields.io/badge/license-MIT-a6e3a1?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0-a6e3a1?style=flat-square)](LICENSE)
 [![Arch](https://img.shields.io/badge/base-Arch%20Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org)
 [![BlackArch](https://img.shields.io/badge/tools-BlackArch-cc0000?style=flat-square)](https://blackarch.org)
 
@@ -251,7 +251,7 @@ git clone https://github.com/muhemmed0634/OmidenOs.git
 
 ## Lisans
 
-[MIT](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
+[GPL-3.0](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
 
 ---
 
