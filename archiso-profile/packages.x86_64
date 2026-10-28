@@ -28,7 +28,6 @@ f2fs-tools
 jfsutils
 nilfs-utils
 ntfs-3g
-reiserfsprogs
 udftools
 xfsprogs
 
@@ -53,10 +52,9 @@ tcpdump
 ethtool
 iperf3
 socat
-netcat
+openbsd-netcat
 
 # ─── Display & Desktop ───────────────────────────────────────
-xorg
 xorg-server
 xorg-xinit
 xorg-xrandr
@@ -65,11 +63,9 @@ xf86-video-vesa
 xf86-video-fbdev
 xf86-input-libinput
 mesa
-libva-mesa-driver
 
 # ─── Window Manager / Desktop ────────────────────────────────
 openbox
-obconf
 tint2
 pcmanfm
 feh
@@ -113,7 +109,7 @@ bzip2
 xz
 zip
 unzip
-p7zip
+7zip
 unrar
 
 # ─── Media ───────────────────────────────────────────────────
@@ -125,7 +121,7 @@ imagemagick
 # ─── Fonts ───────────────────────────────────────────────────
 ttf-dejavu
 ttf-liberation
-ttf-font-awesome
+otf-font-awesome
 noto-fonts
 noto-fonts-emoji
 ttf-cascadia-code
@@ -133,7 +129,6 @@ ttf-hack-nerd
 terminus-font
 
 # ─── Themes & Icons ──────────────────────────────────────────
-arc-gtk-theme
 papirus-icon-theme
 lxappearance
 qt5ct
@@ -158,7 +153,7 @@ ripgrep
 fd
 bat
 hexyl
-xxd
+vim
 binutils
 patchelf
 file
@@ -191,9 +186,7 @@ python
 python-pip
 python-requests
 python-scapy
-python-impacket
-python-pwntools
-python-crypto
+impacket
 python-paramiko
 ruby
 perl
@@ -215,7 +208,6 @@ pavucontrol
 # ─── Bluetooth ───────────────────────────────────────────────
 bluez
 bluez-utils
-blueberry
 
 # ─── Archiso / Install Tools ─────────────────────────────────
 arch-install-scripts
@@ -267,7 +259,6 @@ theharvester
 recon-ng
 maltego
 spiderfoot
-shodan
 sublist3r
 dnsrecon
 fierce
@@ -300,7 +291,7 @@ arpwatch
 dsniff
 mitmproxy
 sslstrip
-hping3
+hping
 scapy
 yersinia
 macchanger
@@ -317,49 +308,39 @@ crowbar
 sprayhound
 kerbrute
 mimikatz
-pypykatz
+python-pypykatz
 certipy
 evil-winrm
-cme
 
 # ─── Exploitation Frameworks ─────────────────────────────────
 metasploit
 exploitdb
-searchsploit
 routersploit
-beef-xss
+beef
 empire
-covenant
 sliver
-havoc
+havoc-c2
 
 # ─── Post Exploitation ───────────────────────────────────────
-meterpreter
 bloodhound
-neo4j
-powershell-empire
+neo4j-community
 crackmapexec
 smbmap
 enum4linux
 enum4linux-ng
-ldapdomaindump
-adidnsdump
 ldeep
 
 # ─── Reverse Engineering ─────────────────────────────────────
 radare2
 cutter
 ghidra
-gdb-peda
 pwndbg
-peda
 binwalk
 angr
-pwntools
+python-pwntools
 checksec
 yara
 retdec
-die
 
 # ─── Forensics ───────────────────────────────────────────────
 autopsy
@@ -367,18 +348,17 @@ volatility3
 bulk-extractor
 sleuthkit
 foremost
-photorec
+testdisk
 ddrescue
 safecopy
 dc3dd
 dcfldd
-exiftool
-steghide
+perl-image-exiftool
+stegseek
 stegsolve
 zsteg
 outguess
-pdf-parser
-oletools
+python-oletools
 
 # ─── Wireless ────────────────────────────────────────────────
 aircrack-ng
@@ -392,7 +372,7 @@ bully
 hashcat-utils
 
 # ─── Fuzzing ─────────────────────────────────────────────────
-afl
+afl++
 afl-utils
 boofuzz
 radamsa
@@ -403,7 +383,6 @@ hashid
 hash-identifier
 rsactftool
 xortool
-ciphey
 featherduster
 openssl
 sagemath
@@ -412,7 +391,7 @@ sagemath
 maltego
 theharvester
 recon-ng
-shodan
+python-shodan
 spiderfoot
 twint
 sherlock
@@ -422,9 +401,7 @@ socialscan
 phoneinfoga
 
 # ─── Social Engineering ──────────────────────────────────────
-setoolkit
 gophish
-evilginx2
 modlishka
 
 # ─── Containers & Cloud ──────────────────────────────────────
@@ -434,20 +411,14 @@ trivy
 grype
 kube-hunter
 pacu
-cloudmapper
 prowler
-cloudsplaining
 
 # ─── Misc Security Tools ─────────────────────────────────────
 proxychains-ng
 tor
-torify
 proxytunnel
 chisel
 ligolo-ng
-ncat
 rlwrap
 pwncat
-penelope
-nc
 websocat
