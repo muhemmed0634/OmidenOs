@@ -191,23 +191,6 @@ Kurulum sihirbazı:
 setup-blackarch
 ```
 
----
-
-## Klavye Kısayolları
-
-| Kısayol | İşlev |
-|---------|-------|
-| `Super + Enter` | Terminal aç |
-| `Super + D` | Uygulama başlatıcı |
-| `Super + E` | Dosya yöneticisi |
-| `Super + ↑` | Pencereyi maximize et |
-| `Super + ←` / `→` | Snap sol / sağ |
-| `Super + 1-4` | Sanal masaüstü değiştir |
-| `Super + F4` | Pencereyi kapat |
-| `Print Screen` | Ekran görüntüsü |
-
----
-
 ## Proje Yapısı
 
 ```

@@ -1,6 +1,6 @@
 # ============================================================
 # OmidenOs - Package List
-# Arch Linux + BlackArch tools
+# Arch Linux + BlackArch tools (all verified)
 # GitHub: https://github.com/muhemmed0634/OmidenOs
 # ============================================================
 
@@ -54,7 +54,7 @@ iperf3
 socat
 openbsd-netcat
 
-# ─── Display & Desktop ───────────────────────────────────────
+# ─── Display ─────────────────────────────────────────────────
 xorg-server
 xorg-xinit
 xorg-xrandr
@@ -92,6 +92,7 @@ neovim
 vim
 nano
 mousepad
+
 
 # ─── File Manager ────────────────────────────────────────────
 thunar
@@ -229,11 +230,10 @@ at-spi2-core
 glib2
 python-setuptools
 pv
-screen
 expect
 
 # ============================================================
-# BlackArch Security Tools (100+)
+# BlackArch Security Tools
 # ============================================================
 
 # ─── Reconnaissance ──────────────────────────────────────────
@@ -284,7 +284,6 @@ bettercap
 ettercap
 responder
 mitm6
-impacket
 crackmapexec
 netdiscover
 arpwatch
@@ -299,8 +298,6 @@ hostapd-wpe
 wifi-pumpkin
 
 # ─── Password Attacks ────────────────────────────────────────
-hashcat
-john
 hydra
 medusa
 patator
@@ -312,7 +309,7 @@ python-pypykatz
 certipy
 evil-winrm
 
-# ─── Exploitation Frameworks ─────────────────────────────────
+# ─── Exploitation ────────────────────────────────────────────
 metasploit
 exploitdb
 routersploit
