@@ -1,6 +1,8 @@
 # ============================================================
 # OmidenOs - Package List
-# Arch Linux + BlackArch tools (all verified)
+# Arch Linux + BlackArch tools (verified, build-safe)
+# NOTE: Large GUI tools (burpsuite, ghidra, autopsy, maltego)
+#       are installed post-boot via: install-tools
 # GitHub: https://github.com/muhemmed0634/OmidenOs
 # ============================================================
 
@@ -93,7 +95,6 @@ vim
 nano
 mousepad
 
-
 # ─── File Manager ────────────────────────────────────────────
 thunar
 thunar-archive-plugin
@@ -154,7 +155,6 @@ ripgrep
 fd
 bat
 hexyl
-vim
 binutils
 patchelf
 file
@@ -233,11 +233,11 @@ pv
 expect
 
 # ============================================================
-# BlackArch Security Tools
+# BlackArch Security Tools (CLI / lightweight only)
+# Heavy GUI tools installed via: install-tools
 # ============================================================
 
 # ─── Reconnaissance ──────────────────────────────────────────
-nmap
 masscan
 amass
 subfinder
@@ -257,7 +257,6 @@ nikto
 nuclei
 theharvester
 recon-ng
-maltego
 spiderfoot
 sublist3r
 dnsrecon
@@ -265,7 +264,6 @@ fierce
 
 # ─── Web Application Testing ─────────────────────────────────
 sqlmap
-burpsuite
 zaproxy
 xsstrike
 dalfox
@@ -316,37 +314,31 @@ routersploit
 beef
 empire
 sliver
-havoc-c2
 
 # ─── Post Exploitation ───────────────────────────────────────
 bloodhound
-neo4j-community
 crackmapexec
 smbmap
 enum4linux
 enum4linux-ng
 ldeep
 
-# ─── Reverse Engineering ─────────────────────────────────────
+# ─── Reverse Engineering (lightweight) ───────────────────────
 radare2
 cutter
-ghidra
 pwndbg
 binwalk
 angr
 python-pwntools
 checksec
 yara
-retdec
 
-# ─── Forensics ───────────────────────────────────────────────
-autopsy
+# ─── Forensics (lightweight) ─────────────────────────────────
 volatility3
 bulk-extractor
 sleuthkit
 foremost
 testdisk
-ddrescue
 safecopy
 dc3dd
 dcfldd
@@ -358,7 +350,6 @@ outguess
 python-oletools
 
 # ─── Wireless ────────────────────────────────────────────────
-aircrack-ng
 airgeddon
 wifite
 kismet
@@ -381,15 +372,10 @@ hash-identifier
 rsactftool
 xortool
 featherduster
-openssl
 sagemath
 
 # ─── OSINT ───────────────────────────────────────────────────
-maltego
-theharvester
-recon-ng
 python-shodan
-spiderfoot
 twint
 sherlock
 holehe

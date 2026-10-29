@@ -1,64 +1,99 @@
 #!/bin/bash
+# ============================================================
 # OmidenOs - ISO Build Script
 # GitHub: https://github.com/muhemmed0634/OmidenOs
+# Usage: sudo ./scripts/build.sh
+# ============================================================
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 PROFILE_DIR="$PROJECT_DIR/archiso-profile"
-BUILD_DIR="$PROJECT_DIR/build"
+WORK_DIR="/tmp/omiden-build"
 OUT_DIR="$PROJECT_DIR/out"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
-BOLD='\033[1m'
+R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
+C='\033[0;36m' M='\033[0;35m' W='\033[1;37m' N='\033[0m' BOLD='\033[1m'
 
-echo -e "${CYAN}${BOLD}"
+echo -e "${M}${BOLD}"
 echo "╔═══════════════════════════════════════╗"
 echo "║     OmidenOs ISO Build Script         ║"
+echo "║   github.com/muhemmed0634/OmidenOs   ║"
 echo "╚═══════════════════════════════════════╝"
-echo -e "${NC}"
+echo -e "${N}"
 
-# Check root
+info()  { echo -e "  ${G}[✔]${N} $*"; }
+warn()  { echo -e "  ${Y}[!]${N} $*"; }
+err()   { echo -e "  ${R}[✘]${N} $*"; }
+step()  { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
+
+# ─── Check root ───────────────────────────────────────────────
 if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}[ERROR]${NC} Must be run as root: sudo ./scripts/build.sh"
+    err "Must be run as root: sudo ./scripts/build.sh"
     exit 1
 fi
 
-# Check archiso
+# ─── Check archiso ────────────────────────────────────────────
 if ! command -v mkarchiso &>/dev/null; then
-    echo -e "${YELLOW}[WARN]${NC} archiso not found. Installing..."
+    warn "archiso not found. Installing..."
     pacman -Sy --noconfirm archiso
 fi
+info "archiso: $(mkarchiso --version 2>/dev/null || echo 'installed')"
 
-# Clean old build
-echo -e "${GREEN}[INFO]${NC} Cleaning previous build artifacts..."
-rm -rf "$BUILD_DIR"
-mkdir -p "$BUILD_DIR" "$OUT_DIR"
+# ─── Fix permissions ──────────────────────────────────────────
+step "Fixing file permissions"
+chmod +x "$PROFILE_DIR"/airootfs/usr/local/bin/* 2>/dev/null
+chmod +x "$PROFILE_DIR"/airootfs/root/.automated_script.sh 2>/dev/null
+chmod 750 "$PROFILE_DIR"/airootfs/root 2>/dev/null
+chmod 400 "$PROFILE_DIR"/airootfs/etc/shadow 2>/dev/null || true
+info "Permissions fixed."
 
-# Fix permissions
-chmod +x "$PROFILE_DIR/airootfs/usr/local/bin/install-omiden"
-chmod +x "$PROFILE_DIR/airootfs/usr/local/bin/omiden-welcome"
-chmod +x "$PROFILE_DIR/airootfs/root/.automated_script.sh"
-chmod 750 "$PROFILE_DIR/airootfs/root"
-chmod 400 "$PROFILE_DIR/airootfs/etc/shadow" 2>/dev/null || true
+# ─── Clean old build ──────────────────────────────────────────
+step "Cleaning previous build artifacts"
+# Unmount any leftover mounts from previous failed builds
+if [[ -d "$WORK_DIR" ]]; then
+    umount -R "$WORK_DIR" 2>/dev/null || true
+    rm -rf "$WORK_DIR"
+fi
+mkdir -p "$WORK_DIR" "$OUT_DIR"
+info "Clean done."
 
-echo -e "${GREEN}[INFO]${NC} Building OmidenOs ISO..."
-echo -e "${YELLOW}[INFO]${NC} This will take 10-30 minutes depending on your connection."
+# ─── Build ────────────────────────────────────────────────────
+step "Building OmidenOs ISO"
+echo -e "  ${Y}This will take 10-30 minutes.${N}"
+echo -e "  ${Y}Work dir: $WORK_DIR${N}"
+echo -e "  ${Y}Output:   $OUT_DIR${N}"
 echo ""
 
-# Build
-mkarchiso -v -w "$BUILD_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
+# Retry on download failures (BlackArch mirrors can be flaky)
+MAX_RETRIES=3
+for attempt in $(seq 1 $MAX_RETRIES); do
+    if mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"; then
+        break
+    fi
+    if [[ $attempt -eq $MAX_RETRIES ]]; then
+        err "Build failed after $MAX_RETRIES attempts."
+        echo ""
+        echo -e "  ${Y}Common fixes:${N}"
+        echo -e "  • Check internet connection"
+        echo -e "  • Run: sudo pacman -Syy"
+        echo -e "  • If a package fails to download, edit:"
+        echo -e "    archiso-profile/packages.x86_64"
+        exit 1
+    fi
+    warn "Build attempt $attempt failed, retrying..."
+    sleep 5
+done
+
+# ─── Done ─────────────────────────────────────────────────────
+echo ""
+step "Build Complete!"
+echo -e "  ${G}${BOLD}✓${N} ISO saved to: ${C}${OUT_DIR}/${N}"
+ls -lh "$OUT_DIR"/*.iso 2>/dev/null || warn "ISO not found in output dir."
 
 echo ""
-echo -e "${GREEN}${BOLD}✓ Build complete!${NC}"
-echo -e "${CYAN}  ISO saved to: ${OUT_DIR}/${NC}"
-ls -lh "$OUT_DIR"/*.iso 2>/dev/null || echo "  (check $OUT_DIR)"
+echo -e "  ${Y}Flash to USB:${NC}"
+echo -e "  ${BOLD}sudo ./scripts/flash-usb.sh${N}"
+echo -e "  ${BOLD}dd if=$OUT_DIR/omidenos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync${N}"
 echo ""
-echo -e "${YELLOW}  Flash to USB:${NC}"
-echo -e "  dd if=$OUT_DIR/omidenos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync"
-echo -e "  (replace /dev/sdX with your USB drive)"

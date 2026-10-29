@@ -1,46 +1,92 @@
 #!/bin/bash
+# ============================================================
 # OmidenOs - Flash ISO to USB
+# GitHub: https://github.com/muhemmed0634/OmidenOs
+# Usage: sudo ./scripts/flash-usb.sh
+# ============================================================
 
 set -e
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
+C='\033[0;36m' W='\033[1;37m' N='\033[0m' BOLD='\033[1m'
 
+info()  { echo -e "  ${G}[✔]${N} $*"; }
+warn()  { echo -e "  ${Y}[!]${N} $*"; }
+err()   { echo -e "  ${R}[✘]${N} $*"; }
+
+echo -e "${C}${BOLD}"
+echo "╔═══════════════════════════════════════╗"
+echo "║     OmidenOs USB Flasher              ║"
+echo "╚═══════════════════════════════════════╝"
+echo -e "${N}"
+
+# ─── Check root ───────────────────────────────────────────────
 if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}Must be run as root${NC}"
+    err "Must be run as root: sudo ./scripts/flash-usb.sh"
     exit 1
 fi
 
-ISO_DIR="$(dirname "$0")/../out"
+# ─── Find ISO ─────────────────────────────────────────────────
+ISO_DIR="$(cd "$(dirname "$0")/.." && pwd)/out"
 ISO_FILE=$(ls "$ISO_DIR"/omidenos-*.iso 2>/dev/null | head -n1)
 
 if [[ -z "$ISO_FILE" ]]; then
-    echo -e "${RED}No OmidenOs ISO found in $ISO_DIR${NC}"
-    echo "Run ./scripts/build.sh first."
+    err "No OmidenOs ISO found in $ISO_DIR"
+    echo -e "  Run ${BOLD}sudo ./scripts/build.sh${N} first."
     exit 1
 fi
 
-echo -e "${CYAN}Available USB drives:${NC}"
-lsblk -d -o NAME,SIZE,MODEL | grep -v "loop\|sda" || lsblk -d -o NAME,SIZE,MODEL | grep -v "loop"
+ISO_SIZE=$(du -h "$ISO_FILE" | awk '{print $1}')
+info "ISO found: $(basename "$ISO_FILE") ($ISO_SIZE)"
+
+# ─── List drives ──────────────────────────────────────────────
 echo ""
-read -p "Enter USB device (e.g. sdb): " USB_DEV
-USB_DEV="/dev/$USB_DEV"
+echo -e "  ${C}Available block devices:${N}"
+echo ""
+
+# Get root disk to exclude it
+ROOT_DISK=$(lsblk -ndo PKNAME "$(df / | tail -1 | awk '{print $1}')" 2>/dev/null || echo "")
+
+lsblk -d -o NAME,SIZE,MODEL,TYPE | grep -v "^loop\|^NAME" | while read -r name size model type; do
+    marker=" "
+    [[ "$name" == "$ROOT_DISK" ]] && marker="${R}✘${N}(system)"
+    [[ -b "/dev/$name" ]] && echo -e "  ${C}$name${N}  ${size}  $model  $marker"
+done
+
+echo ""
+
+# ─── Select device ─────────────────────────────────────────────
+read -p "  Enter USB device name (e.g. sdb, sdc): " USB_NAME
+USB_DEV="/dev/$USB_NAME"
 
 if [[ ! -b "$USB_DEV" ]]; then
-    echo -e "${RED}Device $USB_DEV not found${NC}"
+    err "Device $USB_DEV not found."
     exit 1
 fi
 
-echo -e "${YELLOW}WARNING: All data on $USB_DEV will be erased!${NC}"
-echo -e "ISO: $ISO_FILE -> $USB_DEV"
-read -p "Confirm? [y/N]: " confirm
-[[ "$confirm" != "y" && "$confirm" != "Y" ]] && exit 0
+# Prevent flashing system disk
+if [[ "$USB_NAME" == "$ROOT_DISK" ]]; then
+    err "Cannot flash system disk ($ROOT_DISK)!"
+    exit 1
+fi
 
-echo -e "${GREEN}Flashing...${NC}"
+# ─── Confirm ──────────────────────────────────────────────────
+echo ""
+echo -e "  ${R}${BOLD}⚠ WARNING: ALL DATA ON $USB_DEV WILL BE ERASED! ⚠${N}"
+echo -e "  ${W}ISO:${N}   $(basename "$ISO_FILE")"
+echo -e "  ${W}Target:${N} $USB_DEV ($(lsblk -dn -o SIZE "$USB_DEV"))"
+echo ""
+read -p "  Type 'YES' to confirm: " confirm
+[[ "$confirm" == "YES" ]] || { echo "Aborted."; exit 0; }
+
+# ─── Flash ────────────────────────────────────────────────────
+echo ""
+info "Flashing ISO to $USB_DEV..."
+echo ""
+
 dd if="$ISO_FILE" of="$USB_DEV" bs=4M status=progress oflag=sync
 sync
 
-echo -e "${GREEN}Done! USB is ready to boot OmidenOs.${NC}"
+echo ""
+info "Done! USB is ready to boot OmidenOs."
+echo -e "  ${Y}Reboot and boot from USB.${N}"

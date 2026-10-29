@@ -1,0 +1,72 @@
+#!/bin/bash
+# OmidenOs - Heavy Tools Installer
+# Installs large GUI security tools not included in the ISO
+# GitHub: https://github.com/muhemmed0634/OmidenOs
+
+set -e
+
+R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
+C='\033[0;36m' W='\033[1;37m' M='\033[0;35m' N='\033[0m' BOLD='\033[1m'
+
+banner() {
+    clear
+    echo -e "${M}${BOLD}"
+    echo "  ╔══════════════════════════════════════════╗"
+    echo "  ║     OmidenOs — Heavy Tools Installer     ║"
+    echo "  ╚══════════════════════════════════════════╝"
+    echo -e "${N}"
+}
+
+info()  { echo -e "  ${G}[✔]${N} $*"; }
+warn()  { echo -e "  ${Y}[!]${N} $*"; }
+step()  { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
+
+TOOLS=(
+    "burpsuite:Burp Suite Pro — Web app testing (688 MB)"
+    "maltego:Maltego — OSINT & link analysis (180 MB)"
+    "ghidra:Ghidra — NSA reverse engineering tool (355 MB)"
+    "autopsy:Autopsy — Digital forensics platform (1 GB)"
+    "neo4j-community:Neo4j — BloodHound graph database (126 MB)"
+    "retdec:RetDec — Retargetable decompiler (124 MB)"
+    "havoc-c2:Havoc C2 — Post-exploitation framework (158 MB)"
+)
+
+banner
+
+echo -e "  ${W}Available tools to install:${N}\n"
+i=1
+for t in "${TOOLS[@]}"; do
+    name="${t%%:*}"
+    desc="${t##*:}"
+    echo -e "  ${C}[$i]${N} ${BOLD}$name${N} — $desc"
+    ((i++))
+done
+echo -e "  ${C}[a]${N} Install ALL"
+echo -e "  ${C}[q]${N} Quit"
+echo ""
+
+read -p "  Select [1-${#TOOLS[@]}/a/q]: " choice
+
+install_pkg() {
+    local pkg="$1"
+    info "Installing $pkg..."
+    pacman -S --noconfirm "$pkg" && info "$pkg installed." || warn "$pkg failed."
+}
+
+if [[ "$choice" == "q" ]]; then
+    exit 0
+elif [[ "$choice" == "a" ]]; then
+    step "Installing all heavy tools"
+    for t in "${TOOLS[@]}"; do
+        install_pkg "${t%%:*}"
+    done
+elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#TOOLS[@]} )); then
+    pkg="${TOOLS[$((choice-1))]%%:*}"
+    step "Installing $pkg"
+    install_pkg "$pkg"
+else
+    warn "Invalid selection."
+fi
+
+echo ""
+info "Done. Run again to install more tools."
