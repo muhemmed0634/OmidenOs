@@ -2,23 +2,22 @@
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
 
     "logo": {
-        "type": "small",
-        "source": "~/.config/fastfetch/omiden.txt",
+        "type": "file",
+        "source": "$HOME/.config/fastfetch/omiden.txt",
         "color": {
             "1": "magenta",
             "2": "cyan"
         },
         "padding": {
             "top": 1,
-            "left": 1
+            "left": 2
         }
     },
 
     "display": {
-        "separator": "  →  ",
+        "separator": " → ",
         "color": {
-            "keys": "magenta",
-            "title": "cyan"
+            "keys": "magenta"
         }
     },
 
@@ -84,6 +83,11 @@
             "keyColor": "cyan"
         },
         {
+            "type": "terminalfont",
+            "key": "Terminal Font",
+            "keyColor": "cyan"
+        },
+        {
             "type": "cpu",
             "key": "CPU",
             "keyColor": "yellow"
@@ -91,8 +95,7 @@
         {
             "type": "gpu",
             "key": "GPU",
-            "keyColor": "yellow",
-            "driverSpecific": true
+            "keyColor": "yellow"
         },
         {
             "type": "memory",
@@ -110,16 +113,10 @@
             "key": "Local IP",
             "keyColor": "green"
         },
-        {
-            "type": "publicip",
-            "key": "Public IP",
-            "keyColor": "green",
-            "timeout": 3000
-        },
         "break",
         {
             "type": "colors",
-            "paddingLeft": 1,
+            "paddingLeft": 2,
             "symbol": "circle"
         }
     ]
