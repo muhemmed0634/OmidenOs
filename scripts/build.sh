@@ -40,6 +40,10 @@ if ! command -v mkarchiso &>/dev/null; then
     warn "archiso not found. Installing..."
     pacman -Sy --noconfirm archiso
 fi
+if ! command -v mkfs.erofs &>/dev/null; then
+    warn "erofs-utils not found. Installing..."
+    pacman -Sy --noconfirm erofs-utils
+fi
 info "archiso: $(mkarchiso --version 2>/dev/null || echo 'installed')"
 
 # ─── Check disk space ────────────────────────────────────────
@@ -72,7 +76,7 @@ info "Clean done."
 
 # ─── Build ────────────────────────────────────────────────────
 step "Building OmidenOs ISO"
-echo -e "  ${Y}This will take 15-40 minutes.${N}"
+echo -e "  ${Y}This will take 5-15 minutes.${N}"
 echo -e "  ${Y}Work dir: $WORK_DIR${N}"
 echo -e "  ${Y}Output:   $OUT_DIR${N}"
 echo -e "  ${Y}Log file: $LOG_FILE${N}"
