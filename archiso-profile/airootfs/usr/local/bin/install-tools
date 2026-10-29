@@ -1,72 +1,209 @@
 #!/bin/bash
-# OmidenOs - Heavy Tools Installer
-# Installs large GUI security tools not included in the ISO
+# ============================================================
+# OmidenOs - Security Tools Installer
+# Installs additional tools not included in the base ISO
 # GitHub: https://github.com/muhemmed0634/OmidenOs
+# ============================================================
 
 set -e
 
 R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
 C='\033[0;36m' W='\033[1;37m' M='\033[0;35m' N='\033[0m' BOLD='\033[1m'
 
+info()  { echo -e "  ${G}[✔]${N} $*"; }
+warn()  { echo -e "  ${Y}[!]${N} $*"; }
+err()   { echo -e "  ${R}[✘]${N} $*"; }
+step()  { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
+
 banner() {
     clear
     echo -e "${M}${BOLD}"
-    echo "  ╔══════════════════════════════════════════╗"
-    echo "  ║     OmidenOs — Heavy Tools Installer     ║"
-    echo "  ╚══════════════════════════════════════════╝"
+    cat << 'BANNER'
+  ╔══════════════════════════════════════════╗
+  ║    OmidenOs — Security Tools Installer   ║
+  ║   github.com/muhemmed0634/OmidenOs       ║
+  ╚══════════════════════════════════════════╝
+BANNER
     echo -e "${N}"
 }
 
-info()  { echo -e "  ${G}[✔]${N} $*"; }
-warn()  { echo -e "  ${Y}[!]${N} $*"; }
-step()  { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
+# ─── Tool Categories ─────────────────────────────────────────
+# Format: "package:description"
 
-TOOLS=(
-    "burpsuite:Burp Suite Pro — Web app testing (688 MB)"
+HEAVY_GUI=(
+    "burpsuite:Burp Suite — Web proxy scanner (688 MB)"
+    "ghidra:Ghidra — NSA reverse engineering (355 MB)"
+    "autopsy:Autopsy — Digital forensics (1 GB)"
     "maltego:Maltego — OSINT & link analysis (180 MB)"
-    "ghidra:Ghidra — NSA reverse engineering tool (355 MB)"
-    "autopsy:Autopsy — Digital forensics platform (1 GB)"
-    "neo4j-community:Neo4j — BloodHound graph database (126 MB)"
-    "retdec:RetDec — Retargetable decompiler (124 MB)"
-    "havoc-c2:Havoc C2 — Post-exploitation framework (158 MB)"
+    "neo4j-community:Neo4j — BloodHound graph DB (126 MB)"
+    "retdec:RetDec — Decompiler (124 MB)"
+    "havoc-c2:Havoc C2 — Post-exploitation (158 MB)"
 )
 
-banner
+WEB_APPS=(
+    "w3af:W3AF — Web app attack & audit"
+    "arachni:Arachni — Web vulnerability scanner"
+    "set:SET — Social Engineering Toolkit"
+)
 
-echo -e "  ${W}Available tools to install:${N}\n"
-i=1
-for t in "${TOOLS[@]}"; do
-    name="${t%%:*}"
-    desc="${t##*:}"
-    echo -e "  ${C}[$i]${N} ${BOLD}$name${N} — $desc"
-    ((i++))
-done
-echo -e "  ${C}[a]${N} Install ALL"
-echo -e "  ${C}[q]${N} Quit"
-echo ""
+EXPLOIT=(
+    "armitage:Armitage — Metasploit GUI frontend"
+)
 
-read -p "  Select [1-${#TOOLS[@]}/a/q]: " choice
+MOBILE=(
+    "jadx:JADX — Java/APK decompiler"
+    "androguard:Androguard — Android analysis"
+    "dex2jar:dex2jar — DEX to Java converter"
+    "mobsf:Mobile Security Framework — MobSF"
+)
 
+REVERSE=(
+    "rizin:Rizin — Reverse engineering framework"
+    "capstone:Capstone — Disassembly engine"
+    "unicorn:Unicorn — CPU emulator"
+    "keystone:Keystone — Assembler engine"
+    "z3:Z3 — SMT solver from Microsoft"
+    "ropgadget:ROPgadget — ROP finder"
+    "ropper:Ropper — ROP chain tool"
+    "gef:GEF — GDB enhanced features"
+)
+
+FORENSICS=(
+    "rifiuti2:rifiuti2 — Recycle bin forensics"
+    "ophcrack:Ophcrack — Windows password cracker"
+    "stegcracker:Stegcracker — Steganography brute force"
+    "pngcheck:pngcheck — PNG file verifier"
+    "scalpel:Scalpel — File carving tool"
+    "volafox:volafox — Memory forensics"
+    "libewf:libewf — Expert Witness format library"
+)
+
+NETWORK=(
+    "netexec:NetExec — Network execution (CME fork)"
+    "rita:RITA — Traffic intelligence analysis"
+    "smbclient:SMBClient — SMB/CIFS client"
+    "samba:Samba — SMB file sharing"
+)
+
+ALL_CATEGORIES=("HEAVY_GUI" "WEB_APPS" "EXPLOIT" "MOBILE" "REVERSE" "FORENSICS" "NETWORK")
+ALL_LABELS=("Heavy GUI Tools" "Web Application" "Exploitation" "Mobile/Android" "Reverse Engineering" "Forensics" "Network/AD")
+
+# ─── Count total tools ────────────────────────────────────────
+count_total() {
+    local total=0
+    for cat in "${ALL_CATEGORIES[@]}"; do
+        eval "total+=\${#${cat}[@]}"
+    done
+    echo "$total"
+}
+
+TOTAL=$(count_total)
+
+# ─── Display ─────────────────────────────────────────────────
+show_menu() {
+    banner
+    echo -e "  ${W}Available tools ($TOTAL total):${N}"
+    echo ""
+
+    local idx=1
+    for i in "${!ALL_CATEGORIES[@]}"; do
+        local cat="${ALL_CATEGORIES[$i]}"
+        local label="${ALL_LABELS[$i]}"
+        echo -e "  ${M}${BOLD}── $label ──${N}"
+        eval "local arr=(\"\${${cat}[@]}\")"
+        for t in "${arr[@]}"; do
+            local name="${t%%:*}"
+            local desc="${t##*:}"
+            printf "    ${C}[%2d]${N} %-14s — %s\n" "$idx" "$name" "$desc"
+            ((idx++))
+        done
+        echo ""
+    done
+
+    echo -e "  ${G}[ a]${N} Install ALL ($TOTAL tools)"
+    echo -e "  ${Y}[ c]${N} Install by category"
+    echo -e "  ${R}[ q]${N} Quit"
+    echo ""
+}
+
+show_category_menu() {
+    banner
+    echo -e "  ${W}Select category:${N}\n"
+    for i in "${!ALL_CATEGORIES[@]}"; do
+        local cat="${ALL_CATEGORIES[$i]}"
+        local label="${ALL_LABELS[$i]}"
+        eval "local count=\${#${cat}[@]}"
+        printf "  ${C}[%d]${N} %-24s (%d tools)\n" "$((i+1))" "$label" "$count"
+    done
+    echo -e "  ${R}[0]${N} Back\n"
+}
+
+# ─── Install ──────────────────────────────────────────────────
 install_pkg() {
     local pkg="$1"
     info "Installing $pkg..."
-    pacman -S --noconfirm "$pkg" && info "$pkg installed." || warn "$pkg failed."
+    if pacman -S --noconfirm --needed "$pkg" 2>/dev/null; then
+        info "$pkg installed."
+    else
+        warn "$pkg failed — may need BlackArch repo (run setup-blackarch first)."
+    fi
 }
 
-if [[ "$choice" == "q" ]]; then
-    exit 0
-elif [[ "$choice" == "a" ]]; then
-    step "Installing all heavy tools"
-    for t in "${TOOLS[@]}"; do
+install_category() {
+    local cat_name="$1"
+    local label="$2"
+    step "Installing $label"
+    eval "local arr=(\"\${${cat_name}[@]}\")"
+    for t in "${arr[@]}"; do
         install_pkg "${t%%:*}"
     done
-elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#TOOLS[@]} )); then
-    pkg="${TOOLS[$((choice-1))]%%:*}"
-    step "Installing $pkg"
-    install_pkg "$pkg"
-else
-    warn "Invalid selection."
-fi
+}
 
-echo ""
-info "Done. Run again to install more tools."
+install_all() {
+    step "Installing all $TOTAL tools"
+    for i in "${!ALL_CATEGORIES[@]}"; do
+        install_category "${ALL_CATEGORIES[$i]}" "${ALL_LABELS[$i]}"
+    done
+}
+
+# ─── Main ─────────────────────────────────────────────────────
+main() {
+    show_menu
+
+    read -p "  Select [1-$TOTAL/a/c/q]: " choice
+
+    if [[ "$choice" == "q" ]]; then
+        exit 0
+    elif [[ "$choice" == "a" ]]; then
+        install_all
+    elif [[ "$choice" == "c" ]]; then
+        show_category_menu
+        read -p "  Category [1-${#ALL_CATEGORIES[@]}/0]: " cat_choice
+        if [[ "$cat_choice" =~ ^[1-9]$ ]] && (( cat_choice <= ${#ALL_CATEGORIES[@]} )); then
+            local idx=$((cat_choice - 1))
+            install_category "${ALL_CATEGORIES[$idx]}" "${ALL_LABELS[$idx]}"
+        fi
+    elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= TOTAL )); then
+        # Find the package at this index
+        local idx=1
+        for i in "${!ALL_CATEGORIES[@]}"; do
+            local cat="${ALL_CATEGORIES[$i]}"
+            eval "local arr=(\"\${${cat}[@]}\")"
+            for t in "${arr[@]}"; do
+                if (( idx == choice )); then
+                    step "Installing ${t%%:*}"
+                    install_pkg "${t%%:*}"
+                    break 2
+                fi
+                ((idx++))
+            done
+        done
+    else
+        warn "Invalid selection."
+    fi
+
+    echo ""
+    info "Done. Run again to install more tools."
+}
+
+main "$@"
