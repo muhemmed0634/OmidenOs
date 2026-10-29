@@ -6,6 +6,7 @@
 
 **Arch Linux + BlackArch tabanlı güvenlik ve günlük kullanım dağıtımı**
 
+
 [![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOs?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOs/stargazers)
 [![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOs?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOs/network)
 [![License](https://img.shields.io/badge/license-GPL--3.0-a6e3a1?style=flat-square)](LICENSE)
@@ -39,7 +40,7 @@ OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıf
 - **100+ güvenlik aracı** (BlackArch repo)
 
 ---
-
+**UYARI : Bu bir pre alpha sürümüdür buglar olabilir lütfen test için sanal makinenize kurun!!**
 ## Özellikler
 
 | | |
@@ -229,7 +230,7 @@ OmidenOs/
 PR ve issue'lar açıktır. Fork'layıp değişiklik yapabilirsin.
 
 ```bash
-git clone https://github.com/muhemmed0634/OmidenOs.git
+git clone https://github.com/muhemmed0634/OmidenOs
 ```
 
 ---
