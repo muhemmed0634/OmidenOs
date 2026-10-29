@@ -10,7 +10,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 PROFILE_DIR="$PROJECT_DIR/archiso-profile"
-WORK_DIR="/tmp/omiden-build"
+WORK_DIR="/var/tmp/omiden-build"
 OUT_DIR="$PROJECT_DIR/out"
 
 R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
