@@ -3,6 +3,7 @@
 # OmidenOs - Security Tools Installer
 # Installs additional tools not included in the base ISO
 # GitHub: https://github.com/muhemmed0634/OmidenOs
+# made by muhammed
 # ============================================================
 
 set -e
