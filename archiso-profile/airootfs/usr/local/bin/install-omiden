@@ -280,12 +280,12 @@ install_base() {
 
     if [[ "$INSTALL_DESKTOP" == true ]]; then
         PKGS+=(
-            xorg xorg-server xorg-xinit xf86-video-vesa mesa
-            openbox obconf tint2 rofi dunst feh picom
+            xorg-server xorg-xinit xorg-xrandr xf86-video-vesa mesa
+            openbox tint2 rofi dunst feh picom
             lightdm lightdm-gtk-greeter
             alacritty thunar thunar-archive-plugin
-            noto-fonts ttf-font-awesome ttf-cascadia-code
-            arc-gtk-theme papirus-icon-theme lxappearance
+            noto-fonts otf-font-awesome ttf-cascadia-code
+            adw-gtk-theme papirus-icon-theme lxappearance
             pavucontrol network-manager-applet gparted
         )
     fi
@@ -399,9 +399,28 @@ nm-applet &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 EOF
 
-    # fastfetch config for installed user
+    # fastfetch config for installed user (config + ASCII logo)
     mkdir -p "${USER_HOME}/.config/fastfetch"
     cp /root/.config/fastfetch/config.jsonc "${USER_HOME}/.config/fastfetch/" 2>/dev/null || true
+    cp /root/.config/fastfetch/omiden.txt "${USER_HOME}/.config/fastfetch/" 2>/dev/null || true
+
+    # Copy wallpaper
+    mkdir -p /usr/share/wallpapers/omiden
+    cp /usr/share/wallpapers/omiden/omiden-wallpaper.png /usr/share/wallpapers/omiden/ 2>/dev/null || true
+
+    # LightDM greeter config
+    mkdir -p /etc/lightdm
+    cat > /etc/lightdm/lightdm-gtk-greeter.conf << EOF
+[greeter]
+background=/usr/share/wallpapers/omiden/omiden-wallpaper.png
+theme-name=adw-gtk3-dark
+icon-theme-name=Papirus-Dark
+font-name=Noto Sans 11
+indicators=~host;~spacer;~clock;~spacer;~session;~language;~a11y;~power
+clock-format=%H:%M
+position=50%,center 50%,center
+panel-position=bottom
+EOF
 
     # zshrc for installed user
     cat > "${USER_HOME}/.zshrc" << 'EOF'

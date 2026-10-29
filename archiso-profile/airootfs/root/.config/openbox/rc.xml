@@ -17,7 +17,7 @@
   </focus>
 
   <theme>
-    <name>Arc-Dark</name>
+    <name>adw-gtk3-dark</name>
     <titleLayout>NLC</titleLayout>
     <keepBorder>yes</keepBorder>
     <animateIconify>yes</animateIconify>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc"
+                xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <resistance>
+    <strength>10</strength>
+    <screen_edge_strength>20</screen_edge_strength>
+  </resistance>
+
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+    <focusLast>yes</focusLast>
+    <underMouse>no</underMouse>
+    <focusDelay>200</focusDelay>
+    <raiseOnFocus>no</raiseOnFocus>
+  </focus>
+
+  <theme>
+    <name>adw-gtk3-dark</name>
+    <titleLayout>NLC</titleLayout>
+    <keepBorder>yes</keepBorder>
+    <animateIconify>yes</animateIconify>
+    <font place="ActiveWindow">
+      <name>Noto Sans</name>
+      <size>10</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="InactiveWindow">
+      <name>Noto Sans</name>
+      <size>10</size>
+      <weight>Normal</weight>
+      <slant>Normal</slant>
+    </font>
+  </theme>
+
+  <desktops>
+    <number>4</number>
+    <firstdesk>1</firstdesk>
+    <names>
+      <name>Main</name>
+      <name>Code</name>
+      <name>Web</name>
+      <name>Media</name>
+    </names>
+    <popupTime>875</popupTime>
+  </desktops>
+
+  <resize>
+    <drawContents>yes</drawContents>
+    <popupShow>Nonpixel</popupShow>
+    <popupPosition>Center</popupPosition>
+  </resize>
+
+  <keyboard>
+    <chainQuitKey>C-g</chainQuitKey>
+
+    <!-- OmidenOs Keybindings -->
+    <keybind key="Super-Return">
+      <action name="Execute"><command>alacritty</command></action>
+    </keybind>
+    <keybind key="Super-d">
+      <action name="Execute"><command>rofi -show drun</command></action>
+    </keybind>
+    <keybind key="Super-e">
+      <action name="Execute"><command>thunar</command></action>
+    </keybind>
+    <keybind key="Super-b">
+      <action name="Execute"><command>firefox</command></action>
+    </keybind>
+    <keybind key="Super-F4">
+      <action name="Close"/>
+    </keybind>
+    <keybind key="Super-Up">
+      <action name="Maximize"/>
+    </keybind>
+    <keybind key="Super-Down">
+      <action name="Unmaximize"/>
+    </keybind>
+    <keybind key="Super-Left">
+      <action name="MoveResizeTo">
+        <x>0</x><y>0</y><width>50%</width><height>100%</height>
+      </action>
+    </keybind>
+    <keybind key="Super-Right">
+      <action name="MoveResizeTo">
+        <x>50%</x><y>0</y><width>50%</width><height>100%</height>
+      </action>
+    </keybind>
+    <keybind key="Super-1">
+      <action name="GoToDesktop"><to>1</to></action>
+    </keybind>
+    <keybind key="Super-2">
+      <action name="GoToDesktop"><to>2</to></action>
+    </keybind>
+    <keybind key="Super-3">
+      <action name="GoToDesktop"><to>3</to></action>
+    </keybind>
+    <keybind key="Super-4">
+      <action name="GoToDesktop"><to>4</to></action>
+    </keybind>
+    <keybind key="Print">
+      <action name="Execute"><command>scrot -e 'mv $f ~/Pictures/'</command></action>
+    </keybind>
+    <keybind key="A-F4">
+      <action name="Close"/>
+    </keybind>
+    <keybind key="A-Tab">
+      <action name="NextWindow">
+        <finalactions>
+          <action name="Focus"/>
+          <action name="Raise"/>
+          <action name="Unshade"/>
+        </finalactions>
+      </action>
+    </keybind>
+  </keyboard>
+
+  <mouse>
+    <dragThreshold>1</dragThreshold>
+    <doubleClickTime>200</doubleClickTime>
+    <screenEdgeWarpTime>400</screenEdgeWarpTime>
+    <screenEdgeWarpMouse>false</screenEdgeWarpMouse>
+    <context name="Frame">
+      <mousebind button="A-Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="A-Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+      <mousebind button="A-Right" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+    <context name="Desktop">
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu"><menu>root-menu</menu></action>
+      </mousebind>
+    </context>
+  </mouse>
+
+  <menu>
+    <file>menu.xml</file>
+    <hideDelay>200</hideDelay>
+    <middle>no</middle>
+    <submenuShowDelay>100</submenuShowDelay>
+    <submenuHideDelay>400</submenuHideDelay>
+    <applicationIcons>yes</applicationIcons>
+    <manageDesktops>yes</manageDesktops>
+  </menu>
+
+  <applications>
+  </applications>
+
+</openbox_config>

@@ -1,0 +1,68 @@
+# OmidenOs - Alacritty Terminal Configuration
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding = { x = 12, y = 10 }
+decorations = "full"
+opacity = 0.92
+blur = true
+title = "OmidenOs Terminal"
+dynamic_title = true
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[font]
+normal = { family = "Cascadia Code", style = "Regular" }
+bold = { family = "Cascadia Code", style = "Bold" }
+italic = { family = "Cascadia Code", style = "Italic" }
+size = 12.0
+
+[colors]
+[colors.primary]
+background = "#0d0d1a"
+foreground = "#cdd6f4"
+
+[colors.cursor]
+text = "#0d0d1a"
+cursor = "#e94560"
+
+[colors.selection]
+text = "#0d0d1a"
+background = "#e94560"
+
+[colors.normal]
+black   = "#181825"
+red     = "#f38ba8"
+green   = "#a6e3a1"
+yellow  = "#f9e2af"
+blue    = "#89b4fa"
+magenta = "#cba6f7"
+cyan    = "#94e2d5"
+white   = "#bac2de"
+
+[colors.bright]
+black   = "#313244"
+red     = "#f38ba8"
+green   = "#a6e3a1"
+yellow  = "#f9e2af"
+blue    = "#89b4fa"
+magenta = "#cba6f7"
+cyan    = "#94e2d5"
+white   = "#a6adc8"
+
+[bell]
+animation = "EaseOutExpo"
+duration = 0
+color = "#e94560"
+
+[cursor]
+style = { shape = "Block", blinking = "On" }
+blink_interval = 750
+unfocused_hollow = true
+
+[live_config_reload]
+enabled = true

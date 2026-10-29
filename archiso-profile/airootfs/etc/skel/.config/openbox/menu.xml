@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+
+<menu id="root-menu" label="OmidenOs">
+
+  <item label="Terminal">
+    <action name="Execute"><command>alacritty</command></action>
+  </item>
+  <item label="File Manager">
+    <action name="Execute"><command>thunar</command></action>
+  </item>
+  <item label="Text Editor">
+    <action name="Execute"><command>mousepad</command></action>
+  </item>
+
+  <separator label="──────────"/>
+
+  <menu id="apps-menu" label="Applications">
+    <item label="Firefox">
+      <action name="Execute"><command>firefox</command></action>
+    </item>
+    <item label="App Launcher (Rofi)">
+      <action name="Execute"><command>rofi -show drun</command></action>
+    </item>
+    <item label="System Monitor (btop)">
+      <action name="Execute"><command>alacritty -e btop</command></action>
+    </item>
+    <item label="Audio Control">
+      <action name="Execute"><command>pavucontrol</command></action>
+    </item>
+    <item label="Disk Manager (GParted)">
+      <action name="Execute"><command>gparted</command></action>
+    </item>
+  </menu>
+
+  <menu id="settings-menu" label="Settings">
+    <item label="Theme Switcher">
+      <action name="Execute"><command>lxappearance</command></action>
+    </item>
+    <item label="Openbox Config">
+      <action name="Execute"><command>obconf</command></action>
+    </item>
+    <item label="Display Settings">
+      <action name="Execute"><command>arandr</command></action>
+    </item>
+    <item label="Network Manager">
+      <action name="Execute"><command>nm-connection-editor</command></action>
+    </item>
+  </menu>
+
+  <separator label="──────────"/>
+
+  <item label="Install OmidenOs">
+    <action name="Execute"><command>alacritty -e install-omiden</command></action>
+  </item>
+
+  <separator label="──────────"/>
+
+  <menu id="power-menu" label="Power">
+    <item label="Restart Openbox">
+      <action name="Reconfigure"/>
+    </item>
+    <item label="Logout">
+      <action name="Exit"/>
+    </item>
+    <item label="Reboot">
+      <action name="Execute"><command>systemctl reboot</command></action>
+    </item>
+    <item label="Shutdown">
+      <action name="Execute"><command>systemctl poweroff</command></action>
+    </item>
+  </menu>
+
+</menu>
+
+</openbox_menu>

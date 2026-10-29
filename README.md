@@ -34,7 +34,9 @@ OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıf
 - **Live ortam** olarak USB'den çalıştırılabilir
 - **Diske kurulabilir** — `archinstall` yerine özel bir kurulum sihirbazı
 - **Openbox** pencere yöneticisi, hafif ve hızlı
-- **Fastfetch** ile ASCII logolu sistem bilgisi ekranı
+- **Fastfetch** ile OmidenOs ASCII logolu sistem bilgisi ekranı
+- **Boot splash** — OmidenOs logosu (syslinux, GRUB, systemd-boot)
+- **100+ güvenlik aracı** (BlackArch repo)
 
 ---
 
@@ -47,7 +49,7 @@ OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıf
 | **Masaüstü** | Openbox + Tint2 + Rofi |
 | **Terminal** | Alacritty |
 | **Shell** | Zsh (autosuggestions, syntax-hl) |
-| **Tema** | Arc-Dark + Papirus-Dark |
+| **Tema** | Adw-dark + Papirus-Dark |
 | **Klavye** | US (English) |
 | **Ses** | PipeWire |
 | **Ağ** | NetworkManager + iwd |
