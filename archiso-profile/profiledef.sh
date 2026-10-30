@@ -3,7 +3,7 @@
 # GitHub: https://github.com/muhemmed0634/OmidenOS
 # shellcheck disable=SC2034
 
-iso_name="omidenos"
+iso_name="omiden"
 iso_label="OMIDEN_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
 iso_publisher="OmidenOS <https://github.com/muhemmed0634/OmidenOS>"
 iso_application="OmidenOS Live/Installation Medium"
