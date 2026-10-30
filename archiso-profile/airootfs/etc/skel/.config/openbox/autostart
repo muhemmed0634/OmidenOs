@@ -1,8 +1,14 @@
 #!/bin/bash
 # OmidenOs Openbox Autostart
 
-# Set wallpaper
-feh --bg-fill /usr/share/wallpapers/omiden/omiden-wallpaper.png &
+# Set random wallpaper from wallpapers dir
+WALLPAPER_DIR="/usr/share/wallpapers/omiden"
+RANDOM_WALL=$(ls "$WALLPAPER_DIR"/*.{png,jpg} 2>/dev/null | shuf -n1)
+if [[ -n "$RANDOM_WALL" ]]; then
+    feh --bg-fill "$RANDOM_WALL" &
+else
+    feh --bg-fill "$WALLPAPER_DIR/omiden-wallpaper.png" &
+fi
 
 # Compositor
 picom --daemon &
