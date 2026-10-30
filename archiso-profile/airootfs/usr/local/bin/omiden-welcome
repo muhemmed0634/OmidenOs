@@ -1,7 +1,6 @@
 #!/bin/bash
 # OmidenOs - Welcome Script
 
-# Colors
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 GREEN='\033[0;32m'
@@ -11,39 +10,37 @@ WHITE='\033[1;37m'
 NC='\033[0m'
 BOLD='\033[1m'
 
-clear
+cat << 'WELCOME' | less -R
+\e[35m\e[1m
+  ╔═══════════════════════════════════════════════╗
+  ║   ██████╗ ███╗   ███╗██╗██████╗ ███████╗     ║
+  ║  ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝     ║
+  ║  ██║   ██║██╔████╔██║██║██║  ██║█████╗       ║
+  ║  ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝       ║
+  ║  ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗     ║
+  ║   ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝     ║
+  ╠═══════════════════════════════════════════════╣
+  ║    github.com/muhemmed0634/OmidenOs          ║
+  ╚═══════════════════════════════════════════════╝
+\e[0m
 
-echo -e "${MAGENTA}${BOLD}"
-echo "  ╔══════════════════════════════════════════════════════════╗"
-echo "  ║                                                          ║"
-echo "  ║   ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗       ║"
-echo "  ║  ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║       ║"
-echo "  ║  ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║       ║"
-echo "  ║  ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║       ║"
-echo "  ║  ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║       ║"
-echo "  ║   ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝       ║"
-echo "  ║                                                          ║"
-echo "  ╚══════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+\e[36m\e[1m  Welcome to OmidenOs!\e[0m
 
-echo -e "${CYAN}${BOLD}  Welcome to OmidenOs Live Environment!${NC}"
-echo -e "${BLUE}  GitHub: https://github.com/muhemmed0634/OmidenOs${NC}"
-echo ""
-echo -e "${WHITE}  Quick Reference:${NC}"
-echo ""
-echo -e "  ${GREEN}●${NC} ${BOLD}Install to disk:${NC}     install-omiden"
-echo -e "  ${GREEN}●${NC} ${BOLD}Connect to WiFi:${NC}     nmtui"
-echo -e "  ${GREEN}●${NC} ${BOLD}App launcher:${NC}        Super + D"
-echo -e "  ${GREEN}●${NC} ${BOLD}Open terminal:${NC}       Super + Enter"
-echo -e "  ${GREEN}●${NC} ${BOLD}File manager:${NC}        Super + E"
-echo -e "  ${GREEN}●${NC} ${BOLD}Right-click desktop${NC} for menu"
-echo ""
-echo -e "  ${YELLOW}Keyboard Shortcuts:${NC}"
-echo -e "  ${CYAN}Super + 1-4${NC}    Switch desktops"
-echo -e "  ${CYAN}Super + ←/→${NC}    Snap window left/right"
-echo -e "  ${CYAN}Super + ↑${NC}      Maximize window"
-echo -e "  ${CYAN}Super + F4${NC}     Close window"
-echo -e "  ${CYAN}Print${NC}          Screenshot"
-echo ""
-echo -e "  ${MAGENTA}Built on Arch Linux — Rolling Release${NC}"
-echo ""
+\e[1m  Quick Reference:\e[0m
+
+  \e[32m●\e[0m Install to disk:     \e[1minstall-omiden\e[0m
+  \e[32m●\e[0m Install tools:        \e[1minstall-tools\e[0m
+  \e[32m●\e[0m Connect to WiFi:     \e[1mnmtui\e[0m
+  \e[32m●\e[0m Wallpaper:            \e[1minstall-waypaper\e[0m
+
+\e[1m  Keyboard Shortcuts:\e[0m
+
+  \e[36mSuper+Enter\e[0m   Terminal
+  \e[36mSuper+D\e[0m       App launcher
+  \e[36mSuper+E\e[0m       File manager
+  \e[36mSuper+F4\e[0m     Close window
+  \e[36mSuper+1-4\e[0m    Switch desktops
+  \e[36mRight-click\e[0m   Openbox menu
+
+\e[1m  Use arrow keys or q to exit this screen.\e[0m
+WELCOME

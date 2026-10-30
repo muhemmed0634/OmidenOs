@@ -139,15 +139,44 @@ select_filesystem() {
 gather_config() {
     step "System Configuration"
 
-    # Timezone
-    ask "Timezone (e.g. America/New_York, Europe/London)"
-    read -r __tz
-    if [[ -f "/usr/share/zoneinfo/${__tz:-UTC}" ]]; then
-        TIMEZONE="$__tz"
-    else
-        warn "Timezone not found, using UTC."
-        TIMEZONE="UTC"
-    fi
+    # Timezone — numbered list
+    echo -e "  ${W}Select timezone:${N}"
+    echo -e "  ${C} 1)${N} Asia/Baku"
+    echo -e "  ${C} 2)${N} Europe/Istanbul"
+    echo -e "  ${C} 3)${N} Europe/London"
+    echo -e "  ${C} 4)${N} Europe/Moscow"
+    echo -e "  ${C} 5)${N} America/New_York"
+    echo -e "  ${C} 6)${N} America/Los_Angeles"
+    echo -e "  ${C} 7)${N} Asia/Dubai"
+    echo -e "  ${C} 8)${N} Europe/Berlin"
+    echo -e "  ${C} 9)${N} Asia/Tokyo"
+    echo -e "  ${C}10)${N} UTC"
+    echo -e "  ${C} 0)${N} Other (type manually)"
+    echo ""
+    ask "Choose [1-10/0]"
+    read -r __tz_choice
+    case "${__tz_choice:-1}" in
+        1) TIMEZONE="Asia/Baku" ;;
+        2) TIMEZONE="Europe/Istanbul" ;;
+        3) TIMEZONE="Europe/London" ;;
+        4) TIMEZONE="Europe/Moscow" ;;
+        5) TIMEZONE="America/New_York" ;;
+        6) TIMEZONE="America/Los_Angeles" ;;
+        7) TIMEZONE="Asia/Dubai" ;;
+        8) TIMEZONE="Europe/Berlin" ;;
+        9) TIMEZONE="Asia/Tokyo" ;;
+        10) TIMEZONE="UTC" ;;
+        0) ask "Type timezone (e.g. Asia/Baku)"
+           read -r __tz
+           if [[ -f "/usr/share/zoneinfo/${__tz:-UTC}" ]]; then
+               TIMEZONE="$__tz"
+           else
+               warn "Timezone not found, using UTC."
+               TIMEZONE="UTC"
+           fi ;;
+        *) TIMEZONE="Asia/Baku" ;;
+    esac
+    info "Timezone: $TIMEZONE"
 
     # Hostname
     ask "Hostname [omidenos]"
@@ -390,7 +419,7 @@ configure_chroot() {
     # Write chroot script to /tmp and execute
     cat > /mnt/tmp/omiden-chroot.sh << CHROOT_SCRIPT
 #!/bin/bash
-set -e
+# OmidenOs chroot configuration script
 
 TIMEZONE="$TIMEZONE"
 HOSTNAME="$HOSTNAME"
