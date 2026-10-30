@@ -9,10 +9,8 @@ iso_publisher="OmidenOs <https://github.com/muhemmed0634/OmidenOs>"
 iso_application="OmidenOs Live/Installation Medium"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
-buildmodes=('iso')
 bootmodes=('bios.syslinux'
            'uefi.systemd-boot')
-arch="x86_64"
 pacman_conf="pacman.conf"
 airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '3' '-b' '1M' '-processors' '8')

@@ -20,7 +20,7 @@ C='\033[0;36m' M='\033[0;35m' W='\033[1;37m' N='\033[0m' BOLD='\033[1m'
 echo -e "${M}${BOLD}"
 echo "╔═══════════════════════════════════════╗"
 echo "║     OmidenOs ISO Build Script         ║"
-echo "║   github.com/muhemmed0634/OmidenOs   ║"
+echo "║   github.com/muhemmed0634/OmidenOs    ║"
 echo "╚═══════════════════════════════════════╝"
 echo -e "${N}"
 
