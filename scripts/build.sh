@@ -72,15 +72,6 @@ chmod +x "$PROFILE_DIR"/airootfs/root/.config/openbox/autostart 2>/dev/null || t
 chmod 750 "$PROFILE_DIR"/airootfs/root 2>/dev/null || true
 info "Permissions set."
 
-# ─── Validate profile ─────────────────────────────────────────
-step "Validating profile"
-if mkarchiso -v -w /tmp/omiden-check -o /tmp/omiden-check "$PROFILE_DIR" 2>&1 | grep -q "ERROR"; then
-    err "Profile validation failed!"
-    exit 1
-fi
-rm -rf /tmp/omiden-check
-info "Profile valid."
-
 # ─── Build ────────────────────────────────────────────────────
 step "Building OmidenOs ISO"
 echo -e "  ${Y}This will take 20-40 minutes (squashfs+xz).${N}"
