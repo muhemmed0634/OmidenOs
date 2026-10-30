@@ -27,7 +27,7 @@ autoload -Uz vcs_info
 precmd() { vcs_info }
 zstyle ':vcs_info:git:*' formats ' (%b)'
 setopt PROMPT_SUBST
-PROMPT='%F{magenta}omiden%f@%F{cyan}%m%f:%F{blue}%~%f%F{yellow}${vcs_info_msg_0_}%f$ '
+PROMPT='%F{magenta}OmidenOS%f@%F{cyan}%m%f:%F{blue}%~%f%F{yellow}${vcs_info_msg_0_}%f$ '
 
 # Aliases
 alias ls='ls --color=auto'
