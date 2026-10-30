@@ -74,7 +74,7 @@ info "Permissions set."
 
 # ─── Build ────────────────────────────────────────────────────
 step "Building OmidenOs ISO"
-echo -e "  ${Y}This will take 20-40 minutes (squashfs+xz).${N}"
+echo -e "  ${Y}This will take 10-20 minutes (squashfs+zstd, 8 cores).${N}"
 echo -e "  ${Y}Work dir: $WORK_DIR${N}"
 echo -e "  ${Y}Output:   $OUT_DIR${N}"
 echo -e "  ${Y}Log:      $LOG_FILE${N}"
