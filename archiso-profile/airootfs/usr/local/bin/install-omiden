@@ -82,11 +82,11 @@ check_internet() {
 update_mirrors() {
     step "Updating Mirrors"
     if command -v reflector &>/dev/null; then
-        info "Running reflector..."
-        reflector --age 12 --protocol https --sort rate \
-                  --save /etc/pacman.d/mirrorlist 2>/dev/null \
+        info "Running reflector (10s timeout)..."
+        timeout 10 reflector --age 12 --protocol https --sort rate \
+                  --save /etc/pacman.d/mirrorlist &>/dev/null \
             && info "Mirrors updated." \
-            || warn "reflector failed, using existing mirrors."
+            || warn "reflector skipped, using existing mirrors."
     else
         warn "reflector not found, skipping."
     fi
