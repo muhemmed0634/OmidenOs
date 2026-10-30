@@ -1,4 +1,4 @@
-# OmidenOs - Zsh Configuration
+# OmidenOS - Zsh Configuration
 
 # History
 HISTFILE=~/.zsh_history

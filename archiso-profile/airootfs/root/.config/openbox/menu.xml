@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openbox_menu xmlns="http://openbox.org/3.4/menu">
 
-<menu id="root-menu" label="OmidenOs">
+<menu id="root-menu" label="OmidenOS">
 
   <item label="Terminal">
     <action name="Execute"><command>alacritty</command></action>
@@ -59,7 +59,7 @@
 
   <separator label="──────────"/>
 
-  <item label="Install OmidenOs">
+  <item label="Install OmidenOS">
     <action name="Execute"><command>alacritty -e install-omiden</command></action>
   </item>
 

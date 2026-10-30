@@ -1,4 +1,4 @@
-/* OmidenOs - Rofi Configuration */
+/* OmidenOS - Rofi Configuration */
 
 configuration {
     modi:                       "drun,run,window";

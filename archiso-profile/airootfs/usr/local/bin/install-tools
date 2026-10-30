@@ -1,8 +1,8 @@
 #!/bin/bash
 # ============================================================
-# OmidenOs - Security Tools Installer (100+ tools)
+# OmidenOS - Security Tools Installer (100+ tools)
 # Installs additional tools not included in the base ISO
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 # ============================================================
 
 set -e
@@ -20,7 +20,7 @@ banner() {
     echo -e "${M}${BOLD}"
     cat << 'BANNER'
   ╔══════════════════════════════════════════╗
-  ║  OmidenOs — Security Tools Installer    ║
+  ║  OmidenOS — Security Tools Installer    ║
   ║  100+ tools | github.com/muhemmed0634   ║
   ╚══════════════════════════════════════════╝
 BANNER

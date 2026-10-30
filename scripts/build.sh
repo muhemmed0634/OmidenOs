@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# OmidenOs - ISO Build Script
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# OmidenOS - ISO Build Script
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 # Usage: sudo ./scripts/build.sh
 # ============================================================
 
@@ -19,8 +19,8 @@ C='\033[0;36m' M='\033[0;35m' W='\033[1;37m' N='\033[0m' BOLD='\033[1m'
 
 echo -e "${M}${BOLD}"
 echo "╔═══════════════════════════════════════╗"
-echo "║     OmidenOs ISO Build Script         ║"
-echo "║   github.com/muhemmed0634/OmidenOs    ║"
+echo "║     OmidenOS ISO Build Script         ║"
+echo "║   github.com/muhemmed0634/OmidenOS    ║"
 echo "╚═══════════════════════════════════════╝"
 echo -e "${N}"
 
@@ -73,7 +73,7 @@ chmod 750 "$PROFILE_DIR"/airootfs/root 2>/dev/null || true
 info "Permissions set."
 
 # ─── Build ────────────────────────────────────────────────────
-step "Building OmidenOs ISO"
+step "Building OmidenOS ISO"
 echo -e "  ${Y}This will take 10-20 minutes (squashfs+zstd, 8 cores).${N}"
 echo -e "  ${Y}Work dir: $WORK_DIR${N}"
 echo -e "  ${Y}Output:   $OUT_DIR${N}"

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# OmidenOs - ArchISO Profile Definition
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# OmidenOS - ArchISO Profile Definition
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 # shellcheck disable=SC2034
 
 iso_name="omidenos"
 iso_label="OMIDEN_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="OmidenOs <https://github.com/muhemmed0634/OmidenOs>"
-iso_application="OmidenOs Live/Installation Medium"
+iso_publisher="OmidenOS <https://github.com/muhemmed0634/OmidenOS>"
+iso_application="OmidenOS Live/Installation Medium"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 bootmodes=('bios.syslinux'

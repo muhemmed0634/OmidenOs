@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
-# OmidenOs Installer — Custom Bash Installer
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# OmidenOS Installer — Custom Bash Installer
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 # NO archinstall dependency — fully self-contained
 # ============================================================
 
@@ -49,7 +49,7 @@ banner() {
   ║   ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝ ║
   ║                                                  ║
   ║          Custom Installer  v2.1                   ║
-  ║    github.com/muhemmed0634/OmidenOs               ║
+  ║    github.com/muhemmed0634/OmidenOS               ║
   ╚══════════════════════════════════════════════════╝
 BANNER
     echo -e "${N}"
@@ -245,7 +245,7 @@ partition_disk() {
         parted -s "$DISK" mklabel gpt
         parted -s "$DISK" mkpart "EFI" fat32 1MiB 513MiB
         parted -s "$DISK" set 1 esp on
-        parted -s "$DISK" mkpart "OmidenOs" "${FS_TYPE}" 513MiB 100%
+        parted -s "$DISK" mkpart "OmidenOS" "${FS_TYPE}" 513MiB 100%
 
         if [[ "$DISK" =~ nvme|mmcblk ]]; then
             EFI_PART="${DISK}p1"
@@ -277,9 +277,9 @@ partition_disk() {
     # Format root
     info "Formatting root: $ROOT_PART ($FS_TYPE)"
     case "$FS_TYPE" in
-        btrfs) mkfs.btrfs -f -L "OmidenOs" "$ROOT_PART" ;;
-        xfs)   mkfs.xfs   -f -L "OmidenOs" "$ROOT_PART" ;;
-        *)     mkfs.ext4  -F -L "OmidenOs" "$ROOT_PART" ;;
+        btrfs) mkfs.btrfs -f -L "OmidenOS" "$ROOT_PART" ;;
+        xfs)   mkfs.xfs   -f -L "OmidenOS" "$ROOT_PART" ;;
+        *)     mkfs.ext4  -F -L "OmidenOS" "$ROOT_PART" ;;
     esac
 
     # Mount
@@ -351,7 +351,7 @@ install_base() {
 
 # ─── Copy live configs to installed system ───────────────────
 copy_configs() {
-    step "Copying OmidenOs Configuration"
+    step "Copying OmidenOS Configuration"
 
     local TARGET_HOME="/mnt/home/${USERNAME}"
 
@@ -419,7 +419,7 @@ configure_chroot() {
     # Write chroot script to /tmp and execute
     cat > /mnt/tmp/omiden-chroot.sh << CHROOT_SCRIPT
 #!/bin/bash
-# OmidenOs chroot configuration script
+# OmidenOS chroot configuration script
 
 TIMEZONE="$TIMEZONE"
 HOSTNAME="$HOSTNAME"
@@ -451,14 +451,14 @@ EOF
 
 # OS identity
 cat > /etc/os-release << EOF
-NAME="OmidenOs"
-PRETTY_NAME="OmidenOs"
+NAME="OmidenOS"
+PRETTY_NAME="OmidenOS"
 ID=omidenos
 ID_LIKE=arch
 BUILD_ID=rolling
-HOME_URL="https://github.com/muhemmed0634/OmidenOs"
-SUPPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
-BUG_REPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
+HOME_URL="https://github.com/muhemmed0634/OmidenOS"
+SUPPORT_URL="https://github.com/muhemmed0634/OmidenOS/issues"
+BUG_REPORT_URL="https://github.com/muhemmed0634/OmidenOS/issues"
 LOGO="omidenos"
 EOF
 
@@ -530,7 +530,7 @@ fi
 # Bootloader
 if [[ "\${BOOT_MODE}" == "UEFI" ]]; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi \\
-                 --bootloader-id=OmidenOs --recheck
+                 --bootloader-id=OmidenOS --recheck
 else
     grub-install --target=i386-pc --recheck "\${DISK}"
 fi
@@ -538,7 +538,7 @@ fi
 # GRUB config
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
 sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-echo 'GRUB_DISTRIBUTOR="OmidenOs"' >> /etc/default/grub
+echo 'GRUB_DISTRIBUTOR="OmidenOS"' >> /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Cleanup
@@ -555,7 +555,7 @@ post_install() {
     step "Installation Complete!"
     echo -e "${G}${BOLD}"
     echo "  ╔════════════════════════════════════════╗"
-    echo "  ║   OmidenOs installed successfully!     ║"
+    echo "  ║   OmidenOS installed successfully!     ║"
     echo "  ╚════════════════════════════════════════╝"
     echo -e "${N}"
     echo -e "  ${W}Disk:${N}     $DISK"

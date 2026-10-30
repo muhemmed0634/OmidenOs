@@ -1,4 +1,4 @@
--- OmidenOs - Neovim Configuration
+-- OmidenOS - Neovim Configuration
 
 -- Basic Settings
 vim.opt.number = true
@@ -54,5 +54,5 @@ map("v", "K", ":m '<-2<CR>gv=gv")
 -- Keep clipboard on paste
 map("x", "<leader>p", [["_dP]])
 
--- OmidenOs color scheme (simple built-in)
+-- OmidenOS color scheme (simple built-in)
 vim.cmd.colorscheme("habamax")

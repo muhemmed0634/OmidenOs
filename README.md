@@ -1,17 +1,17 @@
 <div align="center">
 
-<img src="Omiden.png" width="160" alt="OmidenOs"/>
+<img src="Omiden.png" width="160" alt="OmidenOS"/>
 
-# OmidenOs
+# OmidenOS
 
 **Arch Linux + BlackArch tabanlı güvenlik odaklı Linux dağıtımı**
 
-[![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOs?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOs/stargazers)
-[![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOs?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOs/network)
+[![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOS?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOS/stargazers)
+[![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOS?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOS/network)
 [![License](https://img.shields.io/badge/license-GPL--3.0-a6e3a1?style=flat-square)](LICENSE)
 [![Base](https://img.shields.io/badge/base-Arch%20Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org)
 [![BlackArch](https://img.shields.io/badge/tools-BlackArch-cc0000?style=flat-square)](https://blackarch.org)
-[![Status](https://img.shields.io/badge/status-pre--alpha-orange?style=flat-square)](https://github.com/muhemmed0634/OmidenOs)
+[![Status](https://img.shields.io/badge/status-pre--alpha-orange?style=flat-square)](https://github.com/muhemmed0634/OmidenOS)
 
 </div>
 
@@ -32,7 +32,7 @@
 
 ## Hakkında
 
-OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren, hem günlük kullanım hem de güvenlik araştırmaları için tasarlanmıştır.
+OmidenOS, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren, hem günlük kullanım hem de güvenlik araştırmaları için tasarlanmıştır.
 
 ---
 
@@ -45,14 +45,14 @@ OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıf
 | **Masaüstü** | Openbox + Tint2 + Rofi |
 | **Terminal** | Alacritty |
 | **Shell** | Zsh (autosuggestions, syntax-highlighting) |
-| **Sistem bilgisi** | Fastfetch (OmidenOs ASCII logo) |
+| **Sistem bilgisi** | Fastfetch (OmidenOS ASCII logo) |
 | **Tema** | Adw-dark + Papirus-Dark |
-| **Wallpaper** | OmidenOs logosu (değiştirilebilir — waypaper) |
+| **Wallpaper** | OmidenOS logosu (değiştirilebilir — waypaper) |
 | **Klavye** | US (English) |
 | **Ses** | PipeWire |
 | **Ağ** | NetworkManager + iwd |
 | **Boot** | BIOS (syslinux) + UEFI (systemd-boot) |
-| **Boot splash** | OmidenOs logosu |
+| **Boot splash** | OmidenOS logosu |
 
 ---
 
@@ -153,8 +153,8 @@ OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıf
 ### ISO Oluştur
 
 ```bash
-git clone https://github.com/muhemmed0634/OmidenOs.git
-cd OmidenOs
+git clone https://github.com/muhemmed0634/OmidenOS.git
+cd OmidenOS
 sudo pacman -S archiso
 sudo ./scripts/build.sh
 ```
@@ -210,7 +210,7 @@ Kurulum sihirbazı:
 ## Proje Yapısı
 
 ```
-OmidenOs/
+OmidenOS/
 ├── archiso-profile/
 │   ├── profiledef.sh
 │   ├── packages.x86_64          # 324 paket
@@ -244,7 +244,7 @@ OmidenOs/
 ## Katkı
 
 ```bash
-git clone https://github.com/muhemmed0634/OmidenOs.git
+git clone https://github.com/muhemmed0634/OmidenOS.git
 ```
 
 PR ve issue'lar her zaman açıktır.
@@ -258,5 +258,5 @@ PR ve issue'lar her zaman açıktır.
 ---
 
 <div align="center">
-<i>Arch Linux'un gücü. BlackArch'ın araçları. OmidenOs'un tarzı.</i>
+<i>Arch Linux'un gücü. BlackArch'ın araçları. OmidenOS'un tarzı.</i>
 </div>

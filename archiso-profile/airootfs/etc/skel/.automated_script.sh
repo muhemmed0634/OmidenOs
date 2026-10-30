@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OmidenOs - Automated startup script for live environment
+# OmidenOS - Automated startup script for live environment
 # Based on ArchISO releng
 
 script_cmdline() {

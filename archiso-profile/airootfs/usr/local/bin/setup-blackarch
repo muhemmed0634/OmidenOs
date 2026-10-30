@@ -1,5 +1,5 @@
 #!/bin/bash
-# OmidenOs - BlackArch Repository Setup
+# OmidenOS - BlackArch Repository Setup
 # Adds BlackArch repo with proper keyring
 
 set -e
@@ -10,7 +10,7 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-echo -e "${CYAN}[OmidenOs] Setting up BlackArch repository...${NC}"
+echo -e "${CYAN}[OmidenOS] Setting up BlackArch repository...${NC}"
 
 # Download and run the official strap
 curl -O https://blackarch.org/strap.sh

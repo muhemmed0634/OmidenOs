@@ -1,5 +1,5 @@
 #!/bin/bash
-# OmidenOs - Welcome Script
+# OmidenOS - Welcome Script
 
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
@@ -20,11 +20,11 @@ cat << 'WELCOME' | less -R
   ║  ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗     ║
   ║   ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝     ║
   ╠═══════════════════════════════════════════════╣
-  ║    github.com/muhemmed0634/OmidenOs          ║
+  ║    github.com/muhemmed0634/OmidenOS          ║
   ╚═══════════════════════════════════════════════╝
 \e[0m
 
-\e[36m\e[1m  Welcome to OmidenOs!\e[0m
+\e[36m\e[1m  Welcome to OmidenOS!\e[0m
 
 \e[1m  Quick Reference:\e[0m
 

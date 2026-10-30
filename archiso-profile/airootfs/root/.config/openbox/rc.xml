@@ -56,7 +56,7 @@
   <keyboard>
     <chainQuitKey>C-g</chainQuitKey>
 
-    <!-- OmidenOs Keybindings -->
+    <!-- OmidenOS Keybindings -->
     <keybind key="Super-Return">
       <action name="Execute"><command>alacritty</command></action>
     </keybind>

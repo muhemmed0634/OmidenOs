@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# OmidenOs - Flash ISO to USB
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# OmidenOS - Flash ISO to USB
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 # Usage: sudo ./scripts/flash-usb.sh
 # ============================================================
 
@@ -16,7 +16,7 @@ err()   { echo -e "  ${R}[✘]${N} $*"; }
 
 echo -e "${C}${BOLD}"
 echo "╔═══════════════════════════════════════╗"
-echo "║     OmidenOs USB Flasher              ║"
+echo "║     OmidenOS USB Flasher              ║"
 echo "╚═══════════════════════════════════════╝"
 echo -e "${N}"
 
@@ -31,7 +31,7 @@ ISO_DIR="$(cd "$(dirname "$0")/.." && pwd)/out"
 ISO_FILE=$(ls "$ISO_DIR"/omidenos-*.iso 2>/dev/null | head -n1)
 
 if [[ -z "$ISO_FILE" ]]; then
-    err "No OmidenOs ISO found in $ISO_DIR"
+    err "No OmidenOS ISO found in $ISO_DIR"
     echo -e "  Run ${BOLD}sudo ./scripts/build.sh${N} first."
     exit 1
 fi
@@ -88,5 +88,5 @@ dd if="$ISO_FILE" of="$USB_DEV" bs=4M status=progress oflag=sync
 sync
 
 echo ""
-info "Done! USB is ready to boot OmidenOs."
+info "Done! USB is ready to boot OmidenOS."
 echo -e "  ${Y}Reboot and boot from USB.${N}"

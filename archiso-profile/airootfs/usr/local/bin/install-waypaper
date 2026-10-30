@@ -1,13 +1,13 @@
 #!/bin/bash
-# OmidenOs - Waypaper Wallpaper Manager Installer
-# GitHub: https://github.com/muhemmed0634/OmidenOs
+# OmidenOS - Waypaper Wallpaper Manager Installer
+# GitHub: https://github.com/muhemmed0634/OmidenOS
 
 set -e
 
 G='\033[0;32m' Y='\033[1;33m' C='\033[0;36m' N='\033[0m' BOLD='\033[1m'
 
 echo -e "${C}${BOLD}╔═══════════════════════════════════════╗${N}"
-echo -e "${C}${BOLD}║  OmidenOs — Waypaper Installer         ║${N}"
+echo -e "${C}${BOLD}║  OmidenOS — Waypaper Installer         ║${N}"
 echo -e "${C}${BOLD}╚═══════════════════════════════════════╝${N}"
 echo ""
 
