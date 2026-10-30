@@ -32,7 +32,7 @@
 
 ## Hakkında
 
-OmidenOS, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren, hem günlük kullanım hem de güvenlik araştırmaları için tasarlanmıştır.
+OmidenOS, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren,  güvenlik araştırmaları için tasarlanmıştır.
 
 ---
 
