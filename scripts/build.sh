@@ -110,7 +110,7 @@ if [[ "$BUILD_OK" != true ]]; then
     grep -i "error\|failed\|cannot" "$LOG_FILE" 2>/dev/null | tail -10
     echo ""
     echo -e "  ${Y}Common fixes:${N}"
-    echo -e "  • Check internet: ping archlinux.org"
+    echo -e "  • Check internet: ping omidenos.org"
     echo -e "  • Sync repos:    sudo pacman -Syy"
     echo -e "  • Check space:   df -h /var/tmp"
     echo -e "  • Full log:      cat $LOG_FILE"

@@ -1,0 +1,22 @@
+#!/bin/bash
+# OmidenOs - Waypaper Wallpaper Manager Installer
+# GitHub: https://github.com/muhemmed0634/OmidenOs
+
+set -e
+
+G='\033[0;32m' Y='\033[1;33m' C='\033[0;36m' N='\033[0m' BOLD='\033[1m'
+
+echo -e "${C}${BOLD}╔═══════════════════════════════════════╗${N}"
+echo -e "${C}${BOLD}║  OmidenOs — Waypaper Installer         ║${N}"
+echo -e "${C}${BOLD}╚═══════════════════════════════════════╝${N}"
+echo ""
+
+echo -e "  ${G}[✔]${N} Installing waypaper via pip..."
+pip install --break-system-packages waypaper 2>/dev/null || pip install waypaper
+
+echo ""
+echo -e "  ${G}[✔]${N} Waypaper installed!"
+echo ""
+echo -e "  ${Y}Run:${N} waypaper"
+echo -e "  ${Y}Or from Openbox menu:${N} Right-click desktop → Settings → Wallpaper"
+echo ""

@@ -16,9 +16,6 @@
   <separator label="──────────"/>
 
   <menu id="apps-menu" label="Applications">
-    <item label="Firefox">
-      <action name="Execute"><command>firefox</command></action>
-    </item>
     <item label="App Launcher (Rofi)">
       <action name="Execute"><command>rofi -show drun</command></action>
     </item>
@@ -37,6 +34,9 @@
     <item label="Theme Switcher">
       <action name="Execute"><command>lxappearance</command></action>
     </item>
+    <item label="Wallpaper (Waypaper)">
+      <action name="Execute"><command>install-waypaper &amp;&amp; waypaper</command></action>
+    </item>
     <item label="Openbox Config">
       <action name="Execute"><command>obconf</command></action>
     </item>
@@ -45,6 +45,15 @@
     </item>
     <item label="Network Manager">
       <action name="Execute"><command>nm-connection-editor</command></action>
+    </item>
+  </menu>
+
+  <menu id="security-menu" label="Security Tools">
+    <item label="Install Tools (34 tools)">
+      <action name="Execute"><command>alacritty -e install-tools</command></action>
+    </item>
+    <item label="Setup BlackArch Repo">
+      <action name="Execute"><command>alacritty -e setup-blackarch</command></action>
     </item>
   </menu>
 

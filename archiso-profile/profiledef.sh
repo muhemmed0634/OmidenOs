@@ -24,4 +24,5 @@ file_permissions=(
   ["/usr/local/bin/omiden-welcome"]="0:0:755"
   ["/usr/local/bin/setup-blackarch"]="0:0:755"
   ["/usr/local/bin/install-tools"]="0:0:755"
+  ["/usr/local/bin/install-waypaper"]="0:0:755"
 )

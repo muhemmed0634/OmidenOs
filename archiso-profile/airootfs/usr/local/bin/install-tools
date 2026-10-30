@@ -1,9 +1,8 @@
 #!/bin/bash
 # ============================================================
-# OmidenOs - Security Tools Installer
+# OmidenOs - Security Tools Installer (100+ tools)
 # Installs additional tools not included in the base ISO
 # GitHub: https://github.com/muhemmed0634/OmidenOs
-# made by muhammed
 # ============================================================
 
 set -e
@@ -21,8 +20,8 @@ banner() {
     echo -e "${M}${BOLD}"
     cat << 'BANNER'
   ╔══════════════════════════════════════════╗
-  ║    OmidenOs — Security Tools Installer   ║
-  ║   github.com/muhemmed0634/OmidenOs       ║
+  ║  OmidenOs — Security Tools Installer    ║
+  ║  100+ tools | github.com/muhemmed0634   ║
   ╚══════════════════════════════════════════╝
 BANNER
     echo -e "${N}"
@@ -41,21 +40,45 @@ HEAVY_GUI=(
     "havoc-c2:Havoc C2 — Post-exploitation (158 MB)"
 )
 
-WEB_APPS=(
+WEB=(
     "w3af:W3AF — Web app attack & audit"
     "arachni:Arachni — Web vulnerability scanner"
     "set:SET — Social Engineering Toolkit"
+    "a2sv:A2SV — Auto Scanner for SQLi/XSS"
+    "abuse-ssl-bypass-waf:Abuse-SSL — WAF bypass"
+    "anti-xss:Anti-XSS — XSS detection"
+    "apache-users:Apache-Users — Enumerate users"
+    "laudanum:Laudanum — Injection helpers"
+    "swaks:SWAKS — SMTP test tool"
+    "webanalyze:WebAnalyze — Web tech fingerprint"
+    "webtech:WebTech — Web technology detection"
+    "xsser:XSSer — XSS scanner"
+    "xsspire:XSSpire — XSS framework"
 )
 
 EXPLOIT=(
-    "armitage:Armitage — Metasploit GUI frontend"
+    "armitage:Armitage — Metasploit GUI"
+    "ace:ACE — Android Custom Exploit"
+    "hyperfox:HyperFox — MITM proxy"
+    "iaito:Iaito — Radare2 GUI"
+    "irpas:IRPAS — Routing protocol tools"
+    "powerstager:PowerStager — PowerShell stager"
+    "powersploit:PowerSploit — PowerShell toolkit"
+    "pwnat:PWNAT — NAT piercing"
+    "sparta:Sparta — Network infrastructure scanner"
+    "unicornscan:Unicornscan — Port scanner"
 )
 
 MOBILE=(
     "jadx:JADX — Java/APK decompiler"
     "androguard:Androguard — Android analysis"
     "dex2jar:dex2jar — DEX to Java converter"
-    "mobsf:Mobile Security Framework — MobSF"
+    "mobsf:MobSF — Mobile Security Framework"
+    "android-apktool:Apktool — APK decompiler"
+    "android-backup-extractor:ABE — Android backup extractor"
+    "androick:Androick — Android forensic tool"
+    "androbugs:AndroBugs — Android vulnerability scanner"
+    "androwarn:AndroWarn — Android static analysis"
 )
 
 REVERSE=(
@@ -67,6 +90,8 @@ REVERSE=(
     "ropgadget:ROPgadget — ROP finder"
     "ropper:Ropper — ROP chain tool"
     "gef:GEF — GDB enhanced features"
+    "angr-management:Angr — Binary analysis GUI"
+    "amoco:Amoco — Binary analysis"
 )
 
 FORENSICS=(
@@ -77,6 +102,14 @@ FORENSICS=(
     "scalpel:Scalpel — File carving tool"
     "volafox:volafox — Memory forensics"
     "libewf:libewf — Expert Witness format library"
+    "aesfix:AESFix — AES key recovery"
+    "aeskeyfind:AESKeyFind — AES key finder"
+    "afflib:AFFLib — Advanced Forensic Format"
+    "aimage:AImage — Disk imaging"
+    "analyzemft:AnalyzeMFT — MFT analysis"
+    "dumpzilla:Dumpzilla — Firefox forensics"
+    "vinetto:Vinetto — Thumbs.db analysis"
+    "vbindiff:VBinDiff — Visual binary diff"
 )
 
 NETWORK=(
@@ -84,12 +117,73 @@ NETWORK=(
     "rita:RITA — Traffic intelligence analysis"
     "smbclient:SMBClient — SMB/CIFS client"
     "samba:Samba — SMB file sharing"
+    "acccheck:AccCheck — SMB password checker"
+    "activedirectoryenum:ADEnum — Active Directory enum"
+    "ad-ldap-enum:AD-LDAP-Enum — LDAP enumeration"
+    "adfind:AdFind — Active Directory query"
+    "adfspray:ADSpray — AD password spray"
+    "adidnsdump:Adidnsdump — AD DNS dump"
+    "allthevhosts:AllTheVHosts — Virtual host discovery"
+    "alterx:AlterX — Subdomain generator"
+    "amap:Amap — Application mapper"
+    "dmitry:DMitry — Deepmagic info gathering"
+    "dnsenum:DNSenum — DNS enumeration"
+    "fping:Fping — Parallel ping"
+    "nbtscan:NBTscan — NetBIOS scanner"
+    "nemesis:Nemesis — Packet crafter"
+    "p0f:P0f — Passive OS fingerprinting"
+    "polenum:PolEnum — Password policy enum"
+    "ridenum:RidEnum — RID cycling"
+    "snmpcheck:SNMPCheck — SNMP audit"
 )
 
-ALL_CATEGORIES=("HEAVY_GUI" "WEB_APPS" "EXPLOIT" "MOBILE" "REVERSE" "FORENSICS" "NETWORK")
-ALL_LABELS=("Heavy GUI Tools" "Web Application" "Exploitation" "Mobile/Android" "Reverse Engineering" "Forensics" "Network/AD")
+PASSWORD=(
+    "creddump:Creddump — Windows credential dump"
+    "credmap:CredMap — Credential mapper"
+)
 
-# ─── Count total tools ────────────────────────────────────────
+STEGO=(
+    "stegsnow:StegSnow — Whitespace steganography"
+)
+
+OSINT=(
+    "sn0int:Sn0int — OSINT framework"
+    "inquisitor:Inquisitor — Info gathering"
+)
+
+CRYPTO=(
+    "sbd:SBD — Secure backdoor"
+    "tbear:TBEAR — Token-based encryption"
+)
+
+SCANNER=(
+    "sslcaudit:SSLAudit — SSL/TLS audit"
+    "sslsplit:SSLSplit — SSL intercept"
+    "tlsfuzzer:TLSFuzzer — TLS fuzzer"
+    "uniscan:UniScan — Web vulnerability scanner"
+    "urlbuster:URLBuster — URL fuzzer"
+    "urldigger:URLDigger — URL extractor"
+    "t50:T50 — Packet injector"
+    "tinfoleak:TInfoLeak — Info leak scanner"
+    "zmap:ZMap — High-speed scanner"
+    "zbar:ZBar — Barcode reader"
+)
+
+MISC=(
+    "maltrail:MalTrail — Malicious traffic detection"
+    "pyexfil:PyExfil — Data exfiltration toolkit"
+    "wce:WCE — Windows credential editor"
+    "peach:Peach — Fuzzing framework"
+    "pentestly:Pentestly — Pentest framework"
+    "iodine:Iodine — DNS tunnel"
+    "powersploit:PowerSploit — PowerShell post-exploit"
+    "pwnat:PWNAT — NAT traversal"
+    "irpas:IRPAS — Routing protocol attack"
+)
+
+ALL_CATEGORIES=("HEAVY_GUI" "WEB" "EXPLOIT" "MOBILE" "REVERSE" "FORENSICS" "NETWORK" "PASSWORD" "STEGO" "OSINT" "CRYPTO" "SCANNER" "MISC")
+ALL_LABELS=("Heavy GUI" "Web Testing" "Exploitation" "Mobile/Android" "Reverse Eng" "Forensics" "Network/AD" "Password" "Steganography" "OSINT" "Crypto" "Scanners" "Misc")
+
 count_total() {
     local total=0
     for cat in "${ALL_CATEGORIES[@]}"; do
@@ -100,7 +194,6 @@ count_total() {
 
 TOTAL=$(count_total)
 
-# ─── Display ─────────────────────────────────────────────────
 show_menu() {
     banner
     echo -e "  ${W}Available tools ($TOTAL total):${N}"
@@ -115,15 +208,15 @@ show_menu() {
         for t in "${arr[@]}"; do
             local name="${t%%:*}"
             local desc="${t##*:}"
-            printf "    ${C}[%2d]${N} %-14s — %s\n" "$idx" "$name" "$desc"
+            printf "    ${C}[%3d]${N} %-28s %s\n" "$idx" "$name" "$desc"
             ((idx++))
         done
         echo ""
     done
 
-    echo -e "  ${G}[ a]${N} Install ALL ($TOTAL tools)"
-    echo -e "  ${Y}[ c]${N} Install by category"
-    echo -e "  ${R}[ q]${N} Quit"
+    echo -e "  ${G}[  a]${N} Install ALL ($TOTAL tools)"
+    echo -e "  ${Y}[  c]${N} Install by category"
+    echo -e "  ${R}[  q]${N} Quit"
     echo ""
 }
 
@@ -134,19 +227,18 @@ show_category_menu() {
         local cat="${ALL_CATEGORIES[$i]}"
         local label="${ALL_LABELS[$i]}"
         eval "local count=\${#${cat}[@]}"
-        printf "  ${C}[%d]${N} %-24s (%d tools)\n" "$((i+1))" "$label" "$count"
+        printf "  ${C}[%2d]${N} %-24s (%d tools)\n" "$((i+1))" "$label" "$count"
     done
-    echo -e "  ${R}[0]${N} Back\n"
+    echo -e "  ${R}[ 0]${N} Back\n"
 }
 
-# ─── Install ──────────────────────────────────────────────────
 install_pkg() {
     local pkg="$1"
     info "Installing $pkg..."
     if pacman -S --noconfirm --needed "$pkg" 2>/dev/null; then
         info "$pkg installed."
     else
-        warn "$pkg failed — may need BlackArch repo (run setup-blackarch first)."
+        warn "$pkg failed — run setup-blackarch first."
     fi
 }
 
@@ -167,10 +259,8 @@ install_all() {
     done
 }
 
-# ─── Main ─────────────────────────────────────────────────────
 main() {
     show_menu
-
     read -p "  Select [1-$TOTAL/a/c/q]: " choice
 
     if [[ "$choice" == "q" ]]; then
@@ -185,7 +275,6 @@ main() {
             install_category "${ALL_CATEGORIES[$idx]}" "${ALL_LABELS[$idx]}"
         fi
     elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= TOTAL )); then
-        # Find the package at this index
         local idx=1
         for i in "${!ALL_CATEGORIES[@]}"; do
             local cat="${ALL_CATEGORIES[$i]}"

@@ -10,7 +10,7 @@
 [![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOs?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOs/stargazers)
 [![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOs?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOs/network)
 [![License](https://img.shields.io/badge/license-GPL--3.0-a6e3a1?style=flat-square)](LICENSE)
-[![Arch](https://img.shields.io/badge/base-Arch%20Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org)
+[![Base](https://img.shields.io/badge/base-Arch%20Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org)
 [![BlackArch](https://img.shields.io/badge/tools-BlackArch-cc0000?style=flat-square)](https://blackarch.org)
 
 </div>
@@ -30,7 +30,7 @@
 
 ## Hakkında
 
-OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux'un rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren, hem günlük kullanım hem de güvenlik araştırmaları için tasarlanmış minimalist bir sistemdir.
+OmidenOs, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. OmidenOs rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren, hem günlük kullanım hem de güvenlik araştırmaları için tasarlanmış minimalist bir sistemdir.
 
 - **Live ortam** olarak USB'den çalıştırılabilir
 - **Diske kurulabilir** — `archinstall` yerine özel bir kurulum sihirbazı
