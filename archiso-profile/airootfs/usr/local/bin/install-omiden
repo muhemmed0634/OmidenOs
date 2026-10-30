@@ -268,8 +268,25 @@ partition_disk() {
 # ─── Base Install ─────────────────────────────────────────────
 install_base() {
     step "Installing Base System"
-    info "Running pacstrap (this will take a while)..."
 
+    # Ensure network is up
+    info "Checking network..."
+    if ! ping -c1 -W3 archlinux.org &>/dev/null; then
+        warn "No network. Trying to start NetworkManager..."
+        systemctl start NetworkManager 2>/dev/null || true
+        sleep 3
+        if ! ping -c1 -W3 archlinux.org &>/dev/null; then
+            err "No internet connection. Cannot install."
+            die "Run 'nmtui' to connect to WiFi first."
+        fi
+    fi
+    info "Network OK."
+
+    # Sync repos
+    info "Syncing package databases..."
+    pacman -Syy --noconfirm &>/dev/null || true
+
+    info "Running pacstrap (this will take a while)..."
     local PKGS=(
         base base-devel linux linux-firmware linux-headers
         networkmanager grub efibootmgr
@@ -298,6 +315,9 @@ install_base() {
 
     pacstrap -K /mnt "${PKGS[@]}"
     info "Base system installed."
+
+    # Copy pacman.conf with BlackArch to installed system
+    cp /etc/pacman.conf /mnt/etc/pacman.conf 2>/dev/null || true
 }
 
 # ─── Copy live configs to installed system ───────────────────
