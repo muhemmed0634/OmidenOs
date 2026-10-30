@@ -40,20 +40,28 @@ if ! command -v mkarchiso &>/dev/null; then
     warn "archiso not found. Installing..."
     pacman -Sy --noconfirm archiso
 fi
-if ! command -v mkfs.erofs &>/dev/null; then
-    warn "erofs-utils not found. Installing..."
-    pacman -Sy --noconfirm erofs-utils
-fi
 info "archiso: $(mkarchiso --version 2>/dev/null || echo 'installed')"
 
-# ─── Check disk space ────────────────────────────────────────
+# ─── Check disk space ─────────────────────────────────────────
 step "Checking disk space"
 FREE_GB=$(df -BG /var/tmp | awk 'NR==2{print $4}' | tr -d 'G')
-if (( FREE_GB < 10 )); then
-    err "Not enough disk space! Need 10GB, have ${FREE_GB}GB on /var/tmp"
+if (( FREE_GB < 15 )); then
+    err "Not enough space! Need 15GB, have ${FREE_GB}GB on /var/tmp"
     exit 1
 fi
-info "Free space: ${FREE_GB}GB"
+info "Free space on /var/tmp: ${FREE_GB}GB"
+
+# ─── IMPORTANT: Force full clean ──────────────────────────────
+step "Force cleaning old build artifacts"
+# Unmount any stale mounts
+for mnt in proc sys dev run tmp; do
+    umount -R "$WORK_DIR/x86_64/airootfs/$mnt" 2>/dev/null || true
+done
+umount -R "$WORK_DIR" 2>/dev/null || true
+rm -rf "$WORK_DIR"
+mkdir -p "$WORK_DIR" "$OUT_DIR"
+rm -f "$LOG_FILE"
+info "Work directory wiped clean."
 
 # ─── Fix permissions ──────────────────────────────────────────
 step "Fixing file permissions"
@@ -62,27 +70,26 @@ chmod +x "$PROFILE_DIR"/airootfs/root/.automated_script.sh 2>/dev/null || true
 chmod +x "$PROFILE_DIR"/airootfs/root/.xinitrc 2>/dev/null || true
 chmod +x "$PROFILE_DIR"/airootfs/root/.config/openbox/autostart 2>/dev/null || true
 chmod 750 "$PROFILE_DIR"/airootfs/root 2>/dev/null || true
-info "Permissions fixed."
+info "Permissions set."
 
-# ─── Clean old build ──────────────────────────────────────────
-step "Cleaning previous build artifacts"
-if [[ -d "$WORK_DIR" ]]; then
-    umount -R "$WORK_DIR" 2>/dev/null || true
-    rm -rf "$WORK_DIR"
+# ─── Validate profile ─────────────────────────────────────────
+step "Validating profile"
+if mkarchiso -v -w /tmp/omiden-check -o /tmp/omiden-check "$PROFILE_DIR" 2>&1 | grep -q "ERROR"; then
+    err "Profile validation failed!"
+    exit 1
 fi
-mkdir -p "$WORK_DIR" "$OUT_DIR"
-rm -f "$LOG_FILE"
-info "Clean done."
+rm -rf /tmp/omiden-check
+info "Profile valid."
 
 # ─── Build ────────────────────────────────────────────────────
 step "Building OmidenOs ISO"
-echo -e "  ${Y}This will take 5-15 minutes.${N}"
+echo -e "  ${Y}This will take 20-40 minutes (squashfs+xz).${N}"
 echo -e "  ${Y}Work dir: $WORK_DIR${N}"
 echo -e "  ${Y}Output:   $OUT_DIR${N}"
-echo -e "  ${Y}Log file: $LOG_FILE${N}"
+echo -e "  ${Y}Log:      $LOG_FILE${N}"
 echo ""
 
-MAX_RETRIES=3
+MAX_RETRIES=2
 BUILD_OK=false
 
 for attempt in $(seq 1 $MAX_RETRIES); do
@@ -94,44 +101,56 @@ for attempt in $(seq 1 $MAX_RETRIES); do
     fi
 
     if [[ $attempt -lt $MAX_RETRIES ]]; then
-        warn "Attempt $attempt failed. Cleaning and retrying in 5s..."
-        # Clean work dir between retries
+        warn "Attempt $attempt failed. Full clean and retry in 10s..."
+        for mnt in proc sys dev run tmp; do
+            umount -R "$WORK_DIR/x86_64/airootfs/$mnt" 2>/dev/null || true
+        done
         umount -R "$WORK_DIR" 2>/dev/null || true
         rm -rf "$WORK_DIR"
         mkdir -p "$WORK_DIR"
-        sleep 5
+        sleep 10
     fi
 done
 
 if [[ "$BUILD_OK" != true ]]; then
     err "Build failed after $MAX_RETRIES attempts."
     echo ""
-    echo -e "  ${Y}Last errors from log:${N}"
-    grep -i "error\|failed\|cannot" "$LOG_FILE" 2>/dev/null | tail -10
+    echo -e "  ${Y}Last errors:${N}"
+    grep -E "^==> ERROR|^error:" "$LOG_FILE" 2>/dev/null | tail -15
     echo ""
-    echo -e "  ${Y}Common fixes:${N}"
-    echo -e "  • Check internet: ping omidenos.org"
-    echo -e "  • Sync repos:    sudo pacman -Syy"
-    echo -e "  • Check space:   df -h /var/tmp"
-    echo -e "  • Full log:      cat $LOG_FILE"
-    echo -e "  • Edit packages: archiso-profile/packages.x86_64"
+    echo -e "  ${Y}Full log: cat $LOG_FILE | grep -i error${N}"
     exit 1
+fi
+
+# ─── Verify ISO ───────────────────────────────────────────────
+step "Verifying ISO"
+ISO_FILE=$(ls -t "$OUT_DIR"/omidenos-*.iso 2>/dev/null | head -1)
+if [[ -z "$ISO_FILE" ]]; then
+    err "ISO not found in $OUT_DIR"
+    exit 1
+fi
+ISO_SIZE=$(du -h "$ISO_FILE" | awk '{print $1}')
+info "ISO: $(basename "$ISO_FILE") ($ISO_SIZE)"
+
+# Sanity check — 8GB+ means build error
+ISO_GB=$(du -BG "$ISO_FILE" | awk '{print $1}' | tr -d 'G')
+if (( ISO_GB > 6 )); then
+    warn "ISO is ${ISO_GB}GB — suspiciously large! Check $LOG_FILE"
+else
+    info "ISO size looks correct."
 fi
 
 # ─── Done ─────────────────────────────────────────────────────
 echo ""
 step "Build Complete!"
-echo -e "  ${G}${BOLD}✓${N} ISO saved to: ${C}${OUT_DIR}/${N}"
-ls -lh "$OUT_DIR"/*.iso 2>/dev/null || warn "ISO not found in output dir."
-
+echo -e "  ${G}${BOLD}✓${N} ${BOLD}$(basename "$ISO_FILE")${N}  —  $ISO_SIZE"
+echo -e "  ${C}Saved to: $OUT_DIR${N}"
 echo ""
 echo -e "  ${Y}Flash to USB:${N}"
 echo -e "  ${BOLD}sudo ./scripts/flash-usb.sh${N}"
 echo ""
 
 # ─── Cleanup ──────────────────────────────────────────────────
-step "Cleaning up"
 umount -R "$WORK_DIR" 2>/dev/null || true
 rm -rf "$WORK_DIR"
-info "Work directory removed."
-echo -e "  ${C}Done!${N}"
+info "Work directory cleaned."
