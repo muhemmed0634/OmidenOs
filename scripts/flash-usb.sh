@@ -28,7 +28,7 @@ fi
 
 # ─── Find ISO ─────────────────────────────────────────────────
 ISO_DIR="$(cd "$(dirname "$0")/.." && pwd)/out"
-ISO_FILE=$(ls "$ISO_DIR"/omidenos-*.iso 2>/dev/null | head -n1)
+ISO_FILE=$(ls "$ISO_DIR"/omiden-*.iso 2>/dev/null | head -n1)
 
 if [[ -z "$ISO_FILE" ]]; then
     err "No OmidenOS ISO found in $ISO_DIR"
