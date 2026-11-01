@@ -3,15 +3,15 @@
 
 # Set random wallpaper from wallpapers dir
 WALLPAPER_DIR="/usr/share/wallpapers/omiden"
-RANDOM_WALL=$(ls "$WALLPAPER_DIR"/*.{png,jpg} 2>/dev/null | shuf -n1)
+RANDOM_WALL=$(find "$WALLPAPER_DIR" -maxdepth 1 \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) 2>/dev/null | shuf -n1)
 if [[ -n "$RANDOM_WALL" ]]; then
     feh --bg-fill "$RANDOM_WALL" &
 else
     feh --bg-fill "$WALLPAPER_DIR/omiden-wallpaper.png" &
 fi
 
-# Compositor
-picom --daemon &
+# Compositor (picom — no --daemon flag in modern versions)
+picom &
 
 # Panel
 tint2 &
@@ -25,5 +25,5 @@ nm-applet &
 # Polkit agent
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
-# Welcome screen
-omiden-welcome &
+# Welcome screen (slight delay so desktop loads first)
+sleep 2 && omiden-welcome &

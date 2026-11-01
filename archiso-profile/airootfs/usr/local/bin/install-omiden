@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
-# OmidenOS Installer — Custom Bash Installer
-# GitHub: https://github.com/muhemmed0634/OmidenOS
+# OmidenOs Installer — Custom Bash Installer v3.0
+# GitHub: https://github.com/muhemmed0634/OmidenOs
 # NO archinstall dependency — fully self-contained
 # ============================================================
 
-set -euo pipefail
+# NOTE: No set -e here intentionally — we handle errors manually
+# so one step failing doesn't abort the whole install
 
 # ─── Colors ──────────────────────────────────────────────────
 R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
@@ -21,10 +22,12 @@ HOSTNAME="omidenos"
 USERNAME="user"
 USER_PASS=""
 ROOT_PASS=""
-TIMEZONE="UTC"
+TIMEZONE="Asia/Baku"
 INSTALL_BLACKARCH=false
 INSTALL_DESKTOP=true
 FS_TYPE="ext4"
+INSTALL_SWAP=true
+SWAP_SIZE="2G"
 
 # ─── Helpers ─────────────────────────────────────────────────
 info()    { echo -e "  ${G}[✔]${N} $*"; }
@@ -39,18 +42,17 @@ banner() {
     clear
     echo -e "${M}${BOLD}"
     cat << 'BANNER'
-  ╔══════════════════════════════════════════════════╗
-  ║                                                  ║
-  ║   ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗  ██╗ ║
-  ║  ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║ ║
-  ║  ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║ ║
-  ║  ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║ ║
-  ║  ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║ ║
-  ║   ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝ ║
-  ║                                                  ║
-  ║          Custom Installer  v2.1                   ║
-  ║    github.com/muhemmed0634/OmidenOS               ║
-  ╚══════════════════════════════════════════════════╝
+  ╔═════════════════════════════════════════════════════╗
+  ║  ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗  ║
+  ║ ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║  ║
+  ║ ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║  ║
+  ║ ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║  ║
+  ║ ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║  ║
+  ║  ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝  ║
+  ╠═════════════════════════════════════════════════════╣
+  ║          Custom Installer  v3.0                     ║
+  ║    github.com/muhemmed0634/OmidenOs                ║
+  ╚═════════════════════════════════════════════════════╝
 BANNER
     echo -e "${N}"
 }
@@ -122,7 +124,7 @@ select_disk() {
 select_filesystem() {
     step "Filesystem"
     echo "  1) ext4   — Stable, widely supported (recommended)"
-    echo "  2) btrfs  — Snapshots, compression, subvolumes"
+    echo "  2) btrfs  — Snapshots supported (subvolumes auto-created)"
     echo "  3) xfs    — High performance"
     echo ""
     ask "Choose filesystem [1-3] (default: 1)"
@@ -141,8 +143,8 @@ gather_config() {
 
     # Timezone — numbered list
     echo -e "  ${W}Select timezone:${N}"
-    echo -e "  ${C} 1)${N} Asia/Baku"
-    echo -e "  ${C} 2)${N} Europe/Istanbul"
+    echo -e "  ${C} 1)${N} Asia/Baku        (Azerbaijan)"
+    echo -e "  ${C} 2)${N} Europe/Istanbul  (Turkey)"
     echo -e "  ${C} 3)${N} Europe/London"
     echo -e "  ${C} 4)${N} Europe/Moscow"
     echo -e "  ${C} 5)${N} America/New_York"
@@ -171,8 +173,8 @@ gather_config() {
            if [[ -f "/usr/share/zoneinfo/${__tz:-UTC}" ]]; then
                TIMEZONE="$__tz"
            else
-               warn "Timezone not found, using UTC."
-               TIMEZONE="UTC"
+               warn "Timezone not found, using Asia/Baku."
+               TIMEZONE="Asia/Baku"
            fi ;;
         *) TIMEZONE="Asia/Baku" ;;
     esac
@@ -183,7 +185,7 @@ gather_config() {
     read -r __host
     HOSTNAME="${__host:-omidenos}"
 
-    # Username — only lowercase letters and digits
+    # Username
     while true; do
         ask "Username [user]"
         read -r __user
@@ -205,6 +207,13 @@ gather_config() {
     echo -en "  ${W}[?]${N} Root password (blank = disable root login): "
     read -rs ROOT_PASS; echo ""
 
+    # Swap
+    if confirm "Create swap file? (recommended, 2GB)"; then
+        INSTALL_SWAP=true
+    else
+        INSTALL_SWAP=false
+    fi
+
     # Desktop
     if confirm "Install Openbox desktop environment?"; then
         INSTALL_DESKTOP=true
@@ -218,26 +227,12 @@ gather_config() {
     else
         INSTALL_BLACKARCH=false
     fi
-
-    # Summary
-    echo ""
-    echo -e "  ${C}${BOLD}Summary:${N}"
-    echo -e "  Disk:      $DISK ($FS_TYPE)"
-    echo -e "  Boot:      $BOOT_MODE"
-    echo -e "  Hostname:  $HOSTNAME"
-    echo -e "  User:      $USERNAME"
-    echo -e "  Timezone:  $TIMEZONE"
-    echo -e "  Desktop:   $INSTALL_DESKTOP"
-    echo -e "  BlackArch: $INSTALL_BLACKARCH"
-    echo ""
-    confirm "Proceed with installation?" || die "Aborted by user."
 }
 
 # ─── Partition & Format ──────────────────────────────────────
 partition_disk() {
     step "Partitioning $DISK"
 
-    # Wipe existing signatures
     wipefs -af "$DISK" &>/dev/null || true
 
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
@@ -245,7 +240,7 @@ partition_disk() {
         parted -s "$DISK" mklabel gpt
         parted -s "$DISK" mkpart "EFI" fat32 1MiB 513MiB
         parted -s "$DISK" set 1 esp on
-        parted -s "$DISK" mkpart "OmidenOS" "${FS_TYPE}" 513MiB 100%
+        parted -s "$DISK" mkpart "OmidenOs" "${FS_TYPE}" 513MiB 100%
 
         if [[ "$DISK" =~ nvme|mmcblk ]]; then
             EFI_PART="${DISK}p1"
@@ -271,20 +266,36 @@ partition_disk() {
         fi
     fi
 
-    # Wait for kernel to register partitions
     sleep 2
 
     # Format root
     info "Formatting root: $ROOT_PART ($FS_TYPE)"
     case "$FS_TYPE" in
-        btrfs) mkfs.btrfs -f -L "OmidenOS" "$ROOT_PART" ;;
-        xfs)   mkfs.xfs   -f -L "OmidenOS" "$ROOT_PART" ;;
-        *)     mkfs.ext4  -F -L "OmidenOS" "$ROOT_PART" ;;
+        btrfs)
+            mkfs.btrfs -f -L "OmidenOs" "$ROOT_PART"
+            # Create btrfs subvolumes
+            mount "$ROOT_PART" /mnt
+            btrfs subvolume create /mnt/@
+            btrfs subvolume create /mnt/@home
+            btrfs subvolume create /mnt/@snapshots
+            umount /mnt
+            # Mount with subvolumes
+            mount -o subvol=@,compress=zstd,noatime "$ROOT_PART" /mnt
+            mkdir -p /mnt/home
+            mount -o subvol=@home,compress=zstd,noatime "$ROOT_PART" /mnt/home
+            mkdir -p /mnt/.snapshots
+            mount -o subvol=@snapshots,compress=zstd,noatime "$ROOT_PART" /mnt/.snapshots
+            ;;
+        xfs)
+            mkfs.xfs -f -L "OmidenOs" "$ROOT_PART"
+            mount "$ROOT_PART" /mnt
+            ;;
+        *)
+            mkfs.ext4 -F -L "OmidenOs" "$ROOT_PART"
+            mount "$ROOT_PART" /mnt
+            ;;
     esac
 
-    # Mount
-    info "Mounting filesystems..."
-    mount "$ROOT_PART" /mnt
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
         mkdir -p /mnt/boot/efi
         mount "$EFI_PART" /mnt/boot/efi
@@ -298,27 +309,23 @@ partition_disk() {
 install_base() {
     step "Installing Base System"
 
-    # Ensure network is up
     info "Checking network..."
     if ! ping -c1 -W3 archlinux.org &>/dev/null; then
         warn "No network. Trying to start NetworkManager..."
         systemctl start NetworkManager 2>/dev/null || true
         sleep 3
         if ! ping -c1 -W3 archlinux.org &>/dev/null; then
-            err "No internet connection. Cannot install."
-            die "Run 'nmtui' to connect to WiFi first."
+            die "No internet. Run 'nmtui' first."
         fi
     fi
     info "Network OK."
 
-    # Sync repos
-    info "Syncing package databases..."
     pacman -Syy --noconfirm &>/dev/null || true
 
     info "Running pacstrap (this will take a while)..."
     local PKGS=(
         base base-devel linux linux-firmware linux-headers
-        networkmanager grub efibootmgr
+        networkmanager grub efibootmgr os-prober
         sudo nano vim git curl wget
         bash zsh zsh-autosuggestions zsh-syntax-highlighting
         bash-completion man-db man-pages
@@ -329,6 +336,9 @@ install_base() {
         bluez bluez-utils
         arch-install-scripts pacman-contrib reflector
     )
+
+    # btrfs tools if needed
+    [[ "$FS_TYPE" == "btrfs" ]] && PKGS+=(btrfs-progs)
 
     if [[ "$INSTALL_DESKTOP" == true ]]; then
         PKGS+=(
@@ -345,153 +355,145 @@ install_base() {
     pacstrap -K /mnt "${PKGS[@]}"
     info "Base system installed."
 
-    # Copy pacman.conf with BlackArch to installed system
+    # Copy live pacman.conf (has BlackArch) to installed system
     cp /etc/pacman.conf /mnt/etc/pacman.conf 2>/dev/null || true
+    # Copy live mirrorlist
+    cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist 2>/dev/null || true
 }
 
 # ─── Copy live configs to installed system ───────────────────
 copy_configs() {
-    step "Copying OmidenOS Configuration"
+    step "Copying OmidenOs Configuration"
 
-    local TARGET_HOME="/mnt/home/${USERNAME}"
+    # NOTE: user is created inside configure_chroot, so we can't chown yet.
+    # Files are written to the right paths; chown happens at end of chroot.
 
-    # Wallpaper
+    # Wallpapers — copy all
     mkdir -p /mnt/usr/share/wallpapers/omiden
-    if [[ -f /usr/share/wallpapers/omiden/omiden-wallpaper.png ]]; then
-        cp /usr/share/wallpapers/omiden/omiden-wallpaper.png \
-           /mnt/usr/share/wallpapers/omiden/
-        info "Wallpaper copied."
+    if [[ -d /usr/share/wallpapers/omiden ]]; then
+        cp /usr/share/wallpapers/omiden/* \
+           /mnt/usr/share/wallpapers/omiden/ 2>/dev/null || true
+        info "Wallpapers copied ($(ls /mnt/usr/share/wallpapers/omiden/ | wc -l) files)."
     fi
 
     # System icon
     mkdir -p /mnt/usr/share/pixmaps
-    if [[ -f /usr/share/pixmaps/omidenos.png ]]; then
+    [[ -f /usr/share/pixmaps/omidenos.png ]] && \
         cp /usr/share/pixmaps/omidenos.png /mnt/usr/share/pixmaps/
-        info "System icon copied."
+
+    # skel configs → copied to system skel so every new user gets them
+    if [[ -d /etc/skel ]]; then
+        mkdir -p /mnt/etc/skel
+        cp -r /etc/skel/. /mnt/etc/skel/ 2>/dev/null || true
+        info "Skel configs copied."
     fi
-
-    # Skel configs (from /etc/skel if available)
-    if [[ -d /etc/skel/.config ]]; then
-        mkdir -p "${TARGET_HOME}/.config"
-        cp -r /etc/skel/.config/* "${TARGET_HOME}/.config/" 2>/dev/null || true
-        info "Desktop configs copied from skel."
-    fi
-
-    # Shell configs from skel
-    for f in .bashrc .zshrc .xinitrc; do
-        [[ -f "/etc/skel/$f" ]] && cp "/etc/skel/$f" "${TARGET_HOME}/$f"
-    done
-
-    # Fastfetch (from live root if skel doesn't have it)
-    if [[ ! -f "${TARGET_HOME}/.config/fastfetch/omiden.txt" ]] && \
-       [[ -f /root/.config/fastfetch/omiden.txt ]]; then
-        mkdir -p "${TARGET_HOME}/.config/fastfetch"
-        cp /root/.config/fastfetch/config.jsonc "${TARGET_HOME}/.config/fastfetch/" 2>/dev/null || true
-        cp /root/.config/fastfetch/omiden.txt   "${TARGET_HOME}/.config/fastfetch/" 2>/dev/null || true
-        info "Fastfetch config copied."
-    fi
-
-    # Openbox autostart
-    mkdir -p "${TARGET_HOME}/.config/openbox"
-    cat > "${TARGET_HOME}/.config/openbox/autostart" << 'AUTOSTART'
-#!/bin/bash
-feh --bg-fill /usr/share/wallpapers/omiden/omiden-wallpaper.png 2>/dev/null &
-picom --daemon &
-tint2 &
-dunst &
-nm-applet &
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-AUTOSTART
-    info "Openbox autostart created."
-
-    # Set ownership
-    arch-chroot /mnt chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}" 2>/dev/null || true
 }
 
 # ─── Configure Chroot ────────────────────────────────────────
 configure_chroot() {
     step "Configuring System"
 
-    # fstab
     genfstab -U /mnt >> /mnt/etc/fstab
     info "fstab generated."
 
-    # Write chroot script to /tmp and execute
-    cat > /mnt/tmp/omiden-chroot.sh << CHROOT_SCRIPT
+    # Pass variables safely via environment — avoids shell injection
+    # from special characters in passwords/usernames
+    cat > /mnt/tmp/omiden-chroot.sh << 'CHROOT_SCRIPT'
 #!/bin/bash
-# OmidenOS chroot configuration script
+# OmidenOs chroot configuration — variables injected via env
 
-TIMEZONE="$TIMEZONE"
-HOSTNAME="$HOSTNAME"
-USERNAME="$USERNAME"
-USER_PASS="$USER_PASS"
-ROOT_PASS="$ROOT_PASS"
-BOOT_MODE="$BOOT_MODE"
-DISK="$DISK"
-INSTALL_DESKTOP="$INSTALL_DESKTOP"
-INSTALL_BLACKARCH="$INSTALL_BLACKARCH"
+TIMEZONE="${OMIDEN_TIMEZONE}"
+HOSTNAME="${OMIDEN_HOSTNAME}"
+USERNAME="${OMIDEN_USERNAME}"
+USER_PASS="${OMIDEN_USER_PASS}"
+ROOT_PASS="${OMIDEN_ROOT_PASS}"
+BOOT_MODE="${OMIDEN_BOOT_MODE}"
+DISK="${OMIDEN_DISK}"
+INSTALL_DESKTOP="${OMIDEN_INSTALL_DESKTOP}"
+INSTALL_BLACKARCH="${OMIDEN_INSTALL_BLACKARCH}"
+INSTALL_SWAP="${OMIDEN_INSTALL_SWAP}"
+SWAP_SIZE="${OMIDEN_SWAP_SIZE}"
+FS_TYPE="${OMIDEN_FS_TYPE}"
 
-# Timezone
-ln -sf "/usr/share/zoneinfo/\${TIMEZONE}" /etc/localtime
+# ── Timezone ──────────────────────────────────────────────────
+ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
 hwclock --systohc
 
-# Locale
+# ── Locale ───────────────────────────────────────────────────
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
 
-# Hostname
-echo "\${HOSTNAME}" > /etc/hostname
+# ── Hostname ─────────────────────────────────────────────────
+echo "${HOSTNAME}" > /etc/hostname
 cat > /etc/hosts << EOF
 127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   \${HOSTNAME}.localdomain \${HOSTNAME}
+127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
 EOF
 
-# OS identity
+# ── OS identity ──────────────────────────────────────────────
 cat > /etc/os-release << EOF
-NAME="OmidenOS"
-PRETTY_NAME="OmidenOS"
+NAME="OmidenOs"
+PRETTY_NAME="OmidenOs"
 ID=omidenos
 ID_LIKE=arch
 BUILD_ID=rolling
-HOME_URL="https://github.com/muhemmed0634/OmidenOS"
-SUPPORT_URL="https://github.com/muhemmed0634/OmidenOS/issues"
-BUG_REPORT_URL="https://github.com/muhemmed0634/OmidenOS/issues"
+HOME_URL="https://github.com/muhemmed0634/OmidenOs"
+SUPPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
+BUG_REPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
 LOGO="omidenos"
 EOF
 
-# Users
-if [[ -n "\${ROOT_PASS}" ]]; then
-    echo "root:\${ROOT_PASS}" | chpasswd
+# ── Swap ─────────────────────────────────────────────────────
+if [[ "${INSTALL_SWAP}" == true ]]; then
+    echo "Creating swapfile (${SWAP_SIZE})..."
+    dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress 2>/dev/null || \
+        fallocate -l "${SWAP_SIZE}" /swapfile 2>/dev/null || true
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+    echo "/swapfile none swap defaults 0 0" >> /etc/fstab
+    echo "Swapfile created."
+fi
+
+# ── Users ────────────────────────────────────────────────────
+if [[ -n "${ROOT_PASS}" ]]; then
+    echo "root:${ROOT_PASS}" | chpasswd
 else
     passwd -l root
 fi
 
-useradd -m -G wheel,audio,video,storage,optical,network,input \\
-    -s /bin/zsh "\${USERNAME}"
-echo "\${USERNAME}:\${USER_PASS}" | chpasswd
-echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+useradd -m -G wheel,audio,video,storage,optical,network,input \
+    -s /bin/zsh "${USERNAME}"
+echo "${USERNAME}:${USER_PASS}" | chpasswd
 
-# Initramfs
+# Fix sudoers — uncomment wheel line instead of appending
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+# Append only if not already present
+grep -q "^%wheel ALL=(ALL:ALL) ALL" /etc/sudoers || \
+    echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+
+# ── Initramfs ────────────────────────────────────────────────
 mkinitcpio -P
 
-# Services
+# ── Services ─────────────────────────────────────────────────
 systemctl enable NetworkManager
 systemctl enable acpid
 systemctl enable bluetooth 2>/dev/null || true
+systemctl enable pipewire 2>/dev/null || true
+systemctl enable pipewire-pulse 2>/dev/null || true
 
-if [[ "\${INSTALL_DESKTOP}" == true ]]; then
+if [[ "${INSTALL_DESKTOP}" == true ]]; then
     systemctl enable lightdm
 
-    # LightDM autologin
     mkdir -p /etc/lightdm
     cat > /etc/lightdm/lightdm.conf << EOF
 [Seat:*]
 greeter-session=lightdm-gtk-greeter
 user-session=openbox
-autologin-user=\${USERNAME}
+autologin-user=${USERNAME}
 autologin-user-timeout=0
 autologin-session=openbox
 
@@ -500,9 +502,8 @@ logind-check-graphical=true
 EOF
 
     groupadd -r autologin 2>/dev/null || true
-    gpasswd -a "\${USERNAME}" autologin
+    gpasswd -a "${USERNAME}" autologin
 
-    # LightDM greeter
     cat > /etc/lightdm/lightdm-gtk-greeter.conf << EOF
 [greeter]
 background=/usr/share/wallpapers/omiden/omiden-wallpaper.png
@@ -516,37 +517,61 @@ panel-position=bottom
 EOF
 fi
 
-# BlackArch
-if [[ "\${INSTALL_BLACKARCH}" == true ]]; then
+# ── BlackArch ────────────────────────────────────────────────
+if [[ "${INSTALL_BLACKARCH}" == true ]]; then
     curl -sO https://blackarch.org/strap.sh
-    if echo "5ea40d49ecd14c2e024deecf90605426db97ea0c  strap.sh" | sha1sum -c 2>/dev/null; then
-        chmod +x strap.sh && ./strap.sh && rm -f strap.sh
+    # Download current checksum from blackarch.org
+    if curl -sO https://blackarch.org/strap.sh.sha1sum 2>/dev/null; then
+        sha1sum -c strap.sh.sha1sum 2>/dev/null && \
+            chmod +x strap.sh && ./strap.sh || \
+            echo "BlackArch strap verification failed, skipping."
+        rm -f strap.sh.sha1sum
     else
-        echo "BlackArch strap checksum failed, skipping."
+        # Fallback: run without checksum verification
+        chmod +x strap.sh && ./strap.sh || true
     fi
     rm -f strap.sh
 fi
 
-# Bootloader
-if [[ "\${BOOT_MODE}" == "UEFI" ]]; then
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi \\
-                 --bootloader-id=OmidenOS --recheck
+# ── Bootloader ───────────────────────────────────────────────
+if [[ "${BOOT_MODE}" == "UEFI" ]]; then
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi \
+                 --bootloader-id=OmidenOs --recheck
 else
-    grub-install --target=i386-pc --recheck "\${DISK}"
+    grub-install --target=i386-pc --recheck "${DISK}"
 fi
 
 # GRUB config
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
+# Enable os-prober for dual boot detection
 sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-echo 'GRUB_DISTRIBUTOR="OmidenOS"' >> /etc/default/grub
+echo 'GRUB_DISTRIBUTOR="OmidenOs"' >> /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
-# Cleanup
+# ── User home ownership ──────────────────────────────────────
+chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
+
+# ── Cleanup ──────────────────────────────────────────────────
 rm -f /tmp/omiden-chroot.sh
 CHROOT_SCRIPT
 
     chmod +x /mnt/tmp/omiden-chroot.sh
+
+    # Pass variables via environment — safe for special chars in passwords
+    OMIDEN_TIMEZONE="$TIMEZONE" \
+    OMIDEN_HOSTNAME="$HOSTNAME" \
+    OMIDEN_USERNAME="$USERNAME" \
+    OMIDEN_USER_PASS="$USER_PASS" \
+    OMIDEN_ROOT_PASS="$ROOT_PASS" \
+    OMIDEN_BOOT_MODE="$BOOT_MODE" \
+    OMIDEN_DISK="$DISK" \
+    OMIDEN_INSTALL_DESKTOP="$INSTALL_DESKTOP" \
+    OMIDEN_INSTALL_BLACKARCH="$INSTALL_BLACKARCH" \
+    OMIDEN_INSTALL_SWAP="$INSTALL_SWAP" \
+    OMIDEN_SWAP_SIZE="$SWAP_SIZE" \
+    OMIDEN_FS_TYPE="$FS_TYPE" \
     arch-chroot /mnt /tmp/omiden-chroot.sh
+
     info "System configuration complete."
 }
 
@@ -555,13 +580,14 @@ post_install() {
     step "Installation Complete!"
     echo -e "${G}${BOLD}"
     echo "  ╔════════════════════════════════════════╗"
-    echo "  ║   OmidenOS installed successfully!     ║"
+    echo "  ║   OmidenOs installed successfully!     ║"
     echo "  ╚════════════════════════════════════════╝"
     echo -e "${N}"
-    echo -e "  ${W}Disk:${N}     $DISK"
+    echo -e "  ${W}Disk:${N}     $DISK  ($FS_TYPE)"
     echo -e "  ${W}Hostname:${N} $HOSTNAME"
     echo -e "  ${W}User:${N}     $USERNAME"
     echo -e "  ${W}Boot:${N}     $BOOT_MODE"
+    echo -e "  ${W}Timezone:${N} $TIMEZONE"
     echo ""
     echo -e "  ${C}Next steps:${N}"
     echo -e "  1. Remove the USB/live media"
@@ -573,8 +599,7 @@ post_install() {
         umount -R /mnt 2>/dev/null || true
         reboot
     else
-        info "Reboot manually when ready:"
-        echo -e "  ${BOLD}umount -R /mnt && reboot${N}"
+        info "Reboot manually: ${BOLD}umount -R /mnt && reboot${N}"
     fi
 }
 
@@ -585,6 +610,7 @@ main() {
     check_uefi
     check_internet
     update_mirrors
+    # BUG FIX: gather_config BEFORE disk selection (was wrong order before)
     gather_config
     select_disk
     select_filesystem

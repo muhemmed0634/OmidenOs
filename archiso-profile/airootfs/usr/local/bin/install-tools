@@ -1,8 +1,12 @@
 #!/bin/bash
-# ============================================================
-# OmidenOS - Security Tools Installer (100+ tools)
+# OmidenOs - Security Tools Installer (100+ tools)
 # Installs additional tools not included in the base ISO
-# GitHub: https://github.com/muhemmed0634/OmidenOS
+# GitHub: https://github.com/muhemmed0634/OmidenOs
+# ─── Root check ──────────────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    echo "Must be run as root: sudo install-tools"
+    exit 1
+fi
 # ============================================================
 
 set -e

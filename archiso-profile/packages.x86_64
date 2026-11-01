@@ -4,7 +4,6 @@
 # NOTE: Large GUI tools (burpsuite, ghidra, autopsy, maltego)
 #       are installed post-boot via: install-tools
 # GitHub: https://github.com/muhemmed0634/OmidenOs
-# ============================================================
 
 # ─── Base System ─────────────────────────────────────────────
 base
@@ -14,13 +13,11 @@ linux-firmware
 linux-headers
 mkinitcpio
 mkinitcpio-archiso
-
 # ─── Boot ────────────────────────────────────────────────────
 grub
 efibootmgr
 syslinux
 memtest86+
-
 # ─── Filesystem ──────────────────────────────────────────────
 btrfs-progs
 dosfstools
@@ -32,7 +29,6 @@ nilfs-utils
 ntfs-3g
 udftools
 xfsprogs
-
 # ─── Network ─────────────────────────────────────────────────
 networkmanager
 network-manager-applet
@@ -55,7 +51,6 @@ ethtool
 iperf3
 socat
 openbsd-netcat
-
 # ─── Display ─────────────────────────────────────────────────
 xorg-server
 xorg-xinit
@@ -65,7 +60,6 @@ xf86-video-vesa
 xf86-video-fbdev
 xf86-input-libinput
 mesa
-
 # ─── Window Manager / Desktop ────────────────────────────────
 openbox
 tint2
@@ -77,7 +71,6 @@ dunst
 lightdm
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
-
 # ─── Terminal & Shell ─────────────────────────────────────────
 alacritty
 bash
@@ -88,13 +81,11 @@ zsh-syntax-highlighting
 tmux
 screen
 fish
-
 # ─── Text Editors ────────────────────────────────────────────
 neovim
 vim
 nano
 mousepad
-
 # ─── File Manager ────────────────────────────────────────────
 thunar
 thunar-archive-plugin
@@ -102,7 +93,6 @@ thunar-volman
 gvfs
 gvfs-mtp
 ranger
-
 # ─── Archive ─────────────────────────────────────────────────
 file-roller
 tar
@@ -113,13 +103,12 @@ zip
 unzip
 7zip
 unrar
-
 # ─── Media ───────────────────────────────────────────────────
 mpv
 imv
 ffmpeg
 imagemagick
-
+maim
 # ─── Fonts ───────────────────────────────────────────────────
 ttf-dejavu
 ttf-liberation
@@ -129,13 +118,11 @@ noto-fonts-emoji
 ttf-cascadia-code
 ttf-hack-nerd
 terminus-font
-
 # ─── Themes & Icons ──────────────────────────────────────────
 adw-gtk-theme
 papirus-icon-theme
 lxappearance
 qt5ct
-
 # ─── System Tools ────────────────────────────────────────────
 htop
 btop
@@ -160,7 +147,6 @@ binutils
 patchelf
 file
 bc
-
 # ─── Disk & Partition ────────────────────────────────────────
 gparted
 parted
@@ -171,7 +157,6 @@ mdadm
 testdisk
 foremost
 ddrescue
-
 # ─── Security / Crypto ───────────────────────────────────────
 gnupg
 nss
@@ -180,7 +165,6 @@ openssl
 hashcat
 john
 aircrack-ng
-
 # ─── Development Tools ───────────────────────────────────────
 git
 github-cli
@@ -199,24 +183,20 @@ rust
 cmake
 make
 gcc
-
 # ─── Audio ───────────────────────────────────────────────────
 pipewire
 pipewire-alsa
 pipewire-pulse
 wireplumber
 pavucontrol
-
 # ─── Bluetooth ───────────────────────────────────────────────
 bluez
 bluez-utils
-
 # ─── Archiso / Install Tools ─────────────────────────────────
 arch-install-scripts
 reflector
 pacman-contrib
 dialog
-
 # ─── Misc ────────────────────────────────────────────────────
 bash-completion
 xdg-utils
@@ -232,12 +212,8 @@ glib2
 python-setuptools
 pv
 expect
-
-# ============================================================
 # BlackArch Security Tools (CLI / lightweight only)
 # Heavy GUI tools installed via: install-tools
-# ============================================================
-
 # ─── Reconnaissance ──────────────────────────────────────────
 masscan
 amass
@@ -262,7 +238,6 @@ spiderfoot
 sublist3r
 dnsrecon
 fierce
-
 # ─── Web Application Testing ─────────────────────────────────
 sqlmap
 zaproxy
@@ -276,7 +251,6 @@ ssrfmap
 corsy
 smuggler
 ghauri
-
 # ─── Network & Traffic Analysis ──────────────────────────────
 wireshark-qt
 bettercap
@@ -295,7 +269,6 @@ yersinia
 macchanger
 hostapd-wpe
 wifi-pumpkin
-
 # ─── Password Attacks ────────────────────────────────────────
 hydra
 medusa
@@ -307,7 +280,6 @@ mimikatz
 python-pypykatz
 certipy
 evil-winrm
-
 # ─── Exploitation ────────────────────────────────────────────
 metasploit
 exploitdb
@@ -315,15 +287,12 @@ routersploit
 beef
 empire
 sliver
-
 # ─── Post Exploitation ───────────────────────────────────────
 bloodhound
-crackmapexec
 smbmap
 enum4linux
 enum4linux-ng
 ldeep
-
 # ─── Reverse Engineering (lightweight) ───────────────────────
 radare2
 cutter
@@ -333,13 +302,10 @@ angr
 python-pwntools
 checksec
 yara
-
 # ─── Forensics (lightweight) ─────────────────────────────────
 volatility3
 bulk-extractor
 sleuthkit
-foremost
-testdisk
 safecopy
 dc3dd
 dcfldd
@@ -349,7 +315,6 @@ stegsolve
 zsteg
 outguess
 python-oletools
-
 # ─── Wireless ────────────────────────────────────────────────
 airgeddon
 wifite
@@ -359,14 +324,12 @@ pixiewps
 fern-wifi-cracker
 bully
 hashcat-utils
-
 # ─── Fuzzing ─────────────────────────────────────────────────
 afl++
 afl-utils
 boofuzz
 radamsa
 honggfuzz
-
 # ─── Cryptography ────────────────────────────────────────────
 hashid
 hash-identifier
@@ -374,7 +337,6 @@ rsactftool
 xortool
 featherduster
 sagemath
-
 # ─── OSINT ───────────────────────────────────────────────────
 python-shodan
 twint
@@ -383,11 +345,9 @@ holehe
 maigret
 socialscan
 phoneinfoga
-
 # ─── Social Engineering ──────────────────────────────────────
 gophish
 modlishka
-
 # ─── Containers & Cloud ──────────────────────────────────────
 docker
 kubectl
@@ -396,7 +356,6 @@ grype
 kube-hunter
 pacu
 prowler
-
 # ─── Misc Security Tools ─────────────────────────────────────
 proxychains-ng
 tor
