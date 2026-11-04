@@ -61,6 +61,7 @@ WEB=(
 )
 
 EXPLOIT=(
+    "empire:Empire — PowerShell post-exploitation (needs mariadb)"
     "armitage:Armitage — Metasploit GUI"
     "ace:ACE — Android Custom Exploit"
     "hyperfox:HyperFox — MITM proxy"
