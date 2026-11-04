@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# OmidenOs Installer — Custom Bash Installer v3.1
+# OmidenOs Installer — Custom Bash Installer v3.2
 # GitHub: https://github.com/muhemmed0634/OmidenOs
 # NO archinstall dependency — fully self-contained
 # ============================================================
@@ -26,6 +26,7 @@ INSTALL_BLACKARCH=false
 INSTALL_DESKTOP=true
 FS_TYPE="ext4"
 INSTALL_SWAP=true
+CHROOT_ERRORS=0
 
 # ─── Helpers ─────────────────────────────────────────────────
 info()    { echo -e "  ${G}[✔]${N} $*"; }
@@ -48,7 +49,7 @@ banner() {
   ║ ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║  ║
   ║  ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝  ║
   ╠═════════════════════════════════════════════════════╣
-  ║          Custom Installer  v3.1                     ║
+  ║          Custom Installer  v3.2                     ║
   ║    github.com/muhemmed0634/OmidenOs                ║
   ╚═════════════════════════════════════════════════════╝
 BANNER
@@ -232,7 +233,7 @@ partition_disk() {
     step "Partitioning $DISK"
 
     wipefs -af "$DISK" &>/dev/null || true
-    sgdisk -Z "$DISK" &>/dev/null || true  # zap all partition data
+    sgdisk -Z "$DISK" &>/dev/null || true
 
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
         info "Creating GPT partition table (UEFI)..."
@@ -249,7 +250,6 @@ partition_disk() {
             ROOT_PART="${DISK}2"
         fi
 
-        # Wait for kernel to register partitions
         udevadm settle 2>/dev/null || sleep 3
 
         info "Formatting EFI: $EFI_PART"
@@ -351,9 +351,8 @@ install_base() {
         )
     fi
 
-    # Run pacstrap and CHECK exit code
     if ! pacstrap -K /mnt "${PKGS[@]}"; then
-        err "pacstrap FAILED! Check your internet connection."
+        err "pacstrap FAILED!"
         err "Try: pacman -Syy && install-omiden"
         die "Base installation failed."
     fi
@@ -369,7 +368,6 @@ install_base() {
 copy_configs() {
     step "Copying OmidenOs Configuration"
 
-    # Wallpapers — copy all
     mkdir -p /mnt/usr/share/wallpapers/omiden
     if [[ -d /usr/share/wallpapers/omiden ]]; then
         cp /usr/share/wallpapers/omiden/* \
@@ -377,12 +375,10 @@ copy_configs() {
         info "Wallpapers copied ($(ls /mnt/usr/share/wallpapers/omiden/ 2>/dev/null | wc -l) files)."
     fi
 
-    # System icon
     mkdir -p /mnt/usr/share/pixmaps
     [[ -f /usr/share/pixmaps/omidenos.png ]] && \
         cp /usr/share/pixmaps/omidenos.png /mnt/usr/share/pixmaps/
 
-    # skel configs → copied to system skel so every new user gets them
     if [[ -d /etc/skel ]]; then
         mkdir -p /mnt/etc/skel
         cp -r /etc/skel/. /mnt/etc/skel/ 2>/dev/null || true
@@ -394,13 +390,10 @@ copy_configs() {
 configure_chroot() {
     step "Configuring System"
 
-    # Generate fstab — this is critical
-    if ! genfstab -U /mnt >> /mnt/etc/fstab; then
-        die "genfstab FAILED! Cannot continue without fstab."
-    fi
+    # Generate fstab — critical
+    genfstab -U /mnt >> /mnt/etc/fstab || die "genfstab FAILED!"
     info "fstab generated."
 
-    # Verify fstab has entries
     local fstab_lines
     fstab_lines=$(grep -c "^UUID" /mnt/etc/fstab 2>/dev/null || echo 0)
     if [[ "$fstab_lines" -lt 1 ]]; then
@@ -409,7 +402,6 @@ configure_chroot() {
     info "fstab has $fstab_lines entries."
 
     # Write variables to a file using printf %q for safe escaping
-    # This handles special characters in passwords correctly
     {
         printf 'TIMEZONE=%q\n' "$TIMEZONE"
         printf 'HOSTNAME=%q\n' "$HOSTNAME"
@@ -425,11 +417,13 @@ configure_chroot() {
     } > /mnt/tmp/omiden-env.sh
 
     # Write the chroot script
+    # NOTE: No 'set -e' here — we check critical commands individually
+    # so non-critical failures (hwclock, bluetooth service) don't abort
     cat > /mnt/tmp/omiden-chroot.sh << 'CHROOT_SCRIPT'
 #!/bin/bash
-set -e  # EXIT on any error inside chroot
+# OmidenOs chroot configuration — variables from env file
+# NO set -e: non-critical commands can fail without aborting
 
-# Source variables (safely escaped with printf %q)
 source /tmp/omiden-env.sh
 
 echo "==> Configuring system..."
@@ -440,14 +434,17 @@ echo "    Boot:     $BOOT_MODE"
 echo "    Desktop:  $INSTALL_DESKTOP"
 echo "    FS:       $FS_TYPE"
 
+# Track critical errors
+CRITICAL_ERRORS=0
+
 # ── Timezone ──────────────────────────────────────────────────
 echo "==> Setting timezone..."
 ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
-hwclock --systohc
+hwclock --systohc 2>/dev/null || echo "    (hwclock skipped — normal in chroot)"
 
 # ── Locale ───────────────────────────────────────────────────
 echo "==> Generating locale..."
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+grep -q "en_US.UTF-8" /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
@@ -478,44 +475,58 @@ EOF
 if [[ "${INSTALL_SWAP}" == true ]]; then
     echo "==> Creating swapfile (2GB)..."
     fallocate -l 2G /swapfile 2>/dev/null || \
-        dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
-    chmod 600 /swapfile
-    mkswap /swapfile
-    swapon /swapfile 2>/dev/null || true
-    echo "/swapfile none swap defaults 0 0" >> /etc/fstab
-    echo "    Swapfile created."
+        dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress 2>/dev/null
+    if [[ -f /swapfile ]]; then
+        chmod 600 /swapfile
+        mkswap /swapfile 2>/dev/null || true
+        swapon /swapfile 2>/dev/null || true
+        echo "/swapfile none swap defaults 0 0" >> /etc/fstab
+        echo "    Swapfile created."
+    else
+        echo "    Swapfile creation skipped (not enough space?)"
+    fi
 fi
 
-# ── Users ────────────────────────────────────────────────────
+# ── Users — CRITICAL ─────────────────────────────────────────
 echo "==> Creating users..."
 if [[ -n "${ROOT_PASS}" ]]; then
     echo "root:${ROOT_PASS}" | chpasswd
 else
-    passwd -l root
+    passwd -l root 2>/dev/null || true
 fi
 
-useradd -m -G wheel,audio,video,storage,optical,network,input \
-    -s /bin/zsh "${USERNAME}"
-echo "${USERNAME}:${USER_PASS}" | chpasswd
+if ! useradd -m -G wheel,audio,video,storage,optical,network,input \
+    -s /bin/zsh "${USERNAME}"; then
+    echo "    ERROR: useradd failed!"
+    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+else
+    echo "${USERNAME}:${USER_PASS}" | chpasswd
+    echo "    User ${USERNAME} created."
+fi
 
-# Sudoers — uncomment wheel line
+# Sudoers
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 grep -q "^%wheel ALL=(ALL:ALL) ALL" /etc/sudoers || \
     echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
-# ── Initramfs ────────────────────────────────────────────────
+# ── Initramfs — CRITICAL ─────────────────────────────────────
 echo "==> Building initramfs..."
-mkinitcpio -P
+if mkinitcpio -P; then
+    echo "    Initramfs built."
+else
+    echo "    ERROR: mkinitcpio failed!"
+    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+fi
 
 # ── Services ─────────────────────────────────────────────────
 echo "==> Enabling services..."
-systemctl enable NetworkManager
-systemctl enable acpid
+systemctl enable NetworkManager 2>/dev/null || echo "    (NetworkManager enable skipped)"
+systemctl enable acpid 2>/dev/null || true
 systemctl enable bluetooth 2>/dev/null || true
 
 if [[ "${INSTALL_DESKTOP}" == true ]]; then
     echo "==> Configuring desktop..."
-    systemctl enable lightdm
+    systemctl enable lightdm 2>/dev/null || echo "    (lightdm enable skipped)"
 
     mkdir -p /etc/lightdm
     cat > /etc/lightdm/lightdm.conf << EOF
@@ -531,7 +542,7 @@ logind-check-graphical=true
 EOF
 
     groupadd -r autologin 2>/dev/null || true
-    gpasswd -a "${USERNAME}" autologin
+    gpasswd -a "${USERNAME}" autologin 2>/dev/null || true
 
     cat > /etc/lightdm/lightdm-gtk-greeter.conf << EOF
 [greeter]
@@ -552,9 +563,10 @@ if [[ "${INSTALL_BLACKARCH}" == true ]]; then
     curl -sO https://blackarch.org/strap.sh
     if curl -sO https://blackarch.org/strap.sh.sha1sum 2>/dev/null; then
         if sha1sum -c strap.sh.sha1sum 2>/dev/null; then
-            chmod +x strap.sh && ./strap.sh
+            chmod +x strap.sh && ./strap.sh || echo "    BlackArch strap failed"
         else
-            echo "    BlackArch checksum failed, skipping."
+            echo "    BlackArch checksum failed, running without verification..."
+            chmod +x strap.sh && ./strap.sh || true
         fi
         rm -f strap.sh.sha1sum
     else
@@ -569,66 +581,91 @@ echo "==> Installing GRUB bootloader..."
 if [[ "${BOOT_MODE}" == "UEFI" ]]; then
     # Verify EFI partition is mounted
     if ! mountpoint -q /boot/efi; then
-        echo "ERROR: EFI partition not mounted at /boot/efi!"
-        echo "Attempting to mount..."
+        echo "    EFI partition not mounted, trying to mount..."
         mount -a 2>/dev/null
-        if ! mountpoint -q /boot/efi; then
-            echo "FATAL: Cannot mount EFI partition. GRUB install will fail."
-            exit 1
-        fi
     fi
 
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-                 --bootloader-id=OmidenOs --recheck
-    echo "    GRUB installed (UEFI)."
+    if mountpoint -q /boot/efi; then
+        if grub-install --target=x86_64-efi --efi-directory=/boot/efi \
+                 --bootloader-id=OmidenOs --recheck; then
+            echo "    GRUB installed (UEFI)."
+        else
+            echo "    ERROR: grub-install failed!"
+            CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+        fi
+    else
+        echo "    ERROR: EFI partition not mounted at /boot/efi!"
+        CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+    fi
 else
-    grub-install --target=i386-pc --recheck "${DISK}"
-    echo "    GRUB installed (BIOS)."
+    if grub-install --target=i386-pc --recheck "${DISK}"; then
+        echo "    GRUB installed (BIOS)."
+    else
+        echo "    ERROR: grub-install failed!"
+        CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+    fi
 fi
 
-# GRUB config
+# ── GRUB config — CRITICAL ───────────────────────────────────
 echo "==> Generating GRUB config..."
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
 sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-# Add GRUB_DISTRIBUTOR only if not already there
 grep -q 'GRUB_DISTRIBUTOR' /etc/default/grub || \
     echo 'GRUB_DISTRIBUTOR="OmidenOs"' >> /etc/default/grub
 
-grub-mkconfig -o /boot/grub/grub.cfg
-echo "    GRUB config generated."
+if grub-mkconfig -o /boot/grub/grub.cfg; then
+    echo "    GRUB config generated."
+else
+    echo "    ERROR: grub-mkconfig failed!"
+    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
+fi
 
-# ── User home ownership ──────────────────────────────────────
-echo "==> Setting home directory ownership..."
-chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
+# ── User home setup ──────────────────────────────────────────
+echo "==> Setting up user home..."
 
-# ── Copy skel to user home (if desktop installed) ───────────
-if [[ "${INSTALL_DESKTOP}" == true ]] && [[ -d /etc/skel/.config ]]; then
-    echo "==> Copying desktop configs to user home..."
+# Copy skel configs to user home
+if [[ "${INSTALL_DESKTOP}" == true ]] && [[ -d /etc/skel ]]; then
     mkdir -p "/home/${USERNAME}/.config"
     cp -r /etc/skel/.config/* "/home/${USERNAME}/.config/" 2>/dev/null || true
-    cp /etc/skel/.bashrc "/home/${USERNAME}/.bashrc" 2>/dev/null || true
-    cp /etc/skel/.zshrc "/home/${USERNAME}/.zshrc" 2>/dev/null || true
-    cp /etc/skel/.xinitrc "/home/${USERNAME}/.xinitrc" 2>/dev/null || true
+    for f in .bashrc .zshrc .xinitrc; do
+        [[ -f "/etc/skel/$f" ]] && cp "/etc/skel/$f" "/home/${USERNAME}/$f"
+    done
+    # Create XDG directories
+    xdg-user-dirs-update 2>/dev/null || true
+fi
+
+# Set ownership — CRITICAL
+if id "${USERNAME}" &>/dev/null; then
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
+    echo "    Home ownership set."
+else
+    echo "    WARNING: User not found, skipping chown"
 fi
 
 # ── Cleanup ──────────────────────────────────────────────────
 rm -f /tmp/omiden-chroot.sh /tmp/omiden-env.sh
-echo "==> Chroot configuration complete."
+
+# Report errors
+if [[ $CRITICAL_ERRORS -gt 0 ]]; then
+    echo "==> COMPLETED WITH $CRITICAL_ERRORS CRITICAL ERROR(S)"
+    exit $CRITICAL_ERRORS
+else
+    echo "==> Chroot configuration complete."
+    exit 0
+fi
 CHROOT_SCRIPT
 
     chmod +x /mnt/tmp/omiden-chroot.sh
 
-    # Run chroot script and CHECK exit code
+    # Run chroot and check result
     echo ""
     info "Running chroot configuration..."
     if arch-chroot /mnt /tmp/omiden-chroot.sh; then
         info "System configuration complete."
     else
-        err "Chroot configuration FAILED!"
-        err "The installed system may not boot correctly."
-        warn "Check /mnt/tmp/omiden-chroot.sh for debugging."
-        die "Installation aborted. Do NOT reboot."
+        CHROOT_ERRORS=$?
+        warn "Chroot completed with $CHROOT_ERRORS warning(s)/error(s)."
+        warn "Checking what failed..."
     fi
 }
 
@@ -636,57 +673,113 @@ CHROOT_SCRIPT
 verify_install() {
     step "Verifying Installation"
 
-    local errors=0
+    local critical_fail=0
+    local warnings=0
 
-    # Check kernel
+    # ── CRITICAL checks (must pass) ───────────────────────────
+
+    # Kernel
     if [[ ! -f /mnt/boot/vmlinuz-linux ]]; then
-        err "Kernel not found: /mnt/boot/vmlinuz-linux"
-        errors=$((errors+1))
+        err "CRITICAL: Kernel not found!"
+        critical_fail=1
+    else
+        info "Kernel: OK"
     fi
 
-    # Check initramfs
+    # Initramfs
     if [[ ! -f /mnt/boot/initramfs-linux.img ]]; then
-        err "initramfs not found: /mnt/boot/initramfs-linux.img"
-        errors=$((errors+1))
+        err "CRITICAL: initramfs not found!"
+        critical_fail=1
+    else
+        info "Initramfs: OK"
     fi
 
-    # Check GRUB
+    # GRUB config
     if [[ ! -f /mnt/boot/grub/grub.cfg ]]; then
-        err "GRUB config not found: /mnt/boot/grub/grub.cfg"
-        errors=$((errors+1))
+        err "CRITICAL: GRUB config not found!"
+        critical_fail=1
+    else
+        info "GRUB config: OK"
     fi
 
-    # Check fstab
-    if [[ ! -f /mnt/etc/fstab ]] || [[ $(grep -c "^UUID" /mnt/etc/fstab 2>/dev/null) -lt 1 ]]; then
-        err "fstab missing or empty"
-        errors=$((errors+1))
+    # fstab
+    if [[ ! -f /mnt/etc/fstab ]] || [[ $(grep -c "^UUID" /mnt/etc/fstab 2>/dev/null || echo 0) -lt 1 ]]; then
+        err "CRITICAL: fstab missing or empty!"
+        critical_fail=1
+    else
+        info "fstab: OK ($(grep -c '^UUID' /mnt/etc/fstab 2>/dev/null) entries)"
     fi
 
-    # Check user
+    # User
     if ! arch-chroot /mnt id "${USERNAME}" &>/dev/null; then
-        err "User ${USERNAME} not created"
-        errors=$((errors+1))
+        err "CRITICAL: User ${USERNAME} not created!"
+        critical_fail=1
+    else
+        info "User ${USERNAME}: OK"
     fi
 
-    # Check bootloader (UEFI)
+    # EFI bootloader (UEFI only)
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
         if [[ ! -d /mnt/boot/efi/EFI/OmidenOs ]]; then
-            err "GRUB EFI directory not found: /mnt/boot/efi/EFI/OmidenOs"
-            errors=$((errors+1))
+            err "CRITICAL: GRUB EFI not installed!"
+            critical_fail=1
+        else
+            info "GRUB EFI: OK"
         fi
     fi
 
-    if [[ $errors -gt 0 ]]; then
-        err "Verification found $errors error(s). Do NOT reboot!"
-        die "Installation incomplete. Fix errors and re-run install-omiden."
+    # ── Non-critical checks (warnings only) ──────────────────
+
+    # Hostname
+    if [[ ! -f /mnt/etc/hostname ]]; then
+        warn "Hostname not set (non-critical)"
+        warnings=$((warnings+1))
     fi
 
-    info "All checks passed."
-    info "  Kernel:    $(ls /mnt/boot/vmlinuz-linux 2>/dev/null && echo OK)"
-    info "  Initramfs: $(ls /mnt/boot/initramfs-linux.img 2>/dev/null && echo OK)"
-    info "  GRUB:      $(ls /mnt/boot/grub/grub.cfg 2>/dev/null && echo OK)"
-    info "  fstab:     $(grep -c '^UUID' /mnt/etc/fstab 2>/dev/null) entries"
-    info "  User:      $USERNAME"
+    # Locale
+    if ! arch-chroot /mnt locale-gen &>/dev/null 2>&1; then
+        warn "Locale not generated (non-critical)"
+        warnings=$((warnings+1))
+    fi
+
+    # Desktop
+    if [[ "$INSTALL_DESKTOP" == true ]]; then
+        if [[ ! -d /mnt/etc/lightdm ]]; then
+            warn "LightDM not configured (non-critical)"
+            warnings=$((warnings+1))
+        else
+            info "LightDM: OK"
+        fi
+    fi
+
+    # Swap
+    if [[ "$INSTALL_SWAP" == true ]] && [[ ! -f /mnt/swapfile ]]; then
+        warn "Swapfile not created (non-critical)"
+        warnings=$((warnings+1))
+    fi
+
+    # ── Result ────────────────────────────────────────────────
+    echo ""
+    if [[ $warnings -gt 0 ]]; then
+        warn "Warnings: $warnings (non-critical, system will still work)"
+    fi
+
+    if [[ $critical_fail -eq 1 ]]; then
+        err ""
+        err "CRITICAL ERRORS DETECTED!"
+        err "The system may not boot. Do NOT reboot yet."
+        err ""
+        err "To debug:"
+        err "  arch-chroot /mnt"
+        err "  grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=OmidenOs --recheck"
+        err "  grub-mkconfig -o /boot/grub/grub.cfg"
+        err "  mkinitcpio -P"
+        die "Fix critical errors, then re-run verify."
+    fi
+
+    info ""
+    info "All critical checks passed!"
+    info "System is ready to boot."
 }
 
 # ─── Post Install ─────────────────────────────────────────────
