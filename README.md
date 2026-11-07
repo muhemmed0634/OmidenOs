@@ -253,7 +253,7 @@ PR ve issue'lar her zaman açıktır.
 
 ## Lisans
 
-[GPL-3.0](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
+[BSD 3-Clause](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
 
 ---
 

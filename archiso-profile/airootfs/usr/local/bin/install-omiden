@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-# ============================================================
-# OmidenOs Installer — Custom Bash Installer v3.2
-# GitHub: https://github.com/muhemmed0634/OmidenOs
-# NO archinstall dependency — fully self-contained
-# ============================================================
+# OmidenOs Minimal Installer v4.0 - Stability First
+set -euo pipefail
 
-set -uo pipefail
+R="\033[0;31m" G="\033[0;32m" Y="\033[1;33m" 
+C="\033[0;36m" W="\033[1;37m" N="\033[0m" B="\033[1m"
 
-# ─── Colors ──────────────────────────────────────────────────
-R='\033[0;31m' G='\033[0;32m' Y='\033[1;33m'
-B='\033[0;34m' M='\033[0;35m' C='\033[0;36m'
-W='\033[1;37m' N='\033[0m'    BOLD='\033[1m'
-
-# ─── State ───────────────────────────────────────────────────
 DISK=""
 ROOT_PART=""
 EFI_PART=""
@@ -21,811 +13,206 @@ HOSTNAME="omidenos"
 USERNAME="user"
 USER_PASS=""
 ROOT_PASS=""
-TIMEZONE="Asia/Baku"
-INSTALL_BLACKARCH=false
-INSTALL_DESKTOP=true
-FS_TYPE="ext4"
-INSTALL_SWAP=true
-CHROOT_ERRORS=0
+TIMEZONE="UTC"
 
-# ─── Helpers ─────────────────────────────────────────────────
-info()    { echo -e "  ${G}[✔]${N} $*"; }
-warn()    { echo -e "  ${Y}[!]${N} $*"; }
-err()     { echo -e "  ${R}[✘]${N} $*"; }
-step()    { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
-ask()     { echo -en "  ${W}[?]${N} $*: "; }
-confirm() { echo -en "  ${Y}[?]${N} $* [y/N]: "; read -r __ans; [[ "$__ans" =~ ^[Yy]$ ]]; }
-die()     { err "$*"; exit 1; }
+info() { echo -e "  ${G}[✔]${N} $*"; }
+warn() { echo -e "  ${Y}[!]${N} $*"; }
+err()  { echo -e "  ${R}[✘]${N} $*"; }
+die()  { err "$*"; exit 1; }
+ask()  { echo -en "  ${W}[?]${N} $*: "; }
 
 banner() {
     clear
-    echo -e "${M}${BOLD}"
-    cat << 'BANNER'
-  ╔═════════════════════════════════════════════════════╗
-  ║  ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗  ║
-  ║ ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║  ║
-  ║ ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║  ║
-  ║ ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║  ║
-  ║ ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║  ║
-  ║  ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝  ║
-  ╠═════════════════════════════════════════════════════╣
-  ║          Custom Installer  v3.2                     ║
-  ║    github.com/muhemmed0634/OmidenOs                ║
-  ╚═════════════════════════════════════════════════════╝
-BANNER
+    echo -e "${C}${B}"
+    echo "  ╔═══════════════════════════════════════╗"
+    echo "  ║     OmidenOs Minimal Installer v4.0   ║"
+    echo "  ║     Stability First - No Desktop      ║"
+    echo "  ╚═══════════════════════════════════════╝"
     echo -e "${N}"
 }
 
-# ─── Pre-flight checks ───────────────────────────────────────
 check_root() {
-    [[ $EUID -eq 0 ]] || die "Must be run as root. Try: sudo install-omiden"
+    [[ $EUID -eq 0 ]] || die "Run as root: sudo install-omiden"
 }
 
 check_uefi() {
-    if [[ -d /sys/firmware/efi/efivars ]]; then
+    if [[ -d /sys/firmware/efi ]]; then
         BOOT_MODE="UEFI"
     else
         BOOT_MODE="BIOS"
     fi
-    info "Boot mode: ${BOLD}$BOOT_MODE"
+    info "Boot: $BOOT_MODE"
 }
 
-check_internet() {
-    step "Internet Connection"
+check_net() {
+    info "Testing network..."
     if ping -c1 -W3 archlinux.org &>/dev/null; then
-        info "Internet: Connected"
+        info "Network: OK"
     else
-        warn "No internet detected."
-        confirm "Continue without internet?" || die "Aborted."
+        die "No internet! Run: nmtui"
     fi
 }
 
-update_mirrors() {
-    step "Updating Mirrors"
-    if command -v reflector &>/dev/null; then
-        info "Running reflector (10s timeout)..."
-        timeout 10 reflector --age 12 --protocol https --sort rate \
-                  --save /etc/pacman.d/mirrorlist &>/dev/null \
-            && info "Mirrors updated." \
-            || warn "reflector skipped, using existing mirrors."
-    else
-        warn "reflector not found, skipping."
-    fi
-    pacman -Syy --noconfirm &>/dev/null || true
-    info "Package databases synced."
-}
-
-# ─── Disk Selection ──────────────────────────────────────────
 select_disk() {
-    step "Disk Selection"
-    echo -e "  ${C}Available block devices:${N}\n"
-    lsblk -d -o NAME,SIZE,MODEL,TYPE | grep -v "^loop\|^rom\|^airoot" || true
+    echo -e "\n${C}Available disks:${N}"
+    lsblk -d -o NAME,SIZE,TYPE | grep disk
     echo ""
-
     while true; do
-        ask "Target disk (e.g. sda, nvme0n1)"
-        read -r raw_disk
-        DISK="/dev/${raw_disk}"
+        ask "Disk (e.g. sda, nvme0n1)"
+        read -r d
+        DISK="/dev/$d"
         [[ -b "$DISK" ]] && break
-        err "Device $DISK not found. Try again."
+        err "Not found: $DISK"
     done
-
-    echo ""
-    echo -e "  ${R}${BOLD}⚠  ALL DATA ON ${DISK} WILL BE PERMANENTLY ERASED  ⚠${N}"
-    echo -e "  ${Y}Size: $(lsblk -dn -o SIZE "$DISK")${N}"
-    echo ""
-    ask "Type 'ERASE' to confirm"
-    read -r __confirm
-    [[ "$__confirm" == "ERASE" ]] || die "Disk erasure not confirmed. Aborted."
+    
+    echo -e "\n${R}${B}⚠ ALL DATA ON $DISK WILL BE ERASED! ⚠${N}"
+    ask "Type YES to confirm"
+    read -r c
+    [[ "$c" == "YES" ]] || die "Aborted"
 }
 
-# ─── Filesystem Choice ───────────────────────────────────────
-select_filesystem() {
-    step "Filesystem"
-    echo "  1) ext4   — Stable, widely supported (recommended)"
-    echo "  2) btrfs  — Snapshots supported (subvolumes auto-created)"
-    echo "  3) xfs    — High performance"
-    echo ""
-    ask "Choose filesystem [1-3] (default: 1)"
-    read -r __fs
-    case "${__fs:-1}" in
-        2) FS_TYPE="btrfs" ;;
-        3) FS_TYPE="xfs" ;;
-        *) FS_TYPE="ext4" ;;
-    esac
-    info "Filesystem: $FS_TYPE"
-}
-
-# ─── System Configuration ────────────────────────────────────
 gather_config() {
-    step "System Configuration"
-
-    # Timezone
-    echo -e "  ${W}Select timezone:${N}"
-    echo -e "  ${C} 1)${N} Asia/Baku        (Azerbaijan)"
-    echo -e "  ${C} 2)${N} Europe/Istanbul  (Turkey)"
-    echo -e "  ${C} 3)${N} Europe/London"
-    echo -e "  ${C} 4)${N} Europe/Moscow"
-    echo -e "  ${C} 5)${N} America/New_York"
-    echo -e "  ${C} 6)${N} America/Los_Angeles"
-    echo -e "  ${C} 7)${N} Asia/Dubai"
-    echo -e "  ${C} 8)${N} Europe/Berlin"
-    echo -e "  ${C} 9)${N} Asia/Tokyo"
-    echo -e "  ${C}10)${N} UTC"
-    echo -e "  ${C} 0)${N} Other (type manually)"
     echo ""
-    ask "Choose [1-10/0]"
-    read -r __tz_choice
-    case "${__tz_choice:-1}" in
-        1) TIMEZONE="Asia/Baku" ;;
-        2) TIMEZONE="Europe/Istanbul" ;;
-        3) TIMEZONE="Europe/London" ;;
-        4) TIMEZONE="Europe/Moscow" ;;
-        5) TIMEZONE="America/New_York" ;;
-        6) TIMEZONE="America/Los_Angeles" ;;
-        7) TIMEZONE="Asia/Dubai" ;;
-        8) TIMEZONE="Europe/Berlin" ;;
-        9) TIMEZONE="Asia/Tokyo" ;;
-        10) TIMEZONE="UTC" ;;
-        0) ask "Type timezone (e.g. Asia/Baku)"
-           read -r __tz
-           if [[ -f "/usr/share/zoneinfo/${__tz:-UTC}" ]]; then
-               TIMEZONE="$__tz"
-           else
-               warn "Timezone not found, using Asia/Baku."
-               TIMEZONE="Asia/Baku"
-           fi ;;
-        *) TIMEZONE="Asia/Baku" ;;
+    ask "Hostname [omidenos]"; read -r h; HOSTNAME="${h:-omidenos}"
+    ask "Username [user]"; read -r u; USERNAME="${u:-user}"
+    
+    while true; do
+        ask "Password for $USERNAME"; read -rs USER_PASS; echo ""
+        ask "Confirm"; read -rs c; echo ""
+        [[ -n "$USER_PASS" && "$USER_PASS" == "$c" ]] && break
+        err "Password mismatch or empty"
+    done
+    
+    ask "Root password (blank=disabled)"; read -rs ROOT_PASS; echo ""
+    
+    echo -e "\n${C}Timezone:${N}"
+    echo "  1) UTC  2) Asia/Baku  3) Europe/Istanbul  4) Other"
+    ask "Choice [1]"; read -r tz
+    case "${tz:-1}" in
+        2) TIMEZONE="Asia/Baku" ;;
+        3) TIMEZONE="Europe/Istanbul" ;;
+        4) ask "Enter timezone"; read -r TIMEZONE ;;
+        *) TIMEZONE="UTC" ;;
     esac
-    info "Timezone: $TIMEZONE"
-
-    # Hostname
-    ask "Hostname [omidenos]"
-    read -r __host
-    HOSTNAME="${__host:-omidenos}"
-
-    # Username
-    while true; do
-        ask "Username [user]"
-        read -r __user
-        USERNAME="${__user:-user}"
-        [[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] && break
-        err "Invalid username. Use lowercase letters, digits, - or _"
-    done
-
-    # Passwords
-    while true; do
-        echo -en "  ${W}[?]${N} Password for $USERNAME: "
-        read -rs USER_PASS; echo ""
-        echo -en "  ${W}[?]${N} Confirm password: "
-        read -rs __confirm; echo ""
-        [[ -n "$USER_PASS" && "$USER_PASS" == "$__confirm" ]] && break
-        err "Passwords empty or do not match. Try again."
-    done
-
-    echo -en "  ${W}[?]${N} Root password (blank = disable root login): "
-    read -rs ROOT_PASS; echo ""
-
-    # Swap
-    if confirm "Create swap file? (recommended, 2GB)"; then
-        INSTALL_SWAP=true
-    else
-        INSTALL_SWAP=false
-    fi
-
-    # Desktop
-    if confirm "Install Openbox desktop environment?"; then
-        INSTALL_DESKTOP=true
-    else
-        INSTALL_DESKTOP=false
-    fi
-
-    # BlackArch
-    if confirm "Install BlackArch security tools?"; then
-        INSTALL_BLACKARCH=true
-    else
-        INSTALL_BLACKARCH=false
-    fi
 }
 
-# ─── Partition & Format ──────────────────────────────────────
 partition_disk() {
-    step "Partitioning $DISK"
-
+    info "Partitioning $DISK..."
     wipefs -af "$DISK" &>/dev/null || true
-    sgdisk -Z "$DISK" &>/dev/null || true
-
+    
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
-        info "Creating GPT partition table (UEFI)..."
-        parted -s "$DISK" mklabel gpt || die "parted mklabel failed"
-        parted -s "$DISK" mkpart "EFI" fat32 1MiB 513MiB || die "parted EFI failed"
-        parted -s "$DISK" set 1 esp on || die "parted set esp failed"
-        parted -s "$DISK" mkpart "OmidenOs" "${FS_TYPE}" 513MiB 100% || die "parted root failed"
-
-        if [[ "$DISK" =~ nvme|mmcblk ]]; then
-            EFI_PART="${DISK}p1"
-            ROOT_PART="${DISK}p2"
-        else
-            EFI_PART="${DISK}1"
-            ROOT_PART="${DISK}2"
-        fi
-
-        udevadm settle 2>/dev/null || sleep 3
-
-        info "Formatting EFI: $EFI_PART"
-        mkfs.fat -F32 -n "EFI" "$EFI_PART" || die "mkfs.fat failed on $EFI_PART"
-
+        parted -s "$DISK" mklabel gpt
+        parted -s "$DISK" mkpart "EFI" fat32 1MiB 513MiB
+        parted -s "$DISK" set 1 esp on
+        parted -s "$DISK" mkpart "Root" ext4 513MiB 100%
+        
+        [[ "$DISK" =~ nvme|mmcblk ]] && EFI_PART="${DISK}p1" || EFI_PART="${DISK}1"
+        [[ "$DISK" =~ nvme|mmcblk ]] && ROOT_PART="${DISK}p2" || ROOT_PART="${DISK}2"
+        
+        sleep 2
+        mkfs.fat -F32 "$EFI_PART" || die "mkfs.fat failed"
     else
-        info "Creating MBR partition table (BIOS)..."
-        parted -s "$DISK" mklabel msdos || die "parted mklabel failed"
-        parted -s "$DISK" mkpart primary "${FS_TYPE}" 1MiB 100% || die "parted root failed"
-        parted -s "$DISK" set 1 boot on || die "parted set boot failed"
-
-        if [[ "$DISK" =~ nvme|mmcblk ]]; then
-            ROOT_PART="${DISK}p1"
-        else
-            ROOT_PART="${DISK}1"
-        fi
+        parted -s "$DISK" mklabel msdos
+        parted -s "$DISK" mkpart primary ext4 1MiB 100%
+        parted -s "$DISK" set 1 boot on
+        
+        [[ "$DISK" =~ nvme|mmcblk ]] && ROOT_PART="${DISK}p1" || ROOT_PART="${DISK}1"
     fi
-
-    udevadm settle 2>/dev/null || sleep 2
-
-    # Format root
-    info "Formatting root: $ROOT_PART ($FS_TYPE)"
-    case "$FS_TYPE" in
-        btrfs)
-            mkfs.btrfs -f -L "OmidenOs" "$ROOT_PART" || die "mkfs.btrfs failed"
-            mount "$ROOT_PART" /mnt || die "mount root failed"
-            btrfs subvolume create /mnt/@ || true
-            btrfs subvolume create /mnt/@home || true
-            btrfs subvolume create /mnt/@snapshots || true
-            umount /mnt
-            mount -o subvol=@,compress=zstd,noatime "$ROOT_PART" /mnt || die "mount @ failed"
-            mkdir -p /mnt/home
-            mount -o subvol=@home,compress=zstd,noatime "$ROOT_PART" /mnt/home || die "mount @home failed"
-            mkdir -p /mnt/.snapshots
-            mount -o subvol=@snapshots,compress=zstd,noatime "$ROOT_PART" /mnt/.snapshots || true
-            ;;
-        xfs)
-            mkfs.xfs -f -L "OmidenOs" "$ROOT_PART" || die "mkfs.xfs failed"
-            mount "$ROOT_PART" /mnt || die "mount root failed"
-            ;;
-        *)
-            mkfs.ext4 -F -L "OmidenOs" "$ROOT_PART" || die "mkfs.ext4 failed"
-            mount "$ROOT_PART" /mnt || die "mount root failed"
-            ;;
-    esac
-
+    
+    sleep 2
+    mkfs.ext4 -F "$ROOT_PART" || die "mkfs.ext4 failed"
+    mount "$ROOT_PART" /mnt || die "mount failed"
+    
     if [[ "$BOOT_MODE" == "UEFI" ]]; then
         mkdir -p /mnt/boot/efi
-        mount "$EFI_PART" /mnt/boot/efi || die "mount EFI failed"
+        mount "$EFI_PART" /mnt/boot/efi || die "EFI mount failed"
     fi
-
-    info "Partition layout:"
-    lsblk "$DISK" 2>/dev/null || true
+    
+    info "Partitions ready"
 }
 
-# ─── Base Install ─────────────────────────────────────────────
 install_base() {
-    step "Installing Base System"
-
-    info "Checking network..."
-    if ! ping -c1 -W3 archlinux.org &>/dev/null; then
-        warn "No network. Trying to start NetworkManager..."
-        systemctl start NetworkManager 2>/dev/null || true
-        sleep 3
-        if ! ping -c1 -W3 archlinux.org &>/dev/null; then
-            die "No internet. Run 'nmtui' first."
-        fi
+    info "Installing base system..."
+    pacman -Sy --noconfirm archlinux-keyring &>/dev/null || true
+    
+    if ! pacstrap -K /mnt base linux linux-firmware networkmanager grub \
+                      efibootmgr sudo nano git curl wget zsh bash htop; then
+        die "pacstrap failed! Check network."
     fi
-    info "Network OK."
-
-    pacman -Syy --noconfirm &>/dev/null || true
-
-    info "Running pacstrap (this will take a while)..."
-    local PKGS=(
-        base base-devel linux linux-firmware linux-headers
-        networkmanager grub efibootmgr os-prober
-        sudo nano vim git curl wget
-        bash zsh zsh-autosuggestions zsh-syntax-highlighting
-        bash-completion man-db man-pages
-        xdg-utils xdg-user-dirs polkit polkit-gnome
-        gvfs udisks2 upower acpid
-        fastfetch btop htop inxi
-        pipewire pipewire-alsa pipewire-pulse wireplumber
-        bluez bluez-utils
-        arch-install-scripts pacman-contrib reflector
-    )
-
-    [[ "$FS_TYPE" == "btrfs" ]] && PKGS+=(btrfs-progs)
-
-    if [[ "$INSTALL_DESKTOP" == true ]]; then
-        PKGS+=(
-            xorg-server xorg-xinit xorg-xrandr xf86-video-vesa mesa
-            openbox tint2 rofi dunst feh picom
-            lightdm lightdm-gtk-greeter
-            alacritty thunar thunar-archive-plugin
-            noto-fonts otf-font-awesome ttf-cascadia-code
-            adw-gtk-theme papirus-icon-theme lxappearance
-            pavucontrol network-manager-applet gparted
-        )
-    fi
-
-    if ! pacstrap -K /mnt "${PKGS[@]}"; then
-        err "pacstrap FAILED!"
-        err "Try: pacman -Syy && install-omiden"
-        die "Base installation failed."
-    fi
-    info "Base system installed."
-
-    # Copy live pacman.conf (has BlackArch) to installed system
-    cp /etc/pacman.conf /mnt/etc/pacman.conf 2>/dev/null || warn "Could not copy pacman.conf"
-    # Copy live mirrorlist
-    cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist 2>/dev/null || true
+    
+    genfstab -U /mnt >> /mnt/etc/fstab
+    info "Base installed"
 }
 
-# ─── Copy live configs to installed system ───────────────────
-copy_configs() {
-    step "Copying OmidenOs Configuration"
-
-    mkdir -p /mnt/usr/share/wallpapers/omiden
-    if [[ -d /usr/share/wallpapers/omiden ]]; then
-        cp /usr/share/wallpapers/omiden/* \
-           /mnt/usr/share/wallpapers/omiden/ 2>/dev/null || true
-        info "Wallpapers copied ($(ls /mnt/usr/share/wallpapers/omiden/ 2>/dev/null | wc -l) files)."
-    fi
-
-    mkdir -p /mnt/usr/share/pixmaps
-    [[ -f /usr/share/pixmaps/omidenos.png ]] && \
-        cp /usr/share/pixmaps/omidenos.png /mnt/usr/share/pixmaps/
-
-    if [[ -d /etc/skel ]]; then
-        mkdir -p /mnt/etc/skel
-        cp -r /etc/skel/. /mnt/etc/skel/ 2>/dev/null || true
-        info "Skel configs copied."
-    fi
-}
-
-# ─── Configure Chroot ────────────────────────────────────────
-configure_chroot() {
-    step "Configuring System"
-
-    # Generate fstab — critical
-    genfstab -U /mnt >> /mnt/etc/fstab || die "genfstab FAILED!"
-    info "fstab generated."
-
-    local fstab_lines
-    fstab_lines=$(grep -c "^UUID" /mnt/etc/fstab 2>/dev/null || echo 0)
-    if [[ "$fstab_lines" -lt 1 ]]; then
-        die "fstab is empty! Partitions not mounted correctly."
-    fi
-    info "fstab has $fstab_lines entries."
-
-    # Write variables to a file using printf %q for safe escaping
-    {
-        printf 'TIMEZONE=%q\n' "$TIMEZONE"
-        printf 'HOSTNAME=%q\n' "$HOSTNAME"
-        printf 'USERNAME=%q\n' "$USERNAME"
-        printf 'USER_PASS=%q\n' "$USER_PASS"
-        printf 'ROOT_PASS=%q\n' "$ROOT_PASS"
-        printf 'BOOT_MODE=%q\n' "$BOOT_MODE"
-        printf 'DISK=%q\n' "$DISK"
-        printf 'INSTALL_DESKTOP=%q\n' "$INSTALL_DESKTOP"
-        printf 'INSTALL_BLACKARCH=%q\n' "$INSTALL_BLACKARCH"
-        printf 'INSTALL_SWAP=%q\n' "$INSTALL_SWAP"
-        printf 'FS_TYPE=%q\n' "$FS_TYPE"
-    } > /mnt/tmp/omiden-env.sh
-
-    # Write the chroot script
-    # NOTE: No 'set -e' here — we check critical commands individually
-    # so non-critical failures (hwclock, bluetooth service) don't abort
-    cat > /mnt/tmp/omiden-chroot.sh << 'CHROOT_SCRIPT'
+configure_system() {
+    info "Configuring system..."
+    
+    cat > /mnt/tmp/setup.sh << SETUPEOF
 #!/bin/bash
-# OmidenOs chroot configuration — variables from env file
-# NO set -e: non-critical commands can fail without aborting
+ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
+hwclock --systohc 2>/dev/null || true
 
-source /tmp/omiden-env.sh
-
-echo "==> Configuring system..."
-echo "    Timezone: $TIMEZONE"
-echo "    Hostname: $HOSTNAME"
-echo "    User:     $USERNAME"
-echo "    Boot:     $BOOT_MODE"
-echo "    Desktop:  $INSTALL_DESKTOP"
-echo "    FS:       $FS_TYPE"
-
-# Track critical errors
-CRITICAL_ERRORS=0
-
-# ── Timezone ──────────────────────────────────────────────────
-echo "==> Setting timezone..."
-ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
-hwclock --systohc 2>/dev/null || echo "    (hwclock skipped — normal in chroot)"
-
-# ── Locale ───────────────────────────────────────────────────
-echo "==> Generating locale..."
-grep -q "en_US.UTF-8" /etc/locale.gen || echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo "KEYMAP=us" > /etc/vconsole.conf
 
-# ── Hostname ─────────────────────────────────────────────────
-echo "==> Setting hostname..."
 echo "${HOSTNAME}" > /etc/hostname
-cat > /etc/hosts << EOF
+cat > /etc/hosts << HOSTSEOF
 127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
-EOF
+127.0.1.1   ${HOSTNAME}
+HOSTSEOF
 
-# ── OS identity ──────────────────────────────────────────────
-cat > /etc/os-release << EOF
-NAME="OmidenOs"
-PRETTY_NAME="OmidenOs"
-ID=omidenos
-ID_LIKE=arch
-BUILD_ID=rolling
-HOME_URL="https://github.com/muhemmed0634/OmidenOs"
-SUPPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
-BUG_REPORT_URL="https://github.com/muhemmed0634/OmidenOs/issues"
-LOGO="omidenos"
-EOF
+useradd -m -G wheel -s /bin/zsh ${USERNAME}
+echo "${USERNAME}:${USER_PASS}" | chpasswd
+[[ -n "${ROOT_PASS}" ]] && echo "root:${ROOT_PASS}" | chpasswd || passwd -l root
 
-# ── Swap ─────────────────────────────────────────────────────
-if [[ "${INSTALL_SWAP}" == true ]]; then
-    echo "==> Creating swapfile (2GB)..."
-    fallocate -l 2G /swapfile 2>/dev/null || \
-        dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress 2>/dev/null
-    if [[ -f /swapfile ]]; then
-        chmod 600 /swapfile
-        mkswap /swapfile 2>/dev/null || true
-        swapon /swapfile 2>/dev/null || true
-        echo "/swapfile none swap defaults 0 0" >> /etc/fstab
-        echo "    Swapfile created."
-    else
-        echo "    Swapfile creation skipped (not enough space?)"
-    fi
-fi
+sed -i "s/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/" /etc/sudoers
 
-# ── Users — CRITICAL ─────────────────────────────────────────
-echo "==> Creating users..."
-if [[ -n "${ROOT_PASS}" ]]; then
-    echo "root:${ROOT_PASS}" | chpasswd
-else
-    passwd -l root 2>/dev/null || true
-fi
+systemctl enable NetworkManager
 
-if ! useradd -m -G wheel,audio,video,storage,optical,network,input \
-    -s /bin/zsh "${USERNAME}"; then
-    echo "    ERROR: useradd failed!"
-    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-else
-    echo "${USERNAME}:${USER_PASS}" | chpasswd
-    echo "    User ${USERNAME} created."
-fi
-
-# Sudoers
-sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
-grep -q "^%wheel ALL=(ALL:ALL) ALL" /etc/sudoers || \
-    echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
-
-# ── Initramfs — CRITICAL ─────────────────────────────────────
-echo "==> Building initramfs..."
-if mkinitcpio -P; then
-    echo "    Initramfs built."
-else
-    echo "    ERROR: mkinitcpio failed!"
-    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-fi
-
-# ── Services ─────────────────────────────────────────────────
-echo "==> Enabling services..."
-systemctl enable NetworkManager 2>/dev/null || echo "    (NetworkManager enable skipped)"
-systemctl enable acpid 2>/dev/null || true
-systemctl enable bluetooth 2>/dev/null || true
-
-if [[ "${INSTALL_DESKTOP}" == true ]]; then
-    echo "==> Configuring desktop..."
-    systemctl enable lightdm 2>/dev/null || echo "    (lightdm enable skipped)"
-
-    mkdir -p /etc/lightdm
-    cat > /etc/lightdm/lightdm.conf << EOF
-[Seat:*]
-greeter-session=lightdm-gtk-greeter
-user-session=openbox
-autologin-user=${USERNAME}
-autologin-user-timeout=0
-autologin-session=openbox
-
-[LightDM]
-logind-check-graphical=true
-EOF
-
-    groupadd -r autologin 2>/dev/null || true
-    gpasswd -a "${USERNAME}" autologin 2>/dev/null || true
-
-    cat > /etc/lightdm/lightdm-gtk-greeter.conf << EOF
-[greeter]
-background=/usr/share/wallpapers/omiden/omiden-wallpaper.png
-theme-name=adw-gtk3-dark
-icon-theme-name=Papirus-Dark
-font-name=Noto Sans 11
-indicators=~host;~spacer;~clock;~spacer;~session;~language;~a11y;power
-clock-format=%H:%M
-position=50%,center 50%,center
-panel-position=bottom
-EOF
-fi
-
-# ── BlackArch ────────────────────────────────────────────────
-if [[ "${INSTALL_BLACKARCH}" == true ]]; then
-    echo "==> Adding BlackArch repository..."
-    curl -sO https://blackarch.org/strap.sh
-    if curl -sO https://blackarch.org/strap.sh.sha1sum 2>/dev/null; then
-        if sha1sum -c strap.sh.sha1sum 2>/dev/null; then
-            chmod +x strap.sh && ./strap.sh || echo "    BlackArch strap failed"
-        else
-            echo "    BlackArch checksum failed, running without verification..."
-            chmod +x strap.sh && ./strap.sh || true
-        fi
-        rm -f strap.sh.sha1sum
-    else
-        chmod +x strap.sh && ./strap.sh || true
-    fi
-    rm -f strap.sh
-    pacman -Syy --noconfirm 2>/dev/null || true
-fi
-
-# ── Bootloader — CRITICAL ────────────────────────────────────
-echo "==> Installing GRUB bootloader..."
 if [[ "${BOOT_MODE}" == "UEFI" ]]; then
-    # Verify EFI partition is mounted
-    if ! mountpoint -q /boot/efi; then
-        echo "    EFI partition not mounted, trying to mount..."
-        mount -a 2>/dev/null
-    fi
-
-    if mountpoint -q /boot/efi; then
-        if grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-                 --bootloader-id=OmidenOs --recheck; then
-            echo "    GRUB installed (UEFI)."
-        else
-            echo "    ERROR: grub-install failed!"
-            CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-        fi
-    else
-        echo "    ERROR: EFI partition not mounted at /boot/efi!"
-        CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-    fi
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=OmidenOs
 else
-    if grub-install --target=i386-pc --recheck "${DISK}"; then
-        echo "    GRUB installed (BIOS)."
-    else
-        echo "    ERROR: grub-install failed!"
-        CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-    fi
+    grub-install --target=i386-pc ${DISK}
 fi
 
-# ── GRUB config — CRITICAL ───────────────────────────────────
-echo "==> Generating GRUB config..."
-sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=3/' /etc/default/grub
-sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-grep -q 'GRUB_DISTRIBUTOR' /etc/default/grub || \
-    echo 'GRUB_DISTRIBUTOR="OmidenOs"' >> /etc/default/grub
-
-if grub-mkconfig -o /boot/grub/grub.cfg; then
-    echo "    GRUB config generated."
-else
-    echo "    ERROR: grub-mkconfig failed!"
-    CRITICAL_ERRORS=$((CRITICAL_ERRORS + 1))
-fi
-
-# ── User home setup ──────────────────────────────────────────
-echo "==> Setting up user home..."
-
-# Copy skel configs to user home
-if [[ "${INSTALL_DESKTOP}" == true ]] && [[ -d /etc/skel ]]; then
-    mkdir -p "/home/${USERNAME}/.config"
-    cp -r /etc/skel/.config/* "/home/${USERNAME}/.config/" 2>/dev/null || true
-    for f in .bashrc .zshrc .xinitrc; do
-        [[ -f "/etc/skel/$f" ]] && cp "/etc/skel/$f" "/home/${USERNAME}/$f"
-    done
-    # Create XDG directories
-    xdg-user-dirs-update 2>/dev/null || true
-fi
-
-# Set ownership — CRITICAL
-if id "${USERNAME}" &>/dev/null; then
-    chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
-    echo "    Home ownership set."
-else
-    echo "    WARNING: User not found, skipping chown"
-fi
-
-# ── Cleanup ──────────────────────────────────────────────────
-rm -f /tmp/omiden-chroot.sh /tmp/omiden-env.sh
-
-# Report errors
-if [[ $CRITICAL_ERRORS -gt 0 ]]; then
-    echo "==> COMPLETED WITH $CRITICAL_ERRORS CRITICAL ERROR(S)"
-    exit $CRITICAL_ERRORS
-else
-    echo "==> Chroot configuration complete."
-    exit 0
-fi
-CHROOT_SCRIPT
-
-    chmod +x /mnt/tmp/omiden-chroot.sh
-
-    # Run chroot and check result
-    echo ""
-    info "Running chroot configuration..."
-    if arch-chroot /mnt /tmp/omiden-chroot.sh; then
-        info "System configuration complete."
-    else
-        CHROOT_ERRORS=$?
-        warn "Chroot completed with $CHROOT_ERRORS warning(s)/error(s)."
-        warn "Checking what failed..."
-    fi
+grub-mkconfig -o /boot/grub/grub.cfg
+mkinitcpio -P
+SETUPEOF
+    
+    chmod +x /mnt/tmp/setup.sh
+    arch-chroot /mnt /tmp/setup.sh || die "Config failed"
+    rm /mnt/tmp/setup.sh
+    
+    info "System configured"
 }
 
-# ─── Verify Install ──────────────────────────────────────────
-verify_install() {
-    step "Verifying Installation"
-
-    local critical_fail=0
-    local warnings=0
-
-    # ── CRITICAL checks (must pass) ───────────────────────────
-
-    # Kernel
-    if [[ ! -f /mnt/boot/vmlinuz-linux ]]; then
-        err "CRITICAL: Kernel not found!"
-        critical_fail=1
-    else
-        info "Kernel: OK"
-    fi
-
-    # Initramfs
-    if [[ ! -f /mnt/boot/initramfs-linux.img ]]; then
-        err "CRITICAL: initramfs not found!"
-        critical_fail=1
-    else
-        info "Initramfs: OK"
-    fi
-
-    # GRUB config
-    if [[ ! -f /mnt/boot/grub/grub.cfg ]]; then
-        err "CRITICAL: GRUB config not found!"
-        critical_fail=1
-    else
-        info "GRUB config: OK"
-    fi
-
-    # fstab
-    if [[ ! -f /mnt/etc/fstab ]] || [[ $(grep -c "^UUID" /mnt/etc/fstab 2>/dev/null || echo 0) -lt 1 ]]; then
-        err "CRITICAL: fstab missing or empty!"
-        critical_fail=1
-    else
-        info "fstab: OK ($(grep -c '^UUID' /mnt/etc/fstab 2>/dev/null) entries)"
-    fi
-
-    # User
-    if ! arch-chroot /mnt id "${USERNAME}" &>/dev/null; then
-        err "CRITICAL: User ${USERNAME} not created!"
-        critical_fail=1
-    else
-        info "User ${USERNAME}: OK"
-    fi
-
-    # EFI bootloader (UEFI only)
-    if [[ "$BOOT_MODE" == "UEFI" ]]; then
-        if [[ ! -d /mnt/boot/efi/EFI/OmidenOs ]]; then
-            err "CRITICAL: GRUB EFI not installed!"
-            critical_fail=1
-        else
-            info "GRUB EFI: OK"
-        fi
-    fi
-
-    # ── Non-critical checks (warnings only) ──────────────────
-
-    # Hostname
-    if [[ ! -f /mnt/etc/hostname ]]; then
-        warn "Hostname not set (non-critical)"
-        warnings=$((warnings+1))
-    fi
-
-    # Locale
-    if ! arch-chroot /mnt locale-gen &>/dev/null 2>&1; then
-        warn "Locale not generated (non-critical)"
-        warnings=$((warnings+1))
-    fi
-
-    # Desktop
-    if [[ "$INSTALL_DESKTOP" == true ]]; then
-        if [[ ! -d /mnt/etc/lightdm ]]; then
-            warn "LightDM not configured (non-critical)"
-            warnings=$((warnings+1))
-        else
-            info "LightDM: OK"
-        fi
-    fi
-
-    # Swap
-    if [[ "$INSTALL_SWAP" == true ]] && [[ ! -f /mnt/swapfile ]]; then
-        warn "Swapfile not created (non-critical)"
-        warnings=$((warnings+1))
-    fi
-
-    # ── Result ────────────────────────────────────────────────
-    echo ""
-    if [[ $warnings -gt 0 ]]; then
-        warn "Warnings: $warnings (non-critical, system will still work)"
-    fi
-
-    if [[ $critical_fail -eq 1 ]]; then
-        err ""
-        err "CRITICAL ERRORS DETECTED!"
-        err "The system may not boot. Do NOT reboot yet."
-        err ""
-        err "To debug:"
-        err "  arch-chroot /mnt"
-        err "  grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=OmidenOs --recheck"
-        err "  grub-mkconfig -o /boot/grub/grub.cfg"
-        err "  mkinitcpio -P"
-        die "Fix critical errors, then re-run verify."
-    fi
-
-    info ""
-    info "All critical checks passed!"
-    info "System is ready to boot."
-}
-
-# ─── Post Install ─────────────────────────────────────────────
-post_install() {
-    step "Installation Complete!"
-    echo -e "${G}${BOLD}"
-    echo "  ╔════════════════════════════════════════╗"
-    echo "  ║   OmidenOs installed successfully!     ║"
-    echo "  ╚════════════════════════════════════════╝"
-    echo -e "${N}"
-    echo -e "  ${W}Disk:${N}     $DISK  ($FS_TYPE)"
-    echo -e "  ${W}Hostname:${N} $HOSTNAME"
-    echo -e "  ${W}User:${N}     $USERNAME"
-    echo -e "  ${W}Boot:${N}     $BOOT_MODE"
-    echo -e "  ${W}Timezone:${N} $TIMEZONE"
-    echo ""
-    echo -e "  ${C}Next steps:${N}"
-    echo -e "  1. Remove the USB/live media"
-    echo -e "  2. Reboot"
-    echo -e "  3. Log in as ${BOLD}$USERNAME${N}"
-    echo ""
-
-    if confirm "Unmount and reboot now?"; then
+finish() {
+    echo -e "\n${G}${B}✓ Installation Complete!${N}\n"
+    echo -e "  Hostname: $HOSTNAME"
+    echo -e "  User:     $USERNAME"
+    echo -e "  Boot:     $BOOT_MODE\n"
+    
+    ask "Reboot now? [Y/n]"
+    read -r r
+    if [[ "${r:-y}" =~ ^[Yy]$ ]]; then
         umount -R /mnt 2>/dev/null || true
         reboot
-    else
-        info "Reboot manually: ${BOLD}umount -R /mnt && reboot${N}"
     fi
 }
 
-# ─── Main ─────────────────────────────────────────────────────
 main() {
     banner
     check_root
     check_uefi
-    check_internet
-    update_mirrors
-    gather_config
+    check_net
     select_disk
-    select_filesystem
+    gather_config
     partition_disk
     install_base
-    copy_configs
-    configure_chroot
-    verify_install
-    post_install
+    configure_system
+    finish
 }
 
-main "$@"
+main
