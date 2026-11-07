@@ -25,7 +25,7 @@ step()  { echo -e "\n${C}${BOLD}━━━ $* ━━━${N}\n"; }
 echo -e "${M}${BOLD}"
 echo "╔═══════════════════════════════════════╗"
 echo "║     OmidenOs  ISO Build Script        ║"
-echo "║   github.com/muhemmed0634/OmidenOs   ║"
+echo "║   github.com/muhemmed0634/OmidenOs    ║"
 echo "╚═══════════════════════════════════════╝"
 echo -e "${N}"
 

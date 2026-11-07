@@ -79,17 +79,10 @@ zsh-completions
 zsh-autosuggestions
 zsh-syntax-highlighting
 tmux
-screen
-fish
 # ─── Text Editors ────────────────────────────────────────────
 neovim
-vim
 nano
-mousepad
 # ─── File Manager ────────────────────────────────────────────
-thunar
-thunar-archive-plugin
-thunar-volman
 gvfs
 gvfs-mtp
 ranger

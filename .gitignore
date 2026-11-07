@@ -25,3 +25,6 @@ Thumbs.db
 # Temp files
 tmp/
 temp/
+# Roadmap
+ROADMAP.md
+.kiro/
