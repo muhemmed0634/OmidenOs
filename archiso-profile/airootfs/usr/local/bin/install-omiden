@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OmidenOs Minimal Installer v4.0 - Stability First
+# OmidenOs Installer v4.1 - Desktop Choice
 set -euo pipefail
 
 R="\033[0;31m" G="\033[0;32m" Y="\033[1;33m" 
@@ -14,6 +14,7 @@ USERNAME="user"
 USER_PASS=""
 ROOT_PASS=""
 TIMEZONE="UTC"
+DESKTOP_CHOICE="none"
 
 info() { echo -e "  ${G}[✔]${N} $*"; }
 warn() { echo -e "  ${Y}[!]${N} $*"; }
@@ -25,8 +26,8 @@ banner() {
     clear
     echo -e "${C}${B}"
     echo "  ╔═══════════════════════════════════════╗"
-    echo "  ║     OmidenOs Minimal Installer v4.0   ║"
-    echo "  ║     Stability First - No Desktop      ║"
+    echo "  ║     OmidenOs Installer v4.1           ║"
+    echo "  ║     Choose Your Desktop Environment   ║"
     echo "  ╚═══════════════════════════════════════╝"
     echo -e "${N}"
 }
@@ -51,6 +52,41 @@ check_net() {
     else
         die "No internet! Run: nmtui"
     fi
+}
+
+select_desktop() {
+    echo -e "\n${C}${B}Select Desktop Environment:${N}\n"
+    echo -e "  ${C}1)${N} ${B}Hyprland${N} - Modern Wayland compositor"
+    echo -e "     ${W}▸${N} Tiling window manager"
+    echo -e "     ${W}▸${N} Smooth animations, eye candy"
+    echo -e "     ${W}▸${N} Best for: Modern workflow, GPU users"
+    echo ""
+    echo -e "  ${C}2)${N} ${B}i3${N} - Classic tiling window manager"
+    echo -e "     ${W}▸${N} X11 based, stable"
+    echo -e "     ${W}▸${N} Lightweight, fast"
+    echo -e "     ${W}▸${N} Best for: Minimalism, stability"
+    echo ""
+    echo -e "  ${C}3)${N} ${B}No Desktop${N} - CLI only (minimal)"
+    echo -e "     ${W}▸${N} Command line interface only"
+    echo -e "     ${W}▸${N} Ultra minimal system"
+    echo ""
+    
+    while true; do
+        ask "Choose [1-3]"
+        read -r choice
+        case "$choice" in
+            1) DESKTOP_CHOICE="hyprland"
+               info "Selected: Hyprland (Wayland)"
+               break ;;
+            2) DESKTOP_CHOICE="i3"
+               info "Selected: i3 (X11)"
+               break ;;
+            3) DESKTOP_CHOICE="none"
+               info "Selected: No desktop (CLI only)"
+               break ;;
+            *) err "Invalid choice. Try again." ;;
+        esac
+    done
 }
 
 select_disk() {
@@ -135,8 +171,22 @@ install_base() {
     info "Installing base system..."
     pacman -Sy --noconfirm archlinux-keyring &>/dev/null || true
     
-    if ! pacstrap -K /mnt base linux linux-firmware networkmanager grub \
-                      efibootmgr sudo nano git curl wget zsh bash htop; then
+    local PKGS=(base linux linux-firmware networkmanager grub efibootmgr 
+                sudo nano git curl wget zsh bash htop fastfetch)
+    
+    if [[ "$DESKTOP_CHOICE" == "hyprland" ]]; then
+        info "Adding Hyprland packages..."
+        PKGS+=(hyprland waybar wofi kitty dunst xdg-desktop-portal-hyprland
+               polkit-kde-agent qt5-wayland qt6-wayland pipewire wireplumber
+               noto-fonts ttf-font-awesome)
+    elif [[ "$DESKTOP_CHOICE" == "i3" ]]; then
+        info "Adding i3 packages..."
+        PKGS+=(xorg-server xorg-xinit i3-wm i3status dmenu alacritty
+               picom feh nitrogen lightdm lightdm-gtk-greeter
+               noto-fonts ttf-font-awesome)
+    fi
+    
+    if ! pacstrap -K /mnt "${PKGS[@]}"; then
         die "pacstrap failed! Check network."
     fi
     
@@ -171,6 +221,39 @@ sed -i "s/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/" /etc/sudoers
 
 systemctl enable NetworkManager
 
+# Desktop-specific config
+if [[ "${DESKTOP_CHOICE}" == "hyprland" ]]; then
+    echo "Configuring Hyprland..."
+    mkdir -p /home/${USERNAME}/.config/hypr
+    cat > /home/${USERNAME}/.config/hypr/hyprland.conf << HYPREOF
+# OmidenOs Hyprland Config
+exec-once = waybar
+exec-once = dunst
+\\$mod = SUPER
+bind = \\$mod, Return, exec, kitty
+bind = \\$mod, Q, killactive
+bind = \\$mod, M, exit
+bind = \\$mod, D, exec, wofi --show drun
+HYPREOF
+    chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config
+    
+elif [[ "${DESKTOP_CHOICE}" == "i3" ]]; then
+    echo "Configuring i3..."
+    systemctl enable lightdm
+    mkdir -p /home/${USERNAME}/.config/i3
+    cat > /home/${USERNAME}/.config/i3/config << I3EOF
+# OmidenOs i3 Config
+set \\$mod Mod4
+font pango:monospace 10
+exec --no-startup-id picom
+exec --no-startup-id nitrogen --restore
+bindsym \\$mod+Return exec alacritty
+bindsym \\$mod+d exec dmenu_run
+bindsym \\$mod+Shift+q kill
+I3EOF
+    chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config
+fi
+
 if [[ "${BOOT_MODE}" == "UEFI" ]]; then
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=OmidenOs
 else
@@ -192,8 +275,23 @@ finish() {
     echo -e "\n${G}${B}✓ Installation Complete!${N}\n"
     echo -e "  Hostname: $HOSTNAME"
     echo -e "  User:     $USERNAME"
-    echo -e "  Boot:     $BOOT_MODE\n"
+    echo -e "  Boot:     $BOOT_MODE"
+    echo -e "  Desktop:  $DESKTOP_CHOICE"
+    echo ""
     
+    if [[ "$DESKTOP_CHOICE" == "hyprland" ]]; then
+        echo -e "  ${C}Hyprland shortcuts:${N}"
+        echo -e "  • SUPER + Enter → Terminal"
+        echo -e "  • SUPER + D     → App launcher"
+        echo -e "  • SUPER + Q     → Close window"
+    elif [[ "$DESKTOP_CHOICE" == "i3" ]]; then
+        echo -e "  ${C}i3 shortcuts:${N}"
+        echo -e "  • MOD + Enter   → Terminal"
+        echo -e "  • MOD + D       → App launcher"
+        echo -e "  • MOD + Shift+Q → Close window"
+    fi
+    
+    echo ""
     ask "Reboot now? [Y/n]"
     read -r r
     if [[ "${r:-y}" =~ ^[Yy]$ ]]; then
@@ -207,6 +305,7 @@ main() {
     check_root
     check_uefi
     check_net
+    select_desktop
     select_disk
     gather_config
     partition_disk
