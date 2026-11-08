@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Omiden OS - Arch-based Linux distribution with Hyprland and i3">
+    <title>Omiden OS - Modern Arch Linux Distribution</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+</head>
+<body>
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+        <button onclick="setLanguage('en')" id="lang-en" class="active">EN</button>
+        <button onclick="setLanguage('az')" id="lang-az">AZ</button>
+    </div>
+
+    <!-- Header -->
+    <header class="hero">
+        <nav>
+            <div class="logo">
+                <h1>OMIDEN OS</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features" data-en="Features" data-az="Xüsusiyyətlər">Features</a></li>
+                <li><a href="#tools" data-en="Tools" data-az="Alətlər">Tools</a></li>
+                <li><a href="#keybinds" data-en="Keybinds" data-az="Qısayollar">Keybinds</a></li>
+                <li><a href="#wallpapers" data-en="Wallpapers" data-az="Divar kağızları">Wallpapers</a></li>
+                <li><a href="#download" data-en="Download" data-az="Yüklə">Download</a></li>
+            </ul>
+        </nav>
+
+        <div class="hero-content">
+            <h2 data-en="Modern Arch Linux Distribution" data-az="Müasir Arch Linux Distributivi">
+                Modern Arch Linux Distribution
+            </h2>
+            <p data-en="Powerful, minimal, and beautiful - Choose between Hyprland (Wayland) or i3 (X11)" 
+               data-az="Güclü, minimal və gözəl - Hyprland (Wayland) və ya i3 (X11) arasında seçim edin">
+                Powerful, minimal, and beautiful - Choose between Hyprland (Wayland) or i3 (X11)
+            </p>
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary" data-en="Download ISO" data-az="ISO Yüklə">Download ISO</a>
+                <a href="https://github.com/muhemmed0634/OmidenOs" class="btn btn-secondary" target="_blank">
+                    <span data-en="View on GitHub" data-az="GitHub-da bax">View on GitHub</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 data-en="Key Features" data-az="Əsas Xüsusiyyətlər">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 data-en="Performance First" data-az="Performans ilk yerdə">Performance First</h3>
+                    <p data-en="Built on Arch Linux for speed and efficiency" data-az="Sürət və effektivlik üçün Arch Linux əsasında">
+                        Built on Arch Linux for speed and efficiency
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 data-en="Dual WM Support" data-az="İki WM dəstəyi">Dual WM Support</h3>
+                    <p data-en="Choose Hyprland (Wayland) or i3 (X11) during installation" data-az="Quraşdırma zamanı Hyprland (Wayland) və ya i3 (X11) seçin">
+                        Choose Hyprland (Wayland) or i3 (X11) during installation
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛠️</div>
+                    <h3 data-en="160+ Curated Tools" data-az="160+ Seçilmiş Alət">160+ Curated Tools</h3>
+                    <p data-en="Essential tools for development, networking, and daily use" data-az="İnkişaf, şəbəkə və gündəlik istifadə üçün vacib alətlər">
+                        Essential tools for development, networking, and daily use
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3 data-en="Bilingual" data-az="İkidilli">Bilingual</h3>
+                    <p data-en="Full support for English and Azerbaijani" data-az="İngilis və Azərbaycan dillərində tam dəstək">
+                        Full support for English and Azerbaijani
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="tools">
+        <div class="container">
+            <h2 data-en="Included Tools" data-az="Daxil Olan Alətlər">Included Tools</h2>
+            <p class="section-subtitle" data-en="Carefully selected tools organized by category" 
+               data-az="Kateqoriyalara görə diqqətlə seçilmiş alətlər">
+                Carefully selected tools organized by category
+            </p>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterTools('all')" data-en="All" data-az="Hamısı">All</button>
+                <button class="filter-tab" onclick="filterTools('cli')" data-en="CLI" data-az="CLI">CLI</button>
+                <button class="filter-tab" onclick="filterTools('network')" data-en="Network" data-az="Şəbəkə">Network</button>
+                <button class="filter-tab" onclick="filterTools('development')" data-en="Development" data-az="İnkişaf">Development</button>
+                <button class="filter-tab" onclick="filterTools('desktop')" data-en="Desktop" data-az="Masaüstü">Desktop</button>
+            </div>
+
+            <div id="tools-container" class="tools-grid">
+                <!-- Tools will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Keybinds Section -->
+    <section id="keybinds" class="keybinds">
+        <div class="container">
+            <h2 data-en="Keyboard Shortcuts" data-az="Klaviatura Qısayolları">Keyboard Shortcuts</h2>
+            <p class="section-subtitle" data-en="Essential keybindings for productivity" 
+               data-az="Məhsuldarlıq üçün vacib qısayollar">
+                Essential keybindings for productivity
+            </p>
+            
+            <div class="wm-tabs">
+                <button class="wm-tab active" onclick="showKeybinds('hyprland')" data-en="Hyprland" data-az="Hyprland">Hyprland</button>
+                <button class="wm-tab" onclick="showKeybinds('i3')" data-en="i3" data-az="i3">i3</button>
+            </div>
+
+            <div id="keybinds-container" class="keybinds-grid">
+                <!-- Keybinds will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Wallpapers Section -->
+    <section id="wallpapers" class="wallpapers">
+        <div class="container">
+            <h2 data-en="Wallpaper Gallery" data-az="Divar Kağızı Qalereyası">Wallpaper Gallery</h2>
+            <p class="section-subtitle" data-en="Beautiful wallpapers included with Omiden OS" 
+               data-az="Omiden OS ilə daxil olan gözəl divar kağızları">
+                Beautiful wallpapers included with Omiden OS
+            </p>
+            
+            <div class="wallpaper-tabs">
+                <button class="wallpaper-tab active" onclick="showWallpapers('normal')" data-en="Normal" data-az="Normal">Normal</button>
+                <button class="wallpaper-tab" onclick="showWallpapers('dynamic-dark')" data-en="Dynamic Dark" data-az="Dinamik Tünd">Dynamic Dark</button>
+                <button class="wallpaper-tab" onclick="showWallpapers('dynamic-light')" data-en="Dynamic Light" data-az="Dinamik İşıqlı">Dynamic Light</button>
+            </div>
+
+            <div id="wallpapers-container" class="wallpapers-grid">
+                <!-- Wallpapers will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <h2 data-en="Download Omiden OS" data-az="Omiden OS Yüklə">Download Omiden OS</h2>
+            <div class="download-card">
+                <h3 data-en="Latest Release" data-az="Son Buraxılış">Latest Release</h3>
+                <p id="release-version">Loading...</p>
+                <p id="release-date"></p>
+                <a href="#" id="download-link" class="btn btn-primary btn-large" download>
+                    <span data-en="Download ISO" data-az="ISO Yüklə">Download ISO</span>
+                </a>
+                <div class="download-info">
+                    <p data-en="System Requirements:" data-az="Sistem Tələbləri:">System Requirements:</p>
+                    <ul>
+                        <li data-en="2 GB RAM minimum (4 GB recommended)" data-az="Minimum 2 GB RAM (4 GB tövsiyə olunur)">
+                            2 GB RAM minimum (4 GB recommended)
+                        </li>
+                        <li data-en="20 GB disk space" data-az="20 GB disk sahəsi">20 GB disk space</li>
+                        <li data-en="UEFI or BIOS boot support" data-az="UEFI və ya BIOS boot dəstəyi">
+                            UEFI or BIOS boot support
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2024 Omiden OS - <span data-en="Licensed under BSD 3-Clause" data-az="BSD 3-Clause lisenziyası altında">Licensed under BSD 3-Clause</span></p>
+            <div class="social-links">
+                <a href="https://github.com/muhemmed0634/OmidenOs" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

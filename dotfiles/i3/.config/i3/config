@@ -1,0 +1,166 @@
+# Omiden OS - i3 Configuration
+# Path: ~/.config/i3/config
+
+# Set mod key (Mod4 = Super/Windows key)
+set $mod Mod4
+
+# Font for window titles
+font pango:JetBrainsMono Nerd Font 10
+
+# Start XDG autostart .desktop files
+exec --no-startup-id dex --autostart --environment i3
+
+# Network manager applet
+exec --no-startup-id nm-applet
+
+# Start compositor
+exec --no-startup-id picom -b
+
+# Start dunst notification daemon
+exec --no-startup-id dunst
+
+# Start polybar
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+# Set wallpaper
+exec_always --no-startup-id feh --bg-scale ~/Pictures/Wallpapers/normal/default.jpg
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# Kill focused window
+bindsym $mod+c kill
+
+# Start rofi (program launcher)
+bindsym $mod+d exec --no-startup-id rofi -show drun
+
+# Start terminal
+bindsym $mod+Return exec alacritty
+
+# Start file manager
+bindsym $mod+e exec thunar
+
+# Change focus
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move focused window
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Split orientation
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Enter fullscreen mode
+bindsym $mod+f fullscreen toggle
+
+# Change container layout
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# Change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# Focus parent container
+bindsym $mod+a focus parent
+
+# Workspace names
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# Restart i3 inplace
+bindsym $mod+Shift+r restart
+
+# Exit i3
+bindsym $mod+Shift+q exec "i3-msg exit"
+
+# Resize window mode
+mode "resize" {
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# Media keys
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set 10%+
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
+
+# Screenshot
+bindsym Print exec --no-startup-id scrot ~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png
+bindsym Shift+Print exec --no-startup-id scrot -s ~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png
+
+# Colors
+# class                 border  backgr. text    indicator child_border
+client.focused          #89b4fa #89b4fa #1e1e2e #f5c2e7   #89b4fa
+client.focused_inactive #313244 #313244 #cdd6f4 #313244   #313244
+client.unfocused        #313244 #313244 #cdd6f4 #313244   #313244
+client.urgent           #f38ba8 #f38ba8 #1e1e2e #f38ba8   #f38ba8
+client.placeholder      #1e1e2e #1e1e2e #cdd6f4 #1e1e2e   #1e1e2e
+
+client.background       #1e1e2e
+
+# Window borders
+for_window [class="^.*"] border pixel 2
+
+# Gaps
+gaps inner 10
+gaps outer 5
+
+# Floating windows
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Blueman-manager"] floating enable
+for_window [class="Nm-connection-editor"] floating enable

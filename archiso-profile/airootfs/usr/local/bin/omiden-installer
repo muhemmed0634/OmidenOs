@@ -312,8 +312,44 @@ copy_dotfiles() {
     
     info "Copying dotfiles..."
     
-    # TODO: Copy dotfiles from /usr/share/omiden/dotfiles
-    # This will be implemented in Part 4
+    local DOTFILES_DIR="/usr/share/omiden/dotfiles"
+    local USER_HOME="/mnt/home/$USERNAME"
+    
+    # Copy common dotfiles (for all users)
+    if [ -d "$DOTFILES_DIR/common" ]; then
+        cp -r "$DOTFILES_DIR/common/." "$USER_HOME/"
+    fi
+    
+    # Copy WM-specific dotfiles
+    case "$WM_CHOICE" in
+        hyprland)
+            if [ -d "$DOTFILES_DIR/hyprland" ]; then
+                cp -r "$DOTFILES_DIR/hyprland/." "$USER_HOME/"
+            fi
+            ;;
+        i3)
+            if [ -d "$DOTFILES_DIR/i3" ]; then
+                cp -r "$DOTFILES_DIR/i3/." "$USER_HOME/"
+            fi
+            ;;
+        both)
+            if [ -d "$DOTFILES_DIR/hyprland" ]; then
+                cp -r "$DOTFILES_DIR/hyprland/." "$USER_HOME/"
+            fi
+            if [ -d "$DOTFILES_DIR/i3" ]; then
+                cp -r "$DOTFILES_DIR/i3/." "$USER_HOME/"
+            fi
+            ;;
+    esac
+    
+    # Create wallpaper directories
+    mkdir -p "$USER_HOME/Pictures/Wallpapers/normal"
+    mkdir -p "$USER_HOME/Pictures/Wallpapers/dynamic-dark"
+    mkdir -p "$USER_HOME/Pictures/Wallpapers/dynamic-light"
+    mkdir -p "$USER_HOME/Pictures/Screenshots"
+    
+    # Set ownership
+    arch-chroot /mnt chown -R "$USERNAME:$USERNAME" "/home/$USERNAME"
     
     success "Dotfiles copied"
 }

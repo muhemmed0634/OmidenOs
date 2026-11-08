@@ -1,0 +1,37 @@
+# Omiden OS - Starship Prompt Configuration
+# Path: ~/.config/starship.toml
+
+format = """
+[┌───────────────────>](bold green)
+[│](bold green)$directory$git_branch$git_status
+[└─>](bold green) """
+
+[directory]
+style = "bold cyan"
+truncation_length = 3
+truncate_to_repo = true
+
+[git_branch]
+symbol = " "
+style = "bold purple"
+
+[git_status]
+style = "bold yellow"
+conflicted = "⚔️ "
+ahead = "⬆️ "
+behind = "⬇️ "
+diverged = "🔀 "
+untracked = "🤷 "
+stashed = "📦 "
+modified = "📝 "
+staged = "✅ "
+renamed = "👅 "
+deleted = "🗑️ "
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[cmd_duration]
+min_time = 500
+format = "took [$duration](bold yellow)"

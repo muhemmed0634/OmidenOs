@@ -1,0 +1,425 @@
+/* Omiden OS Website Styles */
+
+:root {
+    --bg-primary: #1e1e2e;
+    --bg-secondary: #313244;
+    --bg-tertiary: #45475a;
+    --text-primary: #cdd6f4;
+    --text-secondary: #bac2de;
+    --accent: #89b4fa;
+    --accent-hover: #74c7ec;
+    --success: #a6e3a1;
+    --warning: #f9e2af;
+    --error: #f38ba8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Language Toggle */
+.lang-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 5px;
+    background: var(--bg-secondary);
+    padding: 5px;
+    border-radius: 20px;
+}
+
+.lang-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.lang-toggle button.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Header */
+.hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    padding: 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.logo h1 {
+    color: var(--accent);
+    font-size: 2rem;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+.hero-content {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.hero-content h2 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 15px 35px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+}
+
+.btn-secondary:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+.btn-large {
+    padding: 20px 50px;
+    font-size: 1.2rem;
+}
+
+/* Sections */
+section {
+    padding: 80px 20px;
+}
+
+section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--accent);
+}
+
+.section-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+/* Features Grid */
+.features {
+    background: var(--bg-secondary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.feature-card {
+    background: var(--bg-tertiary);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+/* Filter Tabs */
+.filter-tabs,
+.wm-tabs,
+.wallpaper-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-tab,
+.wm-tab,
+.wallpaper-tab {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid transparent;
+    padding: 10px 25px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.filter-tab:hover,
+.wm-tab:hover,
+.wallpaper-tab:hover {
+    border-color: var(--accent);
+}
+
+.filter-tab.active,
+.wm-tab.active,
+.wallpaper-tab.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Tools Grid */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tool-card {
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+}
+
+.tool-card h3 {
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.tool-card .category {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.tool-card .stack-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.stack-common {
+    background: var(--success);
+    color: var(--bg-primary);
+}
+
+.stack-hyprland {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+.stack-i3 {
+    background: var(--warning);
+    color: var(--bg-primary);
+}
+
+/* Keybinds Grid */
+.keybinds {
+    background: var(--bg-secondary);
+}
+
+.keybinds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+}
+
+.keybind-card {
+    background: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.keybind-keys {
+    background: var(--bg-primary);
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-family: monospace;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.keybind-description {
+    flex: 1;
+    margin-left: 15px;
+}
+
+/* Wallpapers Grid */
+.wallpapers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.wallpaper-card {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.wallpaper-card:hover {
+    transform: scale(1.05);
+}
+
+.wallpaper-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Download Section */
+.download {
+    background: var(--bg-secondary);
+    text-align: center;
+}
+
+.download-card {
+    background: var(--bg-tertiary);
+    padding: 50px;
+    border-radius: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.download-card h3 {
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.download-info {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.download-info ul {
+    list-style-position: inside;
+    color: var(--text-secondary);
+}
+
+/* Footer */
+footer {
+    background: var(--bg-primary);
+    padding: 30px 20px;
+    text-align: center;
+    border-top: 1px solid var(--bg-tertiary);
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+footer a:hover {
+    color: var(--accent-hover);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-content h2 {
+        font-size: 2rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .tools-grid,
+    .keybinds-grid,
+    .wallpapers-grid {
+        grid-template-columns: 1fr;
+    }
+}

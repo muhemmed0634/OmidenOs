@@ -1,0 +1,79 @@
+/* Omiden OS - Rofi Configuration */
+/* Path: ~/.config/rofi/config.rasi */
+
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    display-drun: " Apps";
+    display-run: " Run";
+    display-window: "  Windows";
+    drun-display-format: "{name}";
+    font: "JetBrainsMono Nerd Font 10";
+}
+
+@theme "/dev/null"
+
+* {
+    bg: #1e1e2e;
+    bg-alt: #313244;
+    fg: #cdd6f4;
+    fg-alt: #585b70;
+    primary: #89b4fa;
+    
+    background-color: @bg;
+    text-color: @fg;
+}
+
+window {
+    width: 30%;
+    transparency: "real";
+    border: 2px;
+    border-color: @primary;
+    border-radius: 10px;
+}
+
+mainbox {
+    children: [inputbar, listview];
+}
+
+inputbar {
+    background-color: @bg-alt;
+    children: [prompt, entry];
+    padding: 12px;
+    border-radius: 10px 10px 0 0;
+}
+
+prompt {
+    background-color: @bg-alt;
+    text-color: @primary;
+    padding: 6px 10px;
+}
+
+entry {
+    background-color: @bg-alt;
+    padding: 6px;
+}
+
+listview {
+    lines: 8;
+    padding: 8px;
+}
+
+element {
+    padding: 8px;
+    border-radius: 5px;
+}
+
+element selected {
+    background-color: @bg-alt;
+    text-color: @primary;
+}
+
+element-icon {
+    size: 24px;
+}
+
+element-text {
+    vertical-align: 0.5;
+    margin: 0 0 0 10px;
+}
