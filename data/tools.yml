@@ -1,0 +1,1022 @@
+# Omiden OS Tools Database
+# Single source of truth for all packages
+# Format: name, category, stack (common|hyprland|i3|both), description_en, description_az
+
+# === CORE CLI TOOLS (35) ===
+- name: zsh
+  category: shell
+  stack: common
+  description_en: "Z Shell - powerful shell with completion"
+  description_az: "Z Shell - güclü shell tamamlama ilə"
+
+- name: starship
+  category: shell
+  stack: common
+  description_en: "Fast and customizable prompt"
+  description_az: "Sürətli və fərdiləşdirilə bilən prompt"
+
+- name: zsh-autosuggestions
+  category: shell
+  stack: common
+  description_en: "Fish-like autosuggestions for zsh"
+  description_az: "Fish kimi avtomatik təkliflər"
+
+- name: zsh-syntax-highlighting
+  category: shell
+  stack: common
+  description_en: "Syntax highlighting for zsh"
+  description_az: "Zsh üçün sintaksis vurğulanması"
+
+- name: neovim
+  category: editor
+  stack: common
+  description_en: "Vim-fork focused on extensibility"
+  description_az: "Genişləndirilə bilən Vim fork"
+
+- name: nano
+  category: editor
+  stack: common
+  description_en: "Simple terminal text editor"
+  description_az: "Sadə terminal mətn redaktoru"
+
+- name: micro
+  category: editor
+  stack: common
+  description_en: "Modern and intuitive terminal editor"
+  description_az: "Müasir və intuitiv terminal editor"
+
+- name: tmux
+  category: terminal
+  stack: common
+  description_en: "Terminal multiplexer"
+  description_az: "Terminal multipleksor"
+
+- name: git
+  category: dev
+  stack: common
+  description_en: "Version control system"
+  description_az: "Versiya nəzarət sistemi"
+
+- name: github-cli
+  category: dev
+  stack: common
+  description_en: "GitHub command line tool"
+  description_az: "GitHub əmr sətiri aləti"
+
+- name: lazygit
+  category: dev
+  stack: common
+  description_en: "Simple terminal UI for git"
+  description_az: "Git üçün sadə terminal UI"
+
+- name: bat
+  category: cli
+  stack: common
+  description_en: "Cat clone with syntax highlighting"
+  description_az: "Sintaksis ilə cat klonu"
+
+- name: eza
+  category: cli
+  stack: common
+  description_en: "Modern ls replacement"
+  description_az: "Müasir ls əvəzedicisi"
+
+- name: fd
+  category: cli
+  stack: common
+  description_en: "Fast and user-friendly find"
+  description_az: "Sürətli və rahat find"
+
+- name: ripgrep
+  category: cli
+  stack: common
+  description_en: "Fast recursive search tool"
+  description_az: "Sürətli rekursiv axtarış"
+
+- name: fzf
+  category: cli
+  stack: common
+  description_en: "Fuzzy finder"
+  description_az: "Fuzzy axtarış"
+
+- name: zoxide
+  category: cli
+  stack: common
+  description_en: "Smarter cd command"
+  description_az: "Ağıllı cd əmri"
+
+- name: btop
+  category: monitor
+  stack: common
+  description_en: "Resource monitor"
+  description_az: "Resurs monitoru"
+
+- name: htop
+  category: monitor
+  stack: common
+  description_en: "Interactive process viewer"
+  description_az: "İnteraktiv proses göstəricisi"
+
+- name: fastfetch
+  category: info
+  stack: common
+  description_en: "System information tool"
+  description_az: "Sistem məlumat aləti"
+
+- name: tldr
+  category: docs
+  stack: common
+  description_en: "Simplified man pages"
+  description_az: "Sadələşdirilmiş man səhifələri"
+
+- name: jq
+  category: cli
+  stack: common
+  description_en: "JSON processor"
+  description_az: "JSON prosessoru"
+
+- name: tree
+  category: cli
+  stack: common
+  description_en: "Directory tree viewer"
+  description_az: "Qovluq ağacı göstəricisi"
+
+- name: ncdu
+  category: disk
+  stack: common
+  description_en: "Disk usage analyzer"
+  description_az: "Disk istifadəsi analizatoru"
+
+- name: duf
+  category: disk
+  stack: common
+  description_en: "Disk usage/free utility"
+  description_az: "Disk istifadə/boş utiliti"
+
+- name: rsync
+  category: cli
+  stack: common
+  description_en: "Fast file transfer tool"
+  description_az: "Sürətli fayl köçürmə aləti"
+
+- name: wget
+  category: network
+  stack: common
+  description_en: "Network downloader"
+  description_az: "Şəbəkə yükləyici"
+
+- name: curl
+  category: network
+  stack: common
+  description_en: "Transfer data with URLs"
+  description_az: "URL ilə data transferi"
+
+- name: zip
+  category: archive
+  stack: common
+  description_en: "ZIP archiver"
+  description_az: "ZIP arxivləyici"
+
+- name: unzip
+  category: archive
+  stack: common
+  description_en: "ZIP extractor"
+  description_az: "ZIP çıxarıcı"
+
+- name: p7zip
+  category: archive
+  stack: common
+  description_en: "7z archiver"
+  description_az: "7z arxivləyici"
+
+- name: man-db
+  category: docs
+  stack: common
+  description_en: "Manual pages"
+  description_az: "Manual səhifələr"
+
+- name: man-pages
+  category: docs
+  stack: common
+  description_en: "Linux man pages"
+  description_az: "Linux man səhifələri"
+
+# === NETWORK TOOLS (24) ===
+- name: networkmanager
+  category: network
+  stack: common
+  description_en: "Network connection manager"
+  description_az: "Şəbəkə əlaqə meneceri"
+
+- name: network-manager-applet
+  category: network
+  stack: common
+  description_en: "NetworkManager GUI"
+  description_az: "NetworkManager GUI"
+
+- name: nmap
+  category: security
+  stack: common
+  description_en: "Network scanner"
+  description_az: "Şəbəkə skaneri"
+
+- name: wireshark-qt
+  category: security
+  stack: common
+  description_en: "Network protocol analyzer"
+  description_az: "Şəbəkə protokol analizatoru"
+
+- name: tcpdump
+  category: security
+  stack: common
+  description_en: "Packet analyzer"
+  description_az: "Paket analizatoru"
+
+- name: mtr
+  category: network
+  stack: common
+  description_en: "Network diagnostic tool"
+  description_az: "Şəbəkə diaqnostika aləti"
+
+- name: traceroute
+  category: network
+  stack: common
+  description_en: "Trace network route"
+  description_az: "Şəbəkə marşrut izləyici"
+
+- name: bind
+  category: network
+  stack: common
+  description_en: "DNS tools (dig, nslookup)"
+  description_az: "DNS alətləri (dig, nslookup)"
+
+- name: whois
+  category: network
+  stack: common
+  description_en: "WHOIS client"
+  description_az: "WHOIS client"
+
+- name: iperf3
+  category: network
+  stack: common
+  description_en: "Network bandwidth tester"
+  description_az: "Şəbəkə bandwidth testi"
+
+- name: openvpn
+  category: network
+  stack: common
+  description_en: "VPN client"
+  description_az: "VPN client"
+
+- name: wireguard-tools
+  category: network
+  stack: common
+  description_en: "Modern VPN tools"
+  description_az: "Müasir VPN alətləri"
+
+- name: openssh
+  category: network
+  stack: common
+  description_en: "SSH client and server"
+  description_az: "SSH client və server"
+
+- name: socat
+  category: network
+  stack: common
+  description_en: "Multipurpose relay"
+  description_az: "Çoxməqsədli relay"
+
+- name: openbsd-netcat
+  category: network
+  stack: common
+  description_en: "TCP/IP swiss army knife"
+  description_az: "TCP/IP universal alət"
+
+- name: ethtool
+  category: network
+  stack: common
+  description_en: "Ethernet tool"
+  description_az: "Ethernet aləti"
+
+- name: bluez
+  category: bluetooth
+  stack: common
+  description_en: "Bluetooth protocol stack"
+  description_az: "Bluetooth protokol stack"
+
+- name: blueman
+  category: bluetooth
+  stack: common
+  description_en: "Bluetooth manager"
+  description_az: "Bluetooth meneceri"
+
+- name: iw
+  category: network
+  stack: common
+  description_en: "Wireless configuration"
+  description_az: "Simsiz konfiqurasiya"
+
+- name: wireless_tools
+  category: network
+  stack: common
+  description_en: "Wireless tools"
+  description_az: "Simsiz alətlər"
+
+- name: wpa_supplicant
+  category: network
+  stack: common
+  description_en: "WPA client"
+  description_az: "WPA client"
+
+- name: dhcpcd
+  category: network
+  stack: common
+  description_en: "DHCP client"
+  description_az: "DHCP client"
+
+- name: dnsmasq
+  category: network
+  stack: common
+  description_en: "DNS forwarder"
+  description_az: "DNS yönləndirici"
+
+- name: inetutils
+  category: network
+  stack: common
+  description_en: "Network utilities"
+  description_az: "Şəbəkə utilləri"
+
+# === DISK & SYSTEM (25) ===
+- name: gparted
+  category: disk
+  stack: common
+  description_en: "Partition editor"
+  description_az: "Bölmə redaktoru"
+
+- name: parted
+  category: disk
+  stack: common
+  description_en: "Partition manipulation"
+  description_az: "Bölmə manipulyasiyası"
+
+- name: gptfdisk
+  category: disk
+  stack: common
+  description_en: "GPT partition tool"
+  description_az: "GPT bölmə aləti"
+
+- name: dosfstools
+  category: disk
+  stack: common
+  description_en: "FAT filesystem tools"
+  description_az: "FAT filesystem alətləri"
+
+- name: ntfs-3g
+  category: disk
+  stack: common
+  description_en: "NTFS filesystem support"
+  description_az: "NTFS filesystem dəstəyi"
+
+- name: exfatprogs
+  category: disk
+  stack: common
+  description_en: "exFAT filesystem tools"
+  description_az: "exFAT filesystem alətləri"
+
+- name: btrfs-progs
+  category: disk
+  stack: common
+  description_en: "Btrfs filesystem tools"
+  description_az: "Btrfs filesystem alətləri"
+
+- name: xfsprogs
+  category: disk
+  stack: common
+  description_en: "XFS filesystem tools"
+  description_az: "XFS filesystem alətləri"
+
+- name: e2fsprogs
+  category: disk
+  stack: common
+  description_en: "Ext2/3/4 filesystem tools"
+  description_az: "Ext2/3/4 filesystem alətləri"
+
+- name: cryptsetup
+  category: security
+  stack: common
+  description_en: "Disk encryption setup"
+  description_az: "Disk şifrələmə qurğusu"
+
+- name: lvm2
+  category: disk
+  stack: common
+  description_en: "Logical Volume Manager"
+  description_az: "Məntiqi Həcm Meneceri"
+
+- name: mdadm
+  category: disk
+  stack: common
+  description_en: "RAID management"
+  description_az: "RAID idarəetmə"
+
+- name: smartmontools
+  category: disk
+  stack: common
+  description_en: "SMART monitoring"
+  description_az: "SMART monitoring"
+
+- name: nvme-cli
+  category: disk
+  stack: common
+  description_en: "NVMe management"
+  description_az: "NVMe idarəetmə"
+
+- name: hdparm
+  category: disk
+  stack: common
+  description_en: "Hard disk parameters"
+  description_az: "Hard disk parametrləri"
+
+- name: testdisk
+  category: recovery
+  stack: common
+  description_en: "Data recovery tool"
+  description_az: "Data bərpa aləti"
+
+- name: ddrescue
+  category: recovery
+  stack: common
+  description_en: "Data recovery"
+  description_az: "Data bərpası"
+
+- name: timeshift
+  category: backup
+  stack: common
+  description_en: "System backup"
+  description_az: "Sistem backup"
+
+- name: os-prober
+  category: system
+  stack: common
+  description_en: "OS detection for GRUB"
+  description_az: "GRUB üçün OS aşkarlanması"
+
+- name: efibootmgr
+  category: system
+  stack: common
+  description_en: "EFI boot manager"
+  description_az: "EFI boot meneceri"
+
+- name: arch-install-scripts
+  category: system
+  stack: common
+  description_en: "Arch installation scripts"
+  description_az: "Arch quraşdırma skriptləri"
+
+- name: reflector
+  category: system
+  stack: common
+  description_en: "Mirror list updater"
+  description_az: "Mirror siyahı yeniləyici"
+
+- name: pacman-contrib
+  category: system
+  stack: common
+  description_en: "Pacman utilities"
+  description_az: "Pacman utilləri"
+
+- name: lshw
+  category: info
+  stack: common
+  description_en: "Hardware lister"
+  description_az: "Hardware siyahılayıcı"
+
+- name: inxi
+  category: info
+  stack: common
+  description_en: "System information"
+  description_az: "Sistem informasiyası"
+
+# === DEVELOPMENT (20) ===
+- name: base-devel
+  category: dev
+  stack: common
+  description_en: "Basic development tools"
+  description_az: "Əsas development alətləri"
+
+- name: gcc
+  category: dev
+  stack: common
+  description_en: "C/C++ compiler"
+  description_az: "C/C++ kompilyator"
+
+- name: clang
+  category: dev
+  stack: common
+  description_en: "C/C++ frontend"
+  description_az: "C/C++ frontend"
+
+- name: cmake
+  category: dev
+  stack: common
+  description_en: "Build system generator"
+  description_az: "Build sistem generatoru"
+
+- name: gdb
+  category: dev
+  stack: common
+  description_en: "GNU debugger"
+  description_az: "GNU debugger"
+
+- name: python
+  category: dev
+  stack: common
+  description_en: "Python interpreter"
+  description_az: "Python tərcüməçi"
+
+- name: python-pip
+  category: dev
+  stack: common
+  description_en: "Python package installer"
+  description_az: "Python paket quraşdırıcı"
+
+- name: nodejs
+  category: dev
+  stack: common
+  description_en: "JavaScript runtime"
+  description_az: "JavaScript runtime"
+
+- name: npm
+  category: dev
+  stack: common
+  description_en: "Node package manager"
+  description_az: "Node paket meneceri"
+
+- name: go
+  category: dev
+  stack: common
+  description_en: "Go programming language"
+  description_az: "Go proqramlaşdırma dili"
+
+- name: rustup
+  category: dev
+  stack: common
+  description_en: "Rust toolchain installer"
+  description_az: "Rust toolchain quraşdırıcı"
+
+- name: jdk-openjdk
+  category: dev
+  stack: common
+  description_en: "Java development kit"
+  description_az: "Java development kit"
+
+- name: docker
+  category: dev
+  stack: common
+  description_en: "Container platform"
+  description_az: "Container platforması"
+
+- name: docker-compose
+  category: dev
+  stack: common
+  description_en: "Docker orchestration"
+  description_az: "Docker orkestrasiya"
+
+- name: podman
+  category: dev
+  stack: common
+  description_en: "Daemonless containers"
+  description_az: "Daemon-siz konteyner"
+
+- name: shellcheck
+  category: dev
+  stack: common
+  description_en: "Shell script analyzer"
+  description_az: "Shell skript analizatoru"
+
+- name: code
+  category: dev
+  stack: common
+  description_en: "VS Code editor"
+  description_az: "VS Code editor"
+
+- name: valgrind
+  category: dev
+  stack: common
+  description_en: "Memory debugger"
+  description_az: "Yaddaş debugger"
+
+- name: strace
+  category: dev
+  stack: common
+  description_en: "System call tracer"
+  description_az: "System call izləyici"
+
+- name: ltrace
+  category: dev
+  stack: common
+  description_en: "Library call tracer"
+  description_az: "Library call izləyici"
+
+# === APPLICATIONS (15) ===
+- name: firefox
+  category: app
+  stack: common
+  description_en: "Web browser"
+  description_az: "Veb brauzer"
+
+- name: thunar
+  category: app
+  stack: common
+  description_en: "File manager"
+  description_az: "Fayl meneceri"
+
+- name: gvfs
+  category: app
+  stack: common
+  description_en: "Virtual filesystem"
+  description_az: "Virtual fayl sistemi"
+
+- name: thunar-archive-plugin
+  category: app
+  stack: common
+  description_en: "Archive support for Thunar"
+  description_az: "Thunar üçün arxiv dəstəyi"
+
+- name: yazi
+  category: app
+  stack: common
+  description_en: "Terminal file manager"
+  description_az: "Terminal fayl meneceri"
+
+- name: mpv
+  category: media
+  stack: common
+  description_en: "Media player"
+  description_az: "Media player"
+
+- name: imv
+  category: media
+  stack: common
+  description_en: "Image viewer"
+  description_az: "Şəkil göstərici"
+
+- name: vlc
+  category: media
+  stack: common
+  description_en: "Multimedia player"
+  description_az: "Multimedia player"
+
+- name: zathura
+  category: app
+  stack: common
+  description_en: "Document viewer"
+  description_az: "Sənəd göstərici"
+
+- name: zathura-pdf-mupdf
+  category: app
+  stack: common
+  description_en: "PDF backend for Zathura"
+  description_az: "Zathura üçün PDF backend"
+
+- name: obs-studio
+  category: media
+  stack: common
+  description_en: "Streaming and recording"
+  description_az: "Yayım və qeyd"
+
+- name: gimp
+  category: graphics
+  stack: common
+  description_en: "Image editor"
+  description_az: "Şəkil redaktoru"
+
+- name: libreoffice-fresh
+  category: office
+  stack: common
+  description_en: "Office suite"
+  description_az: "Ofis paketi"
+
+- name: keepassxc
+  category: security
+  stack: common
+  description_en: "Password manager"
+  description_az: "Şifrə meneceri"
+
+- name: yt-dlp
+  category: media
+  stack: common
+  description_en: "Video downloader"
+  description_az: "Video yükləyici"
+
+# === DESKTOP BASE (15) ===
+- name: pipewire
+  category: audio
+  stack: common
+  description_en: "Audio server"
+  description_az: "Audio server"
+
+- name: pipewire-pulse
+  category: audio
+  stack: common
+  description_en: "PulseAudio compatibility"
+  description_az: "PulseAudio uyğunluğu"
+
+- name: pipewire-alsa
+  category: audio
+  stack: common
+  description_en: "ALSA compatibility"
+  description_az: "ALSA uyğunluğu"
+
+- name: wireplumber
+  category: audio
+  stack: common
+  description_en: "Pipewire session manager"
+  description_az: "Pipewire sessiya meneceri"
+
+- name: pavucontrol
+  category: audio
+  stack: common
+  description_en: "Volume control"
+  description_az: "Səs nəzarəti"
+
+- name: nwg-look
+  category: theme
+  stack: common
+  description_en: "GTK settings editor"
+  description_az: "GTK parametr redaktoru"
+
+- name: qt5ct
+  category: theme
+  stack: common
+  description_en: "Qt5 configuration"
+  description_az: "Qt5 konfiqurasiya"
+
+- name: qt6ct
+  category: theme
+  stack: common
+  description_en: "Qt6 configuration"
+  description_az: "Qt6 konfiqurasiya"
+
+- name: papirus-icon-theme
+  category: theme
+  stack: common
+  description_en: "Icon theme"
+  description_az: "İkon mövzusu"
+
+- name: ttf-jetbrains-mono-nerd
+  category: font
+  stack: common
+  description_en: "JetBrains Mono Nerd Font"
+  description_az: "JetBrains Mono Nerd Font"
+
+- name: noto-fonts
+  category: font
+  stack: common
+  description_en: "Google Noto fonts"
+  description_az: "Google Noto fontları"
+
+- name: noto-fonts-emoji
+  category: font
+  stack: common
+  description_en: "Emoji fonts"
+  description_az: "Emoji fontları"
+
+- name: ffmpeg
+  category: media
+  stack: common
+  description_en: "Media converter"
+  description_az: "Media konvertor"
+
+- name: imagemagick
+  category: graphics
+  stack: common
+  description_en: "Image manipulation"
+  description_az: "Şəkil manipulyasiyası"
+
+- name: sddm
+  category: desktop
+  stack: common
+  description_en: "Display manager"
+  description_az: "Display meneceri"
+
+# === HYPRLAND STACK (15) ===
+- name: hyprland
+  category: wm
+  stack: hyprland
+  description_en: "Wayland compositor"
+  description_az: "Wayland kompozitor"
+
+- name: hyprpaper
+  category: wm
+  stack: hyprland
+  description_en: "Wallpaper daemon"
+  description_az: "Wallpaper daemon"
+
+- name: hypridle
+  category: wm
+  stack: hyprland
+  description_en: "Idle daemon"
+  description_az: "İdle daemon"
+
+- name: hyprlock
+  category: wm
+  stack: hyprland
+  description_en: "Screen locker"
+  description_az: "Ekran kilidi"
+
+- name: xdg-desktop-portal-hyprland
+  category: wm
+  stack: hyprland
+  description_en: "XDG portal"
+  description_az: "XDG portal"
+
+- name: hyprpolkitagent
+  category: wm
+  stack: hyprland
+  description_en: "Polkit agent"
+  description_az: "Polkit agent"
+
+- name: waybar
+  category: wm
+  stack: hyprland
+  description_en: "Status bar"
+  description_az: "Status bar"
+
+- name: rofi-wayland
+  category: wm
+  stack: hyprland
+  description_en: "Application launcher"
+  description_az: "Tətbiq başladıcı"
+
+- name: dunst
+  category: wm
+  stack: hyprland
+  description_en: "Notification daemon"
+  description_az: "Bildiriş daemon"
+
+- name: kitty
+  category: wm
+  stack: hyprland
+  description_en: "Terminal emulator"
+  description_az: "Terminal emulyatoru"
+
+- name: wl-clipboard
+  category: wm
+  stack: hyprland
+  description_en: "Clipboard utilities"
+  description_az: "Clipboard utilləri"
+
+- name: cliphist
+  category: wm
+  stack: hyprland
+  description_en: "Clipboard manager"
+  description_az: "Clipboard meneceri"
+
+- name: grim
+  category: wm
+  stack: hyprland
+  description_en: "Screenshot tool"
+  description_az: "Ekran görüntüsü"
+
+- name: slurp
+  category: wm
+  stack: hyprland
+  description_en: "Region selector"
+  description_az: "Region seçici"
+
+- name: swappy
+  category: wm
+  stack: hyprland
+  description_en: "Screenshot editor"
+  description_az: "Ekran görüntü redaktoru"
+
+# === I3 STACK (13) ===
+- name: i3-wm
+  category: wm
+  stack: i3
+  description_en: "Tiling window manager"
+  description_az: "Tiling pəncərə meneceri"
+
+- name: polybar
+  category: wm
+  stack: i3
+  description_en: "Status bar"
+  description_az: "Status bar"
+
+- name: i3lock
+  category: wm
+  stack: i3
+  description_en: "Screen locker"
+  description_az: "Ekran kilidi"
+
+- name: picom
+  category: wm
+  stack: i3
+  description_en: "Compositor"
+  description_az: "Kompozitor"
+
+- name: feh
+  category: wm
+  stack: i3
+  description_en: "Image viewer/wallpaper"
+  description_az: "Şəkil göstərici/wallpaper"
+
+- name: rofi
+  category: wm
+  stack: i3
+  description_en: "Application launcher"
+  description_az: "Tətbiq başladıcı"
+
+- name: xorg-server
+  category: wm
+  stack: i3
+  description_en: "X11 server"
+  description_az: "X11 server"
+
+- name: xorg-xinit
+  category: wm
+  stack: i3
+  description_en: "X11 initializer"
+  description_az: "X11 başladıcı"
+
+- name: xclip
+  category: wm
+  stack: i3
+  description_en: "Clipboard tool"
+  description_az: "Clipboard aləti"
+
+- name: maim
+  category: wm
+  stack: i3
+  description_en: "Screenshot tool"
+  description_az: "Ekran görüntüsü"
+
+- name: arandr
+  category: wm
+  stack: i3
+  description_en: "Display settings"
+  description_az: "Ekran parametrləri"
+
+- name: lxappearance
+  category: wm
+  stack: i3
+  description_en: "GTK theme switcher"
+  description_az: "GTK tema dəyişdirici"
+
+- name: nitrogen
+  category: wm
+  stack: i3
+  description_en: "Wallpaper setter"
+  description_az: "Wallpaper quraşdırıcı"
+
+# === ADDITIONAL UTILITIES (8) ===
+- name: brightnessctl
+  category: system
+  stack: common
+  description_en: "Brightness control"
+  description_az: "Parlaqlıq nəzarəti"
+
+- name: playerctl
+  category: media
+  stack: common
+  description_en: "Media player control"
+  description_az: "Media player nəzarəti"
+
+- name: pciutils
+  category: info
+  stack: common
+  description_en: "PCI utilities"
+  description_az: "PCI utilləri"
+
+- name: usbutils
+  category: info
+  stack: common
+  description_en: "USB utilities"
+  description_az: "USB utilləri"
+
+- name: dmidecode
+  category: info
+  stack: common
+  description_en: "DMI table decoder"
+  description_az: "DMI cədvəl dekoder"
+
+- name: lm_sensors
+  category: monitor
+  stack: common
+  description_en: "Hardware sensors"
+  description_az: "Hardware sensorları"
+
+- name: acpi
+  category: system
+  stack: common
+  description_en: "ACPI information"
+  description_az: "ACPI informasiya"
+
+- name: yad
+  category: gui
+  stack: common
+  description_en: "Dialog creator"
+  description_az: "Dialog yaradıcı"
+
+# Total: 160+ packages

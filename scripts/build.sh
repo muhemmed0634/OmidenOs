@@ -42,6 +42,13 @@ if ! command -v mkarchiso &>/dev/null; then
 fi
 info "archiso: $(mkarchiso --version 2>/dev/null || echo 'installed')"
 
+# ─── Check Python ─────────────────────────────────────────────
+if ! command -v python3 &>/dev/null; then
+    warn "python3 not found. Installing..."
+    pacman -S --noconfirm python python-yaml
+fi
+info "python3: $(python3 --version 2>/dev/null)"
+
 # ─── Predict ISO filename ─────────────────────────────────────
 ISO_DATE="$(date +%Y.%m.%d)"
 ISO_NAME="omiden"

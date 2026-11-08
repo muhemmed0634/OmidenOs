@@ -1,0 +1,325 @@
+# Omiden OS Keybindings
+# Single source of truth for all shortcuts
+# Format: action, hyprland_bind, i3_bind, description_en, description_az
+
+# === BASIC ACTIONS ===
+- action: terminal
+  hyprland_bind: "SUPER, Return, exec, kitty"
+  i3_bind: "bindsym $mod+Return exec kitty"
+  description_en: "Open terminal"
+  description_az: "Terminal aç"
+
+- action: launcher
+  hyprland_bind: "SUPER, D, exec, rofi -show drun"
+  i3_bind: "bindsym $mod+d exec rofi -show drun"
+  description_en: "Application launcher"
+  description_az: "Tətbiq başladıcı"
+
+- action: close_window
+  hyprland_bind: "SUPER, Q, killactive"
+  i3_bind: "bindsym $mod+Shift+q kill"
+  description_en: "Close focused window"
+  description_az: "Fokuslanmış pəncərəni bağla"
+
+- action: reload_config
+  hyprland_bind: "SUPER_SHIFT, R, exec, hyprctl reload"
+  i3_bind: "bindsym $mod+Shift+r reload"
+  description_en: "Reload configuration"
+  description_az: "Konfiqurasiyanı yenilə"
+
+- action: exit_wm
+  hyprland_bind: "SUPER_SHIFT, E, exec, rofi -show power-menu"
+  i3_bind: "bindsym $mod+Shift+e exec rofi -show power-menu"
+  description_en: "Power menu"
+  description_az: "Güc menyusu"
+
+# === WINDOW MANAGEMENT ===
+- action: focus_left
+  hyprland_bind: "SUPER, H, movefocus, l"
+  i3_bind: "bindsym $mod+h focus left"
+  description_en: "Focus left"
+  description_az: "Sola fokuslan"
+
+- action: focus_down
+  hyprland_bind: "SUPER, J, movefocus, d"
+  i3_bind: "bindsym $mod+j focus down"
+  description_en: "Focus down"
+  description_az: "Aşağı fokuslan"
+
+- action: focus_up
+  hyprland_bind: "SUPER, K, movefocus, u"
+  i3_bind: "bindsym $mod+k focus up"
+  description_en: "Focus up"
+  description_az: "Yuxarı fokuslan"
+
+- action: focus_right
+  hyprland_bind: "SUPER, L, movefocus, r"
+  i3_bind: "bindsym $mod+l focus right"
+  description_en: "Focus right"
+  description_az: "Sağa fokuslan"
+
+- action: move_left
+  hyprland_bind: "SUPER_SHIFT, H, movewindow, l"
+  i3_bind: "bindsym $mod+Shift+h move left"
+  description_en: "Move window left"
+  description_az: "Pəncərəni sola daşı"
+
+- action: move_down
+  hyprland_bind: "SUPER_SHIFT, J, movewindow, d"
+  i3_bind: "bindsym $mod+Shift+j move down"
+  description_en: "Move window down"
+  description_az: "Pəncərəni aşağı daşı"
+
+- action: move_up
+  hyprland_bind: "SUPER_SHIFT, K, movewindow, u"
+  i3_bind: "bindsym $mod+Shift+k move up"
+  description_en: "Move window up"
+  description_az: "Pəncərəni yuxarı daşı"
+
+- action: move_right
+  hyprland_bind: "SUPER_SHIFT, L, movewindow, r"
+  i3_bind: "bindsym $mod+Shift+l move right"
+  description_en: "Move window right"
+  description_az: "Pəncərəni sağa daşı"
+
+- action: toggle_fullscreen
+  hyprland_bind: "SUPER, F, fullscreen"
+  i3_bind: "bindsym $mod+f fullscreen toggle"
+  description_en: "Toggle fullscreen"
+  description_az: "Tam ekran keçid"
+
+- action: toggle_float
+  hyprland_bind: "SUPER, V, togglefloating"
+  i3_bind: "bindsym $mod+Shift+space floating toggle"
+  description_en: "Toggle floating"
+  description_az: "Üzən rejim keçid"
+
+- action: split_horizontal
+  hyprland_bind: ""
+  i3_bind: "bindsym $mod+b split h"
+  description_en: "Split horizontal"
+  description_az: "Üfüqi böl"
+
+- action: split_vertical
+  hyprland_bind: ""
+  i3_bind: "bindsym $mod+v split v"
+  description_en: "Split vertical"
+  description_az: "Şaquli böl"
+
+# === WORKSPACES ===
+- action: workspace_1
+  hyprland_bind: "SUPER, 1, workspace, 1"
+  i3_bind: "bindsym $mod+1 workspace number 1"
+  description_en: "Switch to workspace 1"
+  description_az: "İş sahəsi 1-ə keç"
+
+- action: workspace_2
+  hyprland_bind: "SUPER, 2, workspace, 2"
+  i3_bind: "bindsym $mod+2 workspace number 2"
+  description_en: "Switch to workspace 2"
+  description_az: "İş sahəsi 2-yə keç"
+
+- action: workspace_3
+  hyprland_bind: "SUPER, 3, workspace, 3"
+  i3_bind: "bindsym $mod+3 workspace number 3"
+  description_en: "Switch to workspace 3"
+  description_az: "İş sahəsi 3-ə keç"
+
+- action: workspace_4
+  hyprland_bind: "SUPER, 4, workspace, 4"
+  i3_bind: "bindsym $mod+4 workspace number 4"
+  description_en: "Switch to workspace 4"
+  description_az: "İş sahəsi 4-ə keç"
+
+- action: workspace_5
+  hyprland_bind: "SUPER, 5, workspace, 5"
+  i3_bind: "bindsym $mod+5 workspace number 5"
+  description_en: "Switch to workspace 5"
+  description_az: "İş sahəsi 5-ə keç"
+
+- action: workspace_6
+  hyprland_bind: "SUPER, 6, workspace, 6"
+  i3_bind: "bindsym $mod+6 workspace number 6"
+  description_en: "Switch to workspace 6"
+  description_az: "İş sahəsi 6-ya keç"
+
+- action: workspace_7
+  hyprland_bind: "SUPER, 7, workspace, 7"
+  i3_bind: "bindsym $mod+7 workspace number 7"
+  description_en: "Switch to workspace 7"
+  description_az: "İş sahəsi 7-yə keç"
+
+- action: workspace_8
+  hyprland_bind: "SUPER, 8, workspace, 8"
+  i3_bind: "bindsym $mod+8 workspace number 8"
+  description_en: "Switch to workspace 8"
+  description_az: "İş sahəsi 8-ə keç"
+
+- action: workspace_9
+  hyprland_bind: "SUPER, 9, workspace, 9"
+  i3_bind: "bindsym $mod+9 workspace number 9"
+  description_en: "Switch to workspace 9"
+  description_az: "İş sahəsi 9-a keç"
+
+- action: move_to_workspace_1
+  hyprland_bind: "SUPER_SHIFT, 1, movetoworkspace, 1"
+  i3_bind: "bindsym $mod+Shift+1 move container to workspace number 1"
+  description_en: "Move to workspace 1"
+  description_az: "İş sahəsi 1-ə daşı"
+
+- action: move_to_workspace_2
+  hyprland_bind: "SUPER_SHIFT, 2, movetoworkspace, 2"
+  i3_bind: "bindsym $mod+Shift+2 move container to workspace number 2"
+  description_en: "Move to workspace 2"
+  description_az: "İş sahəsi 2-yə daşı"
+
+- action: move_to_workspace_3
+  hyprland_bind: "SUPER_SHIFT, 3, movetoworkspace, 3"
+  i3_bind: "bindsym $mod+Shift+3 move container to workspace number 3"
+  description_en: "Move to workspace 3"
+  description_az: "İş sahəsi 3-ə daşı"
+
+- action: move_to_workspace_4
+  hyprland_bind: "SUPER_SHIFT, 4, movetoworkspace, 4"
+  i3_bind: "bindsym $mod+Shift+4 move container to workspace number 4"
+  description_en: "Move to workspace 4"
+  description_az: "İş sahəsi 4-ə daşı"
+
+- action: move_to_workspace_5
+  hyprland_bind: "SUPER_SHIFT, 5, movetoworkspace, 5"
+  i3_bind: "bindsym $mod+Shift+5 move container to workspace number 5"
+  description_en: "Move to workspace 5"
+  description_az: "İş sahəsi 5-ə daşı"
+
+- action: move_to_workspace_6
+  hyprland_bind: "SUPER_SHIFT, 6, movetoworkspace, 6"
+  i3_bind: "bindsym $mod+Shift+6 move container to workspace number 6"
+  description_en: "Move to workspace 6"
+  description_az: "İş sahəsi 6-ya daşı"
+
+- action: move_to_workspace_7
+  hyprland_bind: "SUPER_SHIFT, 7, movetoworkspace, 7"
+  i3_bind: "bindsym $mod+Shift+7 move container to workspace number 7"
+  description_en: "Move to workspace 7"
+  description_az: "İş sahəsi 7-yə daşı"
+
+- action: move_to_workspace_8
+  hyprland_bind: "SUPER_SHIFT, 8, movetoworkspace, 8"
+  i3_bind: "bindsym $mod+Shift+8 move container to workspace number 8"
+  description_en: "Move to workspace 8"
+  description_az: "İş sahəsi 8-ə daşı"
+
+- action: move_to_workspace_9
+  hyprland_bind: "SUPER_SHIFT, 9, movetoworkspace, 9"
+  i3_bind: "bindsym $mod+Shift+9 move container to workspace number 9"
+  description_en: "Move to workspace 9"
+  description_az: "İş sahəsi 9-a daşı"
+
+# === SYSTEM FUNCTIONS ===
+- action: lock_screen
+  hyprland_bind: "SUPER, L, exec, hyprlock"
+  i3_bind: "bindsym $mod+Shift+x exec i3lock -c 000000"
+  description_en: "Lock screen"
+  description_az: "Ekranı kilitle"
+
+- action: wallpaper_picker
+  hyprland_bind: "SUPER, W, exec, omiden-wallpaper-picker"
+  i3_bind: "bindsym $mod+w exec omiden-wallpaper-picker"
+  description_en: "Wallpaper picker"
+  description_az: "Wallpaper seçici"
+
+- action: theme_toggle
+  hyprland_bind: "SUPER_SHIFT, T, exec, omiden-theme-toggle"
+  i3_bind: "bindsym $mod+Shift+t exec omiden-theme-toggle"
+  description_en: "Toggle dark/light theme"
+  description_az: "Qaranlıq/açıq tema dəyiş"
+
+- action: screenshot_full
+  hyprland_bind: ", Print, exec, grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+  i3_bind: "bindsym Print exec maim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+  description_en: "Screenshot (full)"
+  description_az: "Ekran görüntüsü (tam)"
+
+- action: screenshot_area
+  hyprland_bind: "SHIFT, Print, exec, grim -g \"$(slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+  i3_bind: "bindsym Shift+Print exec maim -s ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
+  description_en: "Screenshot (area)"
+  description_az: "Ekran görüntüsü (sahə)"
+
+- action: screenshot_edit
+  hyprland_bind: "CONTROL, Print, exec, grim -g \"$(slurp)\" - | swappy -f -"
+  i3_bind: "bindsym Control+Print exec maim -s | swappy -f -"
+  description_en: "Screenshot (edit)"
+  description_az: "Ekran görüntüsü (redaktə)"
+
+# === MEDIA CONTROLS ===
+- action: volume_up
+  hyprland_bind: ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+  i3_bind: "bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+  description_en: "Volume up"
+  description_az: "Səsi artır"
+
+- action: volume_down
+  hyprland_bind: ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+  i3_bind: "bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+  description_en: "Volume down"
+  description_az: "Səsi azalt"
+
+- action: volume_mute
+  hyprland_bind: ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  i3_bind: "bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  description_en: "Mute toggle"
+  description_az: "Səssiz keçid"
+
+- action: media_play_pause
+  hyprland_bind: ", XF86AudioPlay, exec, playerctl play-pause"
+  i3_bind: "bindsym XF86AudioPlay exec playerctl play-pause"
+  description_en: "Play/pause"
+  description_az: "Oynat/dayandır"
+
+- action: media_next
+  hyprland_bind: ", XF86AudioNext, exec, playerctl next"
+  i3_bind: "bindsym XF86AudioNext exec playerctl next"
+  description_en: "Next track"
+  description_az: "Növbəti trek"
+
+- action: media_prev
+  hyprland_bind: ", XF86AudioPrev, exec, playerctl previous"
+  i3_bind: "bindsym XF86AudioPrev exec playerctl previous"
+  description_en: "Previous track"
+  description_az: "Əvvəlki trek"
+
+# === BRIGHTNESS ===
+- action: brightness_up
+  hyprland_bind: ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
+  i3_bind: "bindsym XF86MonBrightnessUp exec brightnessctl set +5%"
+  description_en: "Brightness up"
+  description_az: "Parlaqlıq artır"
+
+- action: brightness_down
+  hyprland_bind: ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+  i3_bind: "bindsym XF86MonBrightnessDown exec brightnessctl set 5%-"
+  description_en: "Brightness down"
+  description_az: "Parlaqlıq azalt"
+
+# === FILE MANAGER ===
+- action: file_manager
+  hyprland_bind: "SUPER, E, exec, thunar"
+  i3_bind: "bindsym $mod+e exec thunar"
+  description_en: "Open file manager"
+  description_az: "Fayl meneceri aç"
+
+- action: terminal_file_manager
+  hyprland_bind: "SUPER_SHIFT, E, exec, kitty yazi"
+  i3_bind: "bindsym $mod+Shift+f exec kitty yazi"
+  description_en: "Terminal file manager"
+  description_az: "Terminal fayl meneceri"
+
+# === BROWSERS & APPS ===
+- action: browser
+  hyprland_bind: "SUPER, B, exec, firefox"
+  i3_bind: "bindsym $mod+b exec firefox"
+  description_en: "Open browser"
+  description_az: "Brauzer aç"
+
+# Total: 60+ keybindings
