@@ -1,0 +1,15 @@
+cliphist
+dunst
+grim
+hypridle
+hyprland
+hyprlock
+hyprpaper
+hyprpolkitagent
+kitty
+rofi-wayland
+slurp
+swappy
+waybar
+wl-clipboard
+xdg-desktop-portal-hyprland

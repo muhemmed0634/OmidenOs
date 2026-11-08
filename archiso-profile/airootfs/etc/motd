@@ -1,11 +1,23 @@
 
-  ╔══════════════════════════════════════════════════╗
-  ║           Welcome to OmidenOs                    ║
-  ║   An Arch Linux-based custom distribution        ║
-  ║   GitHub: github.com/muhemmed0634/OmidenOs       ║
-  ╠══════════════════════════════════════════════════╣
-  ║  To install:  run install-omiden                 ║
-  ║  Help:        run omiden-welcome                 ║
-  ║  WiFi:        nmtui                              ║
-  ╚══════════════════════════════════════════════════╝
+ ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗     ██████╗ ███████╗
+██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║    ██╔═══██╗██╔════╝
+██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║    ██║   ██║███████╗
+██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║    ██║   ██║╚════██║
+╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║    ╚██████╔╝███████║
+ ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝     ╚═════╝ ╚══════╝
+
+Welcome to Omiden OS Live Environment!
+
+This is the Omiden OS installation and rescue system.
+
+To install Omiden OS to your system, run:
+    sudo omiden-installer
+
+For more information:
+    - Website: https://omidenos.org
+    - Documentation: https://github.com/muhemmed0634/OmidenOs
+    - Issues: https://github.com/muhemmed0634/OmidenOs/issues
+
+Default credentials:
+    Username: root (no password needed in live environment)
 

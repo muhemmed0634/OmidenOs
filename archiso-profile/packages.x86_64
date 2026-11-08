@@ -1,64 +1,58 @@
-# ============================================================
-# OmidenOs - Minimal Stable Base (No Desktop)
-# Focus: Stability first, features later
-# ============================================================
+# Omiden OS Package List
+# Generated from data/tools.yml
 
-# ─── Core System ─────────────────────────────────────────────
+# ===== CRITICAL BASE SYSTEM =====
+# Absolutely essential for installer and ISO to work
+arch-install-scripts
 base
 base-devel
+efibootmgr
+git
+grub
 linux
 linux-firmware
-linux-headers
-mkinitcpio
-mkinitcpio-archiso
-
-# ─── Boot ────────────────────────────────────────────────────
-grub
-efibootmgr
-syslinux
-
-# ─── Filesystem ──────────────────────────────────────────────
-btrfs-progs
-dosfstools
-e2fsprogs
-ntfs-3g
-exfatprogs
-parted
-
-# ─── Network ─────────────────────────────────────────────────
 networkmanager
-dhcpcd
-iw
-openssh
-curl
-wget
-
-# ─── Shell & Terminal ────────────────────────────────────────
-bash
-zsh
-zsh-completions
-zsh-autosuggestions
-zsh-syntax-highlighting
-bash-completion
-
-# ─── Text Editors ────────────────────────────────────────────
-nano
-neovim
-
-# ─── System Tools ────────────────────────────────────────────
-sudo
-htop
-fastfetch
-man-db
-man-pages
-git
-
-# ─── Archiso Tools ───────────────────────────────────────────
-arch-install-scripts
-reflector
+os-prober
 pacman-contrib
-dialog
+parted
+sudo
 
-# ─── Misc ────────────────────────────────────────────────────
-polkit
-dbus
+# ===== BASE SYSTEM PACKAGES =====
+# These packages are included in the ISO and form the base system
+
+bat
+bind
+curl
+dhcpcd
+dnsmasq
+ethtool
+eza
+fd
+fzf
+inetutils
+iperf3
+iw
+jq
+mtr
+network-manager-applet
+networkmanager
+openbsd-netcat
+openssh
+openvpn
+ripgrep
+rsync
+socat
+traceroute
+tree
+wget
+whois
+wireguard-tools
+wireless_tools
+wpa_supplicant
+zoxide
+
+# ===== INSTALLER ESSENTIALS =====
+# Minimal packages needed for installer to function
+
+dialog
+gawk

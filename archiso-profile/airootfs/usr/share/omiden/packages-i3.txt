@@ -1,0 +1,13 @@
+arandr
+feh
+i3-wm
+i3lock
+lxappearance
+maim
+nitrogen
+picom
+polybar
+rofi
+xclip
+xorg-server
+xorg-xinit

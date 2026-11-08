@@ -1,0 +1,361 @@
+#!/bin/bash
+#
+# Omiden OS Installer v5.0
+# Interactive installer with WM selection
+#
+
+set -e
+
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Dialog dimensions
+HEIGHT=20
+WIDTH=70
+CHOICE_HEIGHT=10
+
+# Package lists location
+PKG_DIR="/usr/share/omiden"
+
+# Log file
+LOGFILE="/tmp/omiden-install.log"
+
+# Functions
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOGFILE"
+}
+
+error() {
+    echo -e "${RED}ERROR: $*${NC}" >&2
+    log "ERROR: $*"
+    exit 1
+}
+
+success() {
+    echo -e "${GREEN}✓ $*${NC}"
+    log "SUCCESS: $*"
+}
+
+info() {
+    echo -e "${BLUE}→ $*${NC}"
+    log "INFO: $*"
+}
+
+warn() {
+    echo -e "${YELLOW}⚠ $*${NC}"
+    log "WARN: $*"
+}
+
+check_root() {
+    if [ "$EUID" -ne 0 ]; then
+        error "This installer must be run as root. Please use: sudo omiden-installer"
+    fi
+}
+
+check_network() {
+    info "Checking network connectivity..."
+    if ! ping -c 1 archlinux.org &>/dev/null; then
+        warn "No network connection detected"
+        warn "Please configure network before continuing:"
+        warn "  - Wired: dhcpcd"
+        warn "  - Wireless: nmtui or wifi-menu"
+        read -p "Press Enter after network is configured..."
+        
+        if ! ping -c 1 archlinux.org &>/dev/null; then
+            error "Network still not available. Cannot continue installation."
+        fi
+    fi
+    success "Network connection verified"
+}
+
+welcome_screen() {
+    dialog --title "Omiden OS Installer" \
+           --msgbox "\nWelcome to Omiden OS Installation!\n\n\
+This installer will guide you through:\n\n\
+  1. Disk partitioning and formatting\n\
+  2. Base system installation\n\
+  3. Desktop environment selection\n\
+  4. Bootloader configuration\n\
+  5. User account creation\n\n\
+Press Enter to continue..." $HEIGHT $WIDTH
+}
+
+select_disk() {
+    # Get list of disks
+    local disks=($(lsblk -dpno NAME,SIZE | grep -v loop | awk '{print $1 " " $2}'))
+    
+    if [ ${#disks[@]} -eq 0 ]; then
+        error "No disks found!"
+    fi
+    
+    # Prepare dialog options
+    local options=()
+    local i=0
+    while [ $i -lt ${#disks[@]} ]; do
+        options+=("${disks[$i]}" "${disks[$((i+1))]}")
+        i=$((i+2))
+    done
+    
+    INSTALL_DISK=$(dialog --title "Select Installation Disk" \
+                          --menu "Choose a disk for Omiden OS installation:\n\n⚠ WARNING: All data will be erased!" \
+                          $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                          "${options[@]}" \
+                          3>&1 1>&2 2>&3)
+    
+    if [ -z "$INSTALL_DISK" ]; then
+        error "No disk selected. Installation cancelled."
+    fi
+    
+    # Confirmation
+    dialog --title "CONFIRM DISK WIPE" \
+           --yesno "\n⚠ WARNING ⚠\n\nALL DATA on $INSTALL_DISK will be PERMANENTLY ERASED!\n\nAre you sure you want to continue?" \
+           12 $WIDTH || error "Installation cancelled by user"
+    
+    log "Selected disk: $INSTALL_DISK"
+}
+
+partition_disk() {
+    info "Partitioning disk $INSTALL_DISK..."
+    
+    # Detect boot mode
+    if [ -d "/sys/firmware/efi" ]; then
+        BOOT_MODE="UEFI"
+        info "UEFI boot mode detected"
+        
+        # GPT partitioning for UEFI
+        parted -s "$INSTALL_DISK" mklabel gpt
+        parted -s "$INSTALL_DISK" mkpart ESP fat32 1MiB 512MiB
+        parted -s "$INSTALL_DISK" set 1 boot on
+        parted -s "$INSTALL_DISK" mkpart primary ext4 512MiB 100%
+        
+        BOOT_PART="${INSTALL_DISK}1"
+        ROOT_PART="${INSTALL_DISK}2"
+        
+        # Format
+        mkfs.fat -F32 "$BOOT_PART"
+        mkfs.ext4 -F "$ROOT_PART"
+    else
+        BOOT_MODE="BIOS"
+        info "BIOS boot mode detected"
+        
+        # MBR partitioning for BIOS
+        parted -s "$INSTALL_DISK" mklabel msdos
+        parted -s "$INSTALL_DISK" mkpart primary ext4 1MiB 512MiB
+        parted -s "$INSTALL_DISK" set 1 boot on
+        parted -s "$INSTALL_DISK" mkpart primary ext4 512MiB 100%
+        
+        BOOT_PART="${INSTALL_DISK}1"
+        ROOT_PART="${INSTALL_DISK}2"
+        
+        # Format
+        mkfs.ext4 -F "$BOOT_PART"
+        mkfs.ext4 -F "$ROOT_PART"
+    fi
+    
+    success "Disk partitioned successfully"
+}
+
+mount_partitions() {
+    info "Mounting partitions..."
+    
+    mount "$ROOT_PART" /mnt
+    mkdir -p /mnt/boot
+    mount "$BOOT_PART" /mnt/boot
+    
+    success "Partitions mounted"
+}
+
+install_base_system() {
+    info "Installing base system packages..."
+    
+    # Install base packages
+    pacstrap /mnt base base-devel linux linux-firmware \
+                   grub os-prober \
+                   networkmanager \
+                   sudo \
+                   git
+    
+    success "Base system installed"
+}
+
+select_wm() {
+    WM_CHOICE=$(dialog --title "Desktop Environment Selection" \
+                       --menu "Choose your window manager:\n\nOmiden OS supports Hyprland (Wayland) and i3 (X11)" \
+                       $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                       "hyprland" "Hyprland - Modern Wayland compositor" \
+                       "i3" "i3wm - Lightweight X11 tiling WM" \
+                       "both" "Install both (choose at login)" \
+                       "none" "No desktop - CLI only" \
+                       3>&1 1>&2 2>&3)
+    
+    if [ -z "$WM_CHOICE" ]; then
+        error "No selection made. Installation cancelled."
+    fi
+    
+    log "WM choice: $WM_CHOICE"
+}
+
+install_wm_packages() {
+    info "Installing desktop packages..."
+    
+    case "$WM_CHOICE" in
+        hyprland)
+            info "Installing Hyprland packages..."
+            arch-chroot /mnt pacman -S --noconfirm $(cat "$PKG_DIR/packages-hyprland.txt")
+            ;;
+        i3)
+            info "Installing i3 packages..."
+            arch-chroot /mnt pacman -S --noconfirm $(cat "$PKG_DIR/packages-i3.txt")
+            ;;
+        both)
+            info "Installing Hyprland and i3 packages..."
+            arch-chroot /mnt pacman -S --noconfirm $(cat "$PKG_DIR/packages-hyprland.txt")
+            arch-chroot /mnt pacman -S --noconfirm $(cat "$PKG_DIR/packages-i3.txt")
+            ;;
+        none)
+            info "Skipping desktop installation"
+            ;;
+    esac
+    
+    success "Desktop packages installed"
+}
+
+configure_system() {
+    info "Configuring system..."
+    
+    # Generate fstab
+    genfstab -U /mnt >> /mnt/etc/fstab
+    
+    # Set hostname
+    HOSTNAME=$(dialog --inputbox "Enter hostname:" 10 $WIDTH "omiden-os" 3>&1 1>&2 2>&3)
+    echo "$HOSTNAME" > /mnt/etc/hostname
+    
+    # Configure hosts
+    cat > /mnt/etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   $HOSTNAME.localdomain $HOSTNAME
+EOF
+    
+    # Set timezone
+    arch-chroot /mnt ln -sf /usr/share/zoneinfo/Asia/Baku /etc/localtime
+    arch-chroot /mnt hwclock --systohc
+    
+    # Set locale
+    echo "en_US.UTF-8 UTF-8" > /mnt/etc/locale.gen
+    echo "az_AZ.UTF-8 UTF-8" >> /mnt/etc/locale.gen
+    arch-chroot /mnt locale-gen
+    echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
+    
+    # Enable NetworkManager
+    arch-chroot /mnt systemctl enable NetworkManager
+    
+    success "System configured"
+}
+
+install_bootloader() {
+    info "Installing bootloader..."
+    
+    if [ "$BOOT_MODE" = "UEFI" ]; then
+        arch-chroot /mnt pacman -S --noconfirm efibootmgr
+        arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+    else
+        arch-chroot /mnt grub-install --target=i386-pc "$INSTALL_DISK"
+    fi
+    
+    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+    
+    success "Bootloader installed"
+}
+
+create_user() {
+    info "Creating user account..."
+    
+    USERNAME=$(dialog --inputbox "Enter username:" 10 $WIDTH "omiden" 3>&1 1>&2 2>&3)
+    
+    if [ -z "$USERNAME" ]; then
+        error "Username cannot be empty"
+    fi
+    
+    arch-chroot /mnt useradd -m -G wheel,audio,video,optical,storage -s /bin/bash "$USERNAME"
+    
+    # Set user password
+    dialog --passwordbox "Enter password for $USERNAME:" 10 $WIDTH 2>/tmp/pass1
+    dialog --passwordbox "Confirm password:" 10 $WIDTH 2>/tmp/pass2
+    
+    if ! cmp -s /tmp/pass1 /tmp/pass2; then
+        error "Passwords do not match!"
+    fi
+    
+    arch-chroot /mnt bash -c "echo '$USERNAME:$(cat /tmp/pass1)' | chpasswd"
+    rm /tmp/pass1 /tmp/pass2
+    
+    # Set root password
+    dialog --passwordbox "Enter root password:" 10 $WIDTH 2>/tmp/rootpass
+    arch-chroot /mnt bash -c "echo 'root:$(cat /tmp/rootpass)' | chpasswd"
+    rm /tmp/rootpass
+    
+    # Enable sudo for wheel group
+    sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /mnt/etc/sudoers
+    
+    success "User $USERNAME created"
+}
+
+copy_dotfiles() {
+    if [ "$WM_CHOICE" = "none" ]; then
+        return
+    fi
+    
+    info "Copying dotfiles..."
+    
+    # TODO: Copy dotfiles from /usr/share/omiden/dotfiles
+    # This will be implemented in Part 4
+    
+    success "Dotfiles copied"
+}
+
+completion_screen() {
+    dialog --title "Installation Complete!" \
+           --msgbox "\n✓ Omiden OS has been successfully installed!\n\n\
+System details:\n\
+  Disk: $INSTALL_DISK\n\
+  Hostname: $HOSTNAME\n\
+  User: $USERNAME\n\
+  WM: $WM_CHOICE\n\
+  Boot mode: $BOOT_MODE\n\n\
+The system will reboot now.\n\
+Remove the installation media after reboot.\n\n\
+Press Enter to reboot..." $HEIGHT $WIDTH
+}
+
+# Main installation flow
+main() {
+    log "=== Omiden OS Installation Started ==="
+    
+    check_root
+    welcome_screen
+    check_network
+    select_disk
+    partition_disk
+    mount_partitions
+    install_base_system
+    select_wm
+    install_wm_packages
+    configure_system
+    install_bootloader
+    create_user
+    copy_dotfiles
+    
+    success "Installation completed successfully!"
+    completion_screen
+    
+    umount -R /mnt
+    reboot
+}
+
+# Run installer
+main
