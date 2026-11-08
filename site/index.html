@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Omiden OS - Cybersecurity-focused Arch Linux with 100+ professional hacking and penetration testing tools">
-    <title>Omiden OS - Cybersecurity-Focused Arch Linux</title>
+    <meta name="description" content="Omiden OS - Professional cybersecurity distribution for penetration testing and security research">
+    <title>Omiden OS - Cybersecurity Distribution</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/favicon.png" type="image/png">
 </head>
@@ -34,9 +34,9 @@
             <h2 data-en="Cybersecurity-Focused Arch Linux" data-az="Kibertəhlükəsizliyə Fokuslanmış Arch Linux">
                 Cybersecurity-Focused Arch Linux
             </h2>
-            <p data-en="Cybersecurity-focused Arch Linux with 100+ professional hacking tools" 
-               data-az="100+ peşəkar hacking aləti ilə kibertəhlükəsizliyə fokuslanmış Arch Linux">
-                Cybersecurity-focused Arch Linux with 100+ professional hacking tools
+            <p data-en="Professional penetration testing and security research distribution" 
+               data-az="Peşəkar penetrasiya testi və təhlükəsizlik araşdırması distributivi">
+                Professional penetration testing and security research distribution
             </p>
             <div class="cta-buttons">
                 <a href="#download" class="btn btn-primary" data-en="Download ISO" data-az="ISO Yüklə">Download ISO</a>
@@ -68,9 +68,9 @@
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🛠️</div>
-                    <h3 data-en="100+ Cybersecurity Tools" data-az="100+ Kibertəhlükəsizlik Aləti">100+ Cybersecurity Tools</h3>
-                    <p data-en="Professional penetration testing, network analysis, and security tools" data-az="Peşəkar penetrasiya testi, şəbəkə analizi və təhlükəsizlik alətləri">
-                        Professional penetration testing, network analysis, and security tools
+                    <h3 data-en="Professional Security Tools" data-az="Peşəkar Təhlükəsizlik Alətləri">Professional Security Tools</h3>
+                    <p data-en="Curated cybersecurity toolkit for penetration testing and security research" data-az="Penetrasiya testi və təhlükəsizlik araşdırması üçün seçilmiş alətlər">
+                        Curated cybersecurity toolkit for penetration testing and security research
                     </p>
                 </div>
                 <div class="feature-card">
@@ -84,26 +84,113 @@
         </div>
     </section>
 
-    <!-- Tools Section -->
+    <!-- Security Tools Section -->
     <section id="tools" class="tools">
         <div class="container">
-            <h2 data-en="Included Tools" data-az="Daxil Olan Alətlər">Included Tools</h2>
-            <p class="section-subtitle" data-en="Professional cybersecurity and penetration testing tools" 
-               data-az="Peşəkar kibertəhlükəsizlik və penetrasiya testi alətləri">
-                Professional cybersecurity and penetration testing tools
+            <h2 data-en="Security Arsenal" data-az="Təhlükəsizlik Arsenalı">Security Arsenal</h2>
+            <p class="section-subtitle" data-en="Professional tools for penetration testing and security research" 
+               data-az="Penetrasiya testi və təhlükəsizlik araşdırması üçün peşəkar alətlər">
+                Professional tools for penetration testing and security research
             </p>
             
-            <div class="filter-tabs">
-                <button class="filter-tab active" onclick="filterTools('all')" data-en="All" data-az="Hamısı">All</button>
-                <button class="filter-tab" onclick="filterTools('network')" data-en="Network Security" data-az="Şəbəkə Təhlükəsizliyi">Network Security</button>
-                <button class="filter-tab" onclick="filterTools('web')" data-en="Web Testing" data-az="Web Testi">Web Testing</button>
-                <button class="filter-tab" onclick="filterTools('wireless')" data-en="Wireless" data-az="Simsiz">Wireless</button>
-                <button class="filter-tab" onclick="filterTools('exploitation')" data-en="Exploitation" data-az="İstismar">Exploitation</button>
-                <button class="filter-tab" onclick="filterTools('forensics')" data-en="Forensics" data-az="Kriminalistika">Forensics</button>
-            </div>
+            <div class="security-categories">
+                <div class="category-card">
+                    <div class="category-icon">🔍</div>
+                    <h3 data-en="Network Security" data-az="Şəbəkə Təhlükəsizliyi">Network Security</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Nmap</span>
+                        <span class="tool-badge">Wireshark</span>
+                        <span class="tool-badge">Masscan</span>
+                        <span class="tool-badge">Netcat</span>
+                        <span class="tool-badge">Ettercap</span>
+                        <span class="tool-badge">Bettercap</span>
+                    </div>
+                </div>
 
-            <div id="tools-container" class="tools-grid">
-                <!-- Tools will be loaded by JavaScript -->
+                <div class="category-card">
+                    <div class="category-icon">🌐</div>
+                    <h3 data-en="Web Application Testing" data-az="Web Tətbiqi Testi">Web Application Testing</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Burp Suite</span>
+                        <span class="tool-badge">OWASP ZAP</span>
+                        <span class="tool-badge">SQLMap</span>
+                        <span class="tool-badge">Nikto</span>
+                        <span class="tool-badge">WPScan</span>
+                        <span class="tool-badge">ffuf</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">📡</div>
+                    <h3 data-en="Wireless Security" data-az="Simsiz Təhlükəsizlik">Wireless Security</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Aircrack-ng</span>
+                        <span class="tool-badge">Wifite</span>
+                        <span class="tool-badge">Reaver</span>
+                        <span class="tool-badge">Kismet</span>
+                        <span class="tool-badge">Airodump</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">💥</div>
+                    <h3 data-en="Exploitation" data-az="İstismar">Exploitation</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Metasploit</span>
+                        <span class="tool-badge">ExploitDB</span>
+                        <span class="tool-badge">Empire</span>
+                        <span class="tool-badge">Sliver</span>
+                        <span class="tool-badge">BeEF</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">🔑</div>
+                    <h3 data-en="Password Attacks" data-az="Parol Hücumları">Password Attacks</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Hashcat</span>
+                        <span class="tool-badge">John the Ripper</span>
+                        <span class="tool-badge">Hydra</span>
+                        <span class="tool-badge">Medusa</span>
+                        <span class="tool-badge">CrackMapExec</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">🔬</div>
+                    <h3 data-en="Reverse Engineering" data-az="Tərsinə Mühəndislik">Reverse Engineering</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Ghidra</span>
+                        <span class="tool-badge">Radare2</span>
+                        <span class="tool-badge">GDB</span>
+                        <span class="tool-badge">Binwalk</span>
+                        <span class="tool-badge">pwntools</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">🧪</div>
+                    <h3 data-en="Digital Forensics" data-az="Rəqəmsal Kriminalistika">Digital Forensics</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">Volatility</span>
+                        <span class="tool-badge">Autopsy</span>
+                        <span class="tool-badge">Sleuthkit</span>
+                        <span class="tool-badge">Foremost</span>
+                        <span class="tool-badge">ExifTool</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-icon">🕵️</div>
+                    <h3 data-en="OSINT & Recon" data-az="OSINT və Kəşfiyyat">OSINT & Recon</h3>
+                    <div class="tool-list">
+                        <span class="tool-badge">TheHarvester</span>
+                        <span class="tool-badge">Maltego</span>
+                        <span class="tool-badge">Recon-ng</span>
+                        <span class="tool-badge">Sherlock</span>
+                        <span class="tool-badge">SpiderFoot</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

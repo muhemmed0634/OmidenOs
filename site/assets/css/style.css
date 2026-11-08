@@ -248,6 +248,62 @@ section h2 {
     color: var(--bg-primary);
 }
 
+/* Security Categories Grid */
+.security-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.category-card {
+    background: var(--bg-secondary);
+    padding: 30px;
+    border-radius: 15px;
+    border-left: 4px solid var(--accent);
+    transition: all 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    border-left-color: var(--accent-hover);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.category-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.category-card h3 {
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.tool-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tool-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.tool-badge:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent-hover);
+}
+
 /* Tools Grid */
 .tools-grid {
     display: grid;

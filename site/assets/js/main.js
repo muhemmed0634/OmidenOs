@@ -1,7 +1,6 @@
 // Omiden OS Website JavaScript
 
 let currentLang = 'en';
-let toolsData = [];
 let keybindsData = [];
 let wallpapersData = [];
 let releaseData = {};
@@ -16,11 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load all data
 async function loadData() {
     try {
-        // Load tools
-        const toolsResponse = await fetch('data/tools.json');
-        toolsData = await toolsResponse.json();
-        displayTools('all');
-        
         // Load keybinds
         const keybindsResponse = await fetch('data/keybinds.json');
         keybindsData = await keybindsResponse.json();
@@ -69,37 +63,7 @@ function setLanguage(lang) {
     });
     
     // Reload dynamic content with new language
-    if (toolsData.length > 0) displayTools(document.querySelector('.filter-tab.active')?.textContent.toLowerCase() || 'all');
     if (keybindsData.length > 0) showKeybinds(document.querySelector('.wm-tab.active')?.dataset.wm || 'hyprland');
-}
-
-// Tools functions
-function filterTools(category) {
-    // Update active tab
-    document.querySelectorAll('.filter-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    
-    displayTools(category);
-}
-
-function displayTools(category) {
-    const container = document.getElementById('tools-container');
-    if (!container) return;
-    
-    const filtered = category === 'all' 
-        ? toolsData 
-        : toolsData.filter(tool => tool.category === category);
-    
-    container.innerHTML = filtered.map(tool => `
-        <div class="tool-card">
-            <h3>${tool.name}</h3>
-            <div class="category">${tool.category}</div>
-            <p>${tool[`description_${currentLang}`] || tool.description_en}</p>
-            <span class="stack-badge stack-${tool.stack}">${tool.stack}</span>
-        </div>
-    `).join('');
 }
 
 // Keybinds functions
@@ -188,7 +152,6 @@ function initSmoothScroll() {
 
 // Make functions global
 window.setLanguage = setLanguage;
-window.filterTools = filterTools;
 window.showKeybinds = showKeybinds;
 window.showWallpapers = showWallpapers;
 window.openWallpaper = openWallpaper;
