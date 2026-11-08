@@ -1,262 +1,336 @@
 <div align="center">
 
-<img src="Omiden.png" width="160" alt="OmidenOS"/>
+<img src="Omiden.png" width="160" alt="Omiden OS"/>
 
-# OmidenOS
+# Omiden OS
 
-**Arch Linux + BlackArch tabanlı güvenlik odaklı Linux dağıtımı**
+**Cybersecurity-Focused Arch Linux Distribution**
 
-[![Stars](https://img.shields.io/github/stars/muhemmed0634/OmidenOS?style=flat-square&color=e94560)](https://github.com/muhemmed0634/OmidenOS/stargazers)
-[![Forks](https://img.shields.io/github/forks/muhemmed0634/OmidenOS?style=flat-square&color=89b4fa)](https://github.com/muhemmed0634/OmidenOS/network)
-[![License](https://img.shields.io/badge/license-GPL--3.0-a6e3a1?style=flat-square)](LICENSE)
-[![Base](https://img.shields.io/badge/base-Arch%20Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org)
-[![BlackArch](https://img.shields.io/badge/tools-BlackArch-cc0000?style=flat-square)](https://blackarch.org)
-[![Status](https://img.shields.io/badge/status-pre--alpha-orange?style=flat-square)](https://github.com/muhemmed0634/OmidenOS)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
+[![Base](https://img.shields.io/badge/based%20on-Arch%20Linux-1793D1?logo=arch-linux&logoColor=white)](https://archlinux.org)
+[![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/muhemmed0634/OmidenOs)
 
 </div>
 
 ---
 
 ```
-  ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗  ██████╗ ███████╗
- ██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║ ██╔═══██╗██╔════╝
- ██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║ ██║   ██║███████╗
- ██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║ ██║   ██║╚════██║
- ╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║ ╚██████╔╝███████║
-  ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝  ╚═════╝ ╚══════╝
+ ██████╗ ███╗   ███╗██╗██████╗ ███████╗███╗   ██╗     ██████╗ ███████╗
+██╔═══██╗████╗ ████║██║██╔══██╗██╔════╝████╗  ██║    ██╔═══██╗██╔════╝
+██║   ██║██╔████╔██║██║██║  ██║█████╗  ██╔██╗ ██║    ██║   ██║███████╗
+██║   ██║██║╚██╔╝██║██║██║  ██║██╔══╝  ██║╚██╗██║    ██║   ██║╚════██║
+╚██████╔╝██║ ╚═╝ ██║██║██████╔╝███████╗██║ ╚████║    ╚██████╔╝███████║
+ ╚═════╝ ╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═══╝     ╚═════╝ ╚══════╝
 ```
 
-> ⚠️ **Pre-Alpha** — Test amaçlıdır. Sanal makinede deneyin.
+> Professional penetration testing and security research distribution built from scratch on Arch Linux
 
 ---
 
-## Hakkında
+## 🎯 About
 
-OmidenOS, [ArchISO](https://wiki.archlinux.org/title/Archiso) kullanılarak sıfırdan inşa edilmiş özel bir Linux dağıtımıdır. Arch Linux rolling-release modelini ve BlackArch'ın 100+ güvenlik aracını bir araya getiren,  güvenlik araştırmaları için tasarlanmıştır.
-
----
-
-## Özellikler
-
-| | |
-|---|---|
-| **Base** | Arch Linux (rolling release) |
-| **Güvenlik** | BlackArch repo + 324 paket + 112 araç (install-tools) |
-| **Masaüstü** | Openbox + Tint2 + Rofi |
-| **Terminal** | Alacritty |
-| **Shell** | Zsh (autosuggestions, syntax-highlighting) |
-| **Sistem bilgisi** | Fastfetch (OmidenOS ASCII logo) |
-| **Tema** | Adw-dark + Papirus-Dark |
-| **Wallpaper** | OmidenOS logosu (değiştirilebilir — waypaper) |
-| **Klavye** | US (English) |
-| **Ses** | PipeWire |
-| **Ağ** | NetworkManager + iwd |
-| **Boot** | BIOS (syslinux) + UEFI (systemd-boot) |
-| **Boot splash** | OmidenOS logosu |
+Omiden OS is a cybersecurity-focused Linux distribution built on Arch Linux, specifically designed for penetration testers, security researchers, and ethical hackers. It comes pre-configured with **100+ professional security tools** and offers a choice between Hyprland (Wayland) and i3 (X11) window managers.
 
 ---
 
-## Güvenlik Araçları
+## ✨ Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **🔐 100+ Security Tools** | Professional penetration testing, network analysis, exploitation, and forensics tools |
+| **🎨 Dual WM Support** | Choose Hyprland (modern Wayland) or i3 (classic X11) during installation |
+| **⚡ Arch-Based** | Rolling release model with latest packages and AUR support |
+| **🌍 Bilingual** | Full support for English and Azerbaijani languages |
+| **🎭 Pre-Configured** | Beautiful dotfiles with Catppuccin theme, ready to use out of the box |
+| **📦 Single Source** | All tools and configurations managed from YAML files |
+| **🚀 Performance** | Minimal base system, install only what you need |
+
+---
+
+## 🛠️ Security Tools by Category
 
 <details>
-<summary><b>🔍 Reconnaissance (ISO'da hazır)</b></summary>
+<summary><b>🔍 Network Security & Reconnaissance</b></summary>
 
-`nmap` · `masscan` · `amass` · `subfinder` · `httpx` · `dnsx` · `ffuf` · `gobuster` · `feroxbuster` · `nikto` · `nuclei` · `whatweb` · `wafw00f` · `wpscan` · `theharvester` · `recon-ng` · `spiderfoot` · `dnsrecon` · `fierce`
+- **Scanning:** nmap, masscan, zmap, unicornscan
+- **Analysis:** wireshark, tcpdump, ettercap, bettercap
+- **Discovery:** netcat, socat, mtr, traceroute
+- **OSINT:** theharvester, maltego, recon-ng, sherlock
+- **DNS:** fierce, dnsrecon, dnsenum, subfinder
 
 </details>
 
 <details>
-<summary><b>🌐 Web Application Testing (ISO'da hazır)</b></summary>
+<summary><b>🌐 Web Application Testing</b></summary>
 
-`sqlmap` · `zaproxy` · `xsstrike` · `dalfox` · `commix` · `wfuzz` · `arjun` · `jwt-tool` · `ssrfmap` · `ghauri` · `corsy` · `smuggler`
-
-</details>
-
-<details>
-<summary><b>🔗 Network & Traffic (ISO'da hazır)</b></summary>
-
-`wireshark` · `bettercap` · `ettercap` · `responder` · `mitmproxy` · `tcpdump` · `scapy` · `hping` · `yersinia` · `sslstrip` · `macchanger` · `mitm6`
+- **Proxies:** Burp Suite, OWASP ZAP, mitmproxy
+- **Scanners:** Nikto, WPScan, Wapiti, Arachni
+- **SQL Injection:** SQLMap, NoSQLMap
+- **XSS:** XSSer, Dalfox
+- **Fuzzing:** ffuf, gobuster, wfuzz, feroxbuster
+- **CMS:** WPScan, Joomscan, Droopescan
 
 </details>
 
 <details>
-<summary><b>🔑 Password Attacks (ISO'da hazır)</b></summary>
+<summary><b>📡 Wireless Security</b></summary>
 
-`hashcat` · `john` · `hydra` · `medusa` · `kerbrute` · `mimikatz` · `python-pypykatz` · `certipy` · `evil-winrm` · `crowbar`
-
-</details>
-
-<details>
-<summary><b>💥 Exploitation (ISO'da hazır)</b></summary>
-
-`metasploit` · `exploitdb` · `routersploit` · `beef` · `empire` · `sliver`
+- **Frameworks:** Aircrack-ng suite
+- **Attacks:** Wifite, Reaver, Bully, Pixiewps
+- **Monitoring:** Kismet, Airodump-ng
+- **Tools:** Airgeddon, WiFi-Pumpkin3
 
 </details>
 
 <details>
-<summary><b>🕵️ Post Exploitation (ISO'da hazır)</b></summary>
+<summary><b>💥 Exploitation & Post-Exploitation</b></summary>
 
-`bloodhound` · `crackmapexec` · `smbmap` · `enum4linux` · `ldeep`
-
-</details>
-
-<details>
-<summary><b>🔬 Reverse Engineering (ISO'da hazır)</b></summary>
-
-`radare2` · `cutter` · `pwndbg` · `binwalk` · `angr` · `python-pwntools` · `checksec` · `yara`
+- **Frameworks:** Metasploit Framework, Empire, Sliver
+- **Databases:** ExploitDB, RouterSploit
+- **Post-Exploit:** BloodHound, CrackMapExec, Evil-WinRM
+- **AD Tools:** Impacket, Kerbrute, Responder, Mimikatz
 
 </details>
 
 <details>
-<summary><b>🧪 Forensics (ISO'da hazır)</b></summary>
+<summary><b>🔑 Password Attacks</b></summary>
 
-`volatility3` · `sleuthkit` · `bulk-extractor` · `dc3dd` · `dcfldd` · `perl-image-exiftool` · `stegseek` · `zsteg` · `python-oletools`
-
-</details>
-
-<details>
-<summary><b>📡 Wireless (ISO'da hazır)</b></summary>
-
-`aircrack-ng` · `airgeddon` · `wifite` · `kismet` · `reaver` · `pixiewps` · `bully` · `wifi-pumpkin`
+- **Cracking:** Hashcat, John the Ripper
+- **Online:** Hydra, Medusa, Ncrack
+- **Tools:** Crunch, CeWL, Maskprocessor
+- **Windows:** pypykatz, Certipy
 
 </details>
 
 <details>
-<summary><b>🔧 install-tools ile kurulabilen +112 araç</b></summary>
+<summary><b>🔬 Reverse Engineering & Binary Analysis</b></summary>
 
-**Heavy GUI:** `burpsuite` · `ghidra` · `autopsy` · `maltego` · `neo4j-community` · `retdec` · `havoc-c2`
+- **Disassemblers:** Ghidra, Radare2, Cutter
+- **Debuggers:** GDB, pwndbg, gef
+- **Analysis:** Binwalk, Angr, pwntools
+- **Utils:** checksec, ROPgadget, Ropper
 
-**Web:** `w3af` · `arachni` · `set` · `xsser` · `swaks` · `webanalyze`
+</details>
 
-**Mobile:** `jadx` · `androguard` · `dex2jar` · `mobsf` · `android-apktool`
+<details>
+<summary><b>🧪 Forensics & Data Recovery</b></summary>
 
-**Reverse:** `rizin` · `capstone` · `unicorn` · `keystone` · `z3` · `ropgadget` · `gef`
+- **Memory:** Volatility3, Rekall
+- **Disk:** Autopsy, Sleuthkit, dc3dd
+- **Carving:** Foremost, Scalpel, bulk-extractor
+- **Steganography:** Steghide, Stegseek, zsteg
+- **Metadata:** ExifTool, pdfid, pdf-parser
 
-**Forensics:** `ophcrack` · `stegcracker` · `volafox` · `afflib` · `rifiuti2`
+</details>
 
-**Network/AD:** `netexec` · `rita` · `smbclient` · `dmitry` · `nbtscan` · `dnsenum`
+<details>
+<summary><b>🎭 Social Engineering</b></summary>
+
+- **Frameworks:** Social Engineer Toolkit (SET)
+- **Phishing:** GoPhish, King Phisher
+- **OSINT:** Maltego, SpiderFoot
 
 </details>
 
 ---
 
-## Kurulum
+## 📥 Download & Installation
 
-### Gereksinimler
+### System Requirements
 
-- Arch Linux tabanlı bir sistem
-- `archiso` paketi
-- Root yetkisi
-- ~15 GB boş disk alanı
-- İnternet bağlantısı
+- **RAM:** 2 GB minimum (4 GB recommended)
+- **Storage:** 20 GB minimum
+- **Boot:** UEFI or BIOS support
+- **Network:** Internet connection for installation
 
-### ISO Oluştur
+### Download ISO
+
+Download the latest release from [GitHub Releases](https://github.com/muhemmed0634/OmidenOs/releases)
 
 ```bash
-git clone https://github.com/muhemmed0634/OmidenOS.git
-cd OmidenOS
+# Verify checksum
+sha256sum omidenos-*.iso
+
+# Compare with release notes
+```
+
+### Create Bootable USB
+
+**Linux:**
+```bash
+sudo dd if=omidenos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+```
+
+**Windows:** Use [Rufus](https://rufus.ie/) or [Balena Etcher](https://www.balena.io/etcher/)
+
+**macOS:**
+```bash
+sudo dd if=omidenos-*.iso of=/dev/diskX bs=4m
+```
+
+**Universal:** Use [Ventoy](https://www.ventoy.net/) for multi-ISO USB
+
+### Installation
+
+1. Boot from USB
+2. Run `sudo omiden-installer`
+3. Follow the interactive installation wizard:
+   - Select disk and partition layout
+   - Choose window manager (Hyprland/i3/Both/None)
+   - Set hostname, username, and password
+   - Configure system settings
+4. Reboot and enjoy!
+
+---
+
+## 🎨 Window Managers
+
+### Hyprland (Wayland)
+
+Modern, GPU-accelerated compositor with:
+- Smooth animations and blur effects
+- Multi-monitor support
+- Gesture controls
+- Waybar status bar
+- Catppuccin theme
+
+### i3 (X11)
+
+Classic, lightweight tiling WM with:
+- Proven stability
+- Low resource usage
+- Polybar status bar
+- Extensive customization
+- Perfect for older hardware
+
+---
+
+## 🚀 Quick Start
+
+### After Installation
+
+```bash
+# Update system
+sudo pacman -Syu
+
+# Install additional tools from AUR
+yay -S <package-name>
+
+# Configure network
+nmtui
+
+# Launch tools
+nmap --help
+metasploit
+burpsuite
+wireshark
+```
+
+### Keyboard Shortcuts
+
+See full list on the [website](https://muhemmed0634.github.io/OmidenOs) or check:
+- Hyprland: `~/.config/hypr/hyprland.conf`
+- i3: `~/.config/i3/config`
+
+**Common shortcuts:**
+- `Super + Return` - Terminal
+- `Super + D` - Application launcher
+- `Super + E` - File manager
+- `Super + C` - Close window
+- `Super + 1-9` - Switch workspace
+
+---
+
+## 📚 Documentation
+
+- [Installation Guide](docs/installation.md)
+- [Tool List](data/tools.yml)
+- [Keybindings](data/keybinds.yml)
+- [Website](https://muhemmed0634.github.io/OmidenOs)
+
+---
+
+## 🛠️ Development
+
+### Build from Source
+
+```bash
+# Clone repository
+git clone https://github.com/muhemmed0634/OmidenOs.git
+cd OmidenOs
+
+# Install dependencies
 sudo pacman -S archiso
-sudo ./scripts/build.sh
+
+# Generate package lists
+python3 scripts/gen-packages.py
+
+# Build ISO (requires root)
+sudo bash scripts/build.sh
+
+# Test in QEMU
+bash scripts/test.sh out/omidenos-*.iso
 ```
 
-### USB'ye Yaz
-
-```bash
-# Script ile
-sudo ./scripts/flash-usb.sh
-
-# Manuel (sdX = USB sürücün)
-sudo dd if=out/omidenos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
-```
-
-### Live Ortamda Çalıştır
-
-- Root olarak **şifresiz** otomatik giriş yapılır
-- WiFi: `nmtui`
-- Ek araçlar: `install-tools`
-- Wallpaper yöneticisi: `install-waypaper`
-
-### Diske Kur
-
-```bash
-install-omiden
-```
-
-Kurulum sihirbazı:
-- UEFI / BIOS otomatik algılar
-- Disk seçimi ve bölümlendirme (ext4 / btrfs / xfs)
-- Timezone listesi (Azerbaycan dahil)
-- Kullanıcı, şifre, hostname
-- Openbox masaüstü (isteğe bağlı)
-- BlackArch repo (isteğe bağlı)
-- GRUB önyükleyici
-
----
-
-## Komutlar
-
-| Komut | Açıklama |
-|-------|---------|
-| `install-omiden` | Sistemi diske kur |
-| `install-tools` | 112 ek araç kur (kategorili menü) |
-| `setup-blackarch` | BlackArch reposunu ekle |
-| `install-waypaper` | Wallpaper yöneticisi kur |
-| `omiden-welcome` | Hoş geldin ekranı |
-| `nmtui` | WiFi/ağ bağlantısı |
-| `fastfetch` | Sistem bilgisi |
-
----
-
-## Proje Yapısı
+### Project Structure
 
 ```
-OmidenOS/
-├── archiso-profile/
-│   ├── profiledef.sh
-│   ├── packages.x86_64          # 324 paket
-│   ├── pacman.conf              # Arch + BlackArch repo
-│   └── airootfs/
-│       ├── etc/
-│       │   ├── mkinitcpio.conf.d/archiso.conf  # Live initramfs hooks
-│       │   ├── shadow           # Root şifresiz giriş
-│       │   ├── systemd/system/  # Servis enable'ları
-│       │   └── ...
-│       ├── root/.config/
-│       │   ├── fastfetch/       # ASCII logo + config
-│       │   ├── openbox/         # WM config
-│       │   ├── alacritty/       # Terminal
-│       │   ├── rofi/            # Launcher
-│       │   └── ...
-│       └── usr/local/bin/
-│           ├── install-omiden   # Kurulum sihirbazı
-│           ├── install-tools    # 112 araç yükleyici
-│           ├── install-waypaper # Wallpaper yöneticisi
-│           ├── omiden-welcome   # Hoş geldin
-│           └── setup-blackarch  # BlackArch repo
-├── scripts/
-│   ├── build.sh
-│   └── flash-usb.sh
-└── Omiden.png
+OmidenOs/
+├── archiso-profile/       # ISO build configuration
+├── data/                  # Tool and keybind definitions
+├── dotfiles/              # Pre-configured dotfiles
+├── scripts/               # Build and generation scripts
+├── site/                  # Static website
+└── docs/                  # Documentation
 ```
 
 ---
 
-## Katkı
+## 🤝 Contributing
 
-```bash
-git clone https://github.com/muhemmed0634/OmidenOS.git
-```
+Contributions are welcome! Please:
 
-PR ve issue'lar her zaman açıktır.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+**Areas for contribution:**
+- Adding new security tools
+- Improving documentation
+- Testing on different hardware
+- Translating to other languages
+- Creating tutorials and guides
 
 ---
 
-## Lisans
+## ⚖️ Legal Disclaimer
 
-[BSD 3-Clause](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
+Omiden OS is designed for **legal security testing and research purposes only**. Users are responsible for complying with all applicable local, state, national, and international laws. The developers assume no liability and are not responsible for any misuse or damage caused by this distribution.
+
+**Use this distribution only on systems you own or have explicit permission to test.**
+
+---
+
+## 📜 License
+
+[BSD 3-Clause License](LICENSE) © [muhemmed0634](https://github.com/muhemmed0634)
+
+---
+
+## 🙏 Credits
+
+- **Base:** [Arch Linux](https://archlinux.org/)
+- **Theme:** [Catppuccin](https://github.com/catppuccin)
+- **Wallpapers:** [JaKooLit/Wallpaper-Bank](https://github.com/JaKooLit/Wallpaper-Bank)
+- **Tools:** Security community contributors
 
 ---
 
 <div align="center">
-<i>Arch Linux'un gücü. BlackArch'ın araçları. OmidenOS'un tarzı.</i>
+
+**[Website](https://muhemmed0634.github.io/OmidenOs)** • **[Releases](https://github.com/muhemmed0634/OmidenOs/releases)** • **[Issues](https://github.com/muhemmed0634/OmidenOs/issues)**
+
+<i>Professional cybersecurity distribution built by hackers, for hackers.</i>
+
 </div>
