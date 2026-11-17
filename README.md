@@ -5,7 +5,7 @@
 <p align="center">
   A pacman-based live system for security work, built with <code>mkarchiso</code>.
   <br>
-  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; XFCE &middot; i3 &middot; Hyprland &middot; Calamares
+  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; KDE Plasma &middot; GNOME &middot; Hyprland &middot; Calamares
 </p>
 
 <p align="center">
@@ -64,7 +64,7 @@ described: `docs/dev/verification.md`.
 | Live root | squashfs plus RAM overlay | verified |
 | Installed root filesystem | ext4 | scope decision, no installer yet |
 | Installer | Calamares | not implemented |
-| Sessions | XFCE (default), i3, Hyprland | in the tree, not yet built |
+| Sessions | KDE Plasma (default), GNOME, Hyprland | in the tree, not yet built |
 | Tool set | curated security tools | not implemented |
 | Disk encryption | none, out of v1.0 scope | not applicable |
 | Secure Boot | unsupported, ISO unsigned | decision recorded |
@@ -86,13 +86,14 @@ live medium logs straight into XFCE; the others are one click away.
 
 | Session | Stack | Notes |
 | --- | --- | --- |
-| XFCE | X11 | default, autologin, the session to fall back to |
-| i3 | X11 | tiling, `Mod4` bindings, status bar from `i3status` |
+| KDE Plasma | Wayland | default, autologin, the full desktop |
+| GNOME | Wayland | stock session, `Ctrl+Alt+F2` for the console |
 | Hyprland | Wayland | tiling, needs OpenGL; enable 3D acceleration in a VM |
-| text console | tty2 | `Ctrl+Alt+F2`, no session, no display manager |
+| text console | tty2 | no session, no display manager |
 
-Session defaults are written by the project and stay short: a keybinding
-set, a bar, a launcher. No borrowed dotfile collections.
+Session defaults are written by the project: one keybinding set and one
+wallpaper hook each. GNOME and KDE keep their own defaults rather than a
+borrowed theme.
 
 ## Phases
 

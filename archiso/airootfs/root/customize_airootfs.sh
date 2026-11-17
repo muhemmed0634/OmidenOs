@@ -45,11 +45,10 @@ sed -E -i 's/^(alpm:x:970:970:)[^:]*:/\1Package Management:/' /etc/passwd
 
 # Live user home. mkarchiso does not create per-user homes, and
 # /etc/skel belongs to the shell configuration package, so the session
-# files are written directly. Three session configurations are kept:
-# the shell, the X11 tiling window manager and the Wayland compositor.
+# files are written directly. GNOME and KDE Plasma carry their own
+# defaults; only the shell and the Wayland compositor need files.
 install -d -o omiden -g omiden -m 0755 /home/omiden
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config
-install -d -o omiden -g omiden -m 0755 /home/omiden/.config/i3
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config/hypr
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config/autostart
 
@@ -69,76 +68,6 @@ fi
 if [[ -o login ]] && (( $+commands[fastfetch] )); then
   fastfetch --config /etc/fastfetch/config.jsonc
 fi
-EOF
-
-cat >/home/omiden/.config/i3/config <<'EOF'
-# OmidenOS live session, i3 defaults.
-# Modifier is the Windows key; the workflow is tiling, no desktop icons.
-
-set $mod Mod4
-font pango:Noto Sans 10
-
-# Wallpaper and session basics
-exec --no-startup-id feh --bg-fill /usr/share/backgrounds/omidenos/wallpaper.png
-exec --no-startup-id nm-applet
-
-# Open a terminal, launcher, file manager
-bindsym $mod+Return exec xfce4-terminal
-bindsym $mod+d exec rofi -show drun
-bindsym $mod+Shift+f exec thunar
-
-# Window handling
-bindsym $mod+q kill
-bindsym $mod+f fullscreen toggle
-bindsym $mod+v split v
-bindsym $mod+h split h
-bindsym $mod+r restart
-bindsym $mod+Shift+e exec i3-msg exit
-
-# Focus and move
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
-
-# Workspaces
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-bindsym $mod+1 workspace $ws1
-bindsym $mod+2 workspace $ws2
-bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+5 workspace $ws5
-bindsym $mod+Shift+1 move container to workspace $ws1
-bindsym $mod+Shift+2 move container to workspace $ws2
-bindsym $mod+Shift+3 move container to workspace $ws3
-bindsym $mod+Shift+4 move container to workspace $ws4
-bindsym $mod+Shift+5 move container to workspace $ws5
-
-# Session actions
-bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
-bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-bindsym $mod+Shift+p exec systemctl poweroff
-bindsym $mod+Shift+l exec i3lock -c 1a1a1a
-
-bar {
-    status_command i3status
-    position top
-    colors {
-        background #1a1a1a
-        statusline #e6e6e6
-        focused_workspace #8b5cf6 #8b5cf6 #ffffff
-        inactive_workspace #1a1a1a #1a1a1a #9e9e9e
-    }
-}
 EOF
 
 cat >/home/omiden/.config/hypr/hyprland.conf <<'EOF'
@@ -179,7 +108,7 @@ bind = $mod, Return, exec, kitty
 bind = $mod, D, exec, wofi --show drun
 bind = $mod, Q, killactive
 bind = $mod, F, fullscreen
-bind = $mod, E, exec, thunar
+bind = $mod, E, exec, nautilus
 bind = $mod SHIFT, E, exit
 bind = $mod, 1, workspace, 1
 bind = $mod, 2, workspace, 2
@@ -193,18 +122,16 @@ bind = , XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
 bind = , XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 EOF
 
-chown -R omiden:omiden /home/omiden
-
-# XFCE picks its own wallpapers per monitor, and the monitor name differs
-# between hypervisors and hardware, so the image is applied to every
-# backdrop property that exists instead of guessing a monitor name.
-cat >/home/omiden/.config/autostart/omidenos-wallpaper.desktop <<'EOF'
+# GNOME and KDE Plasma read XDG autostart entries; the helper decides
+# what the running desktop needs for the wallpaper.
+cat >/home/omiden/.config/autostart/omidenos-session.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
-Name=OmidenOS wallpaper
-Exec=sh -c 'p=/usr/share/backgrounds/omidenos/wallpaper.png; for prop in $(xfconf-query -c xfce4-desktop -l | grep last-image); do xfconf-query -c xfce4-desktop -p $prop -s $p; done'
-OnlyShowIn=XFCE;
+Name=OmidenOS session setup
+Exec=/usr/local/bin/omidenos-session
+OnlyShowIn=GNOME;KDE;
 X-GNOME-Autostart-enabled=true
+NoDisplay=true
 EOF
 
-chown -R omiden:omiden /home/omiden/.config
+chown -R omiden:omiden /home/omiden

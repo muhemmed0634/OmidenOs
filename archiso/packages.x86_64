@@ -33,10 +33,10 @@ terminus-font
 zsh-syntax-highlighting
 zsh-autosuggestions
 
-# Graphical stack: one display manager, three sessions in v1.0 (XFCE, i3,
-# Hyprland). KDE Plasma is a v1.1 sub-phase. Shared plumbing first, then
-# the sessions, then the session helpers. Hyprland needs mesa and the
-# portal; X11 sessions need the X server and the input driver.
+# Graphical stack: one display manager, three sessions in v1.0 —
+# Hyprland, GNOME and KDE Plasma. Shared plumbing first, then the
+# sessions, then the session helpers. All three run on Wayland; the X
+# server stays for Calamares and for X11-only tools.
 xorg-server
 xf86-input-libinput
 xorg-xwayland
@@ -45,28 +45,21 @@ polkit
 xdg-utils
 xdg-desktop-portal
 xdg-desktop-portal-gtk
+xdg-desktop-portal-gnome
+xdg-desktop-portal-kde
 xdg-desktop-portal-hyprland
 sddm
 noto-fonts
 ttf-dejavu
-xfce4
-xfce4-terminal
-thunar
-mousepad
-i3-wm
-i3status
-i3lock
-rofi
+gnome
+plasma-meta
+plasma-nm
 hyprland
 waybar
 wofi
 kitty
 swaybg
-feh
+network-manager-applet
 pipewire
 pipewire-pulse
 wireplumber
-network-manager-applet
-xfce4-power-manager
-xfce4-pulseaudio-plugin
-xfce4-screenshooter

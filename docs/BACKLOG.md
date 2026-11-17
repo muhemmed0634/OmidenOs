@@ -19,10 +19,9 @@ Nothing in this file is claimed to work; these are pending items.
 
 ## v1.0 scope decisions recorded
 
-- Desktop scope: three sessions in v1.0 — XFCE on X11 (default), i3 on
-  X11, Hyprland on Wayland, all launched from SDDM. KDE Plasma and GNOME
-  are v1.1 sub-phases, each with its own acceptance criteria. This
-  supersedes the earlier XFCE-only decision.
+- Desktop scope: three sessions in v1.0 — KDE Plasma (default), GNOME
+  and Hyprland, all Wayland, all launched from SDDM. XFCE and i3 are out
+  of the plan; this supersedes both earlier decisions.
 - Language: English is the default and only language of the v1.0 medium.
   A Turkish variant is planned as a separate artefact (translated motd,
   issue, boot text and session hints) and needs its own decision record

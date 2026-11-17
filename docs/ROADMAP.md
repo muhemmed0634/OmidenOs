@@ -20,7 +20,7 @@ install packages without a password and builds the ISO as root by hand.
 | 2 | UEFI-only live medium | done 2026-11-17 | `docs/dev/verification.md` |
 | 3 | Own repository, own hooks, own kernel | next | not started |
 | 4 | Tool manifest and meta packages | planned | not started |
-| 5 | Desktops (XFCE, i3, Hyprland) and identity | in progress | sessions in tree, no build yet |
+| 5 | Desktops (KDE Plasma, GNOME, Hyprland) and identity | in progress | sessions in tree, no build yet |
 | 6 | Calamares, install matrix | planned | not started |
 | 7 | Hardening, SBOM, signed release | planned | not started |
 
@@ -86,15 +86,16 @@ reason, and `docs/dev/verification.md` records the leak honestly.
 
 ## Phase 5 — desktops and identity (4 weeks)
 
-Three sessions in v1.0 over one display manager: XFCE on X11 (default),
-i3 on X11, Hyprland on Wayland. KDE Plasma moves to v1.1. Package set
-and session files land first, theming afterwards.
+Three sessions in v1.0 over one display manager: KDE Plasma (Wayland,
+default), GNOME (Wayland) and Hyprland (Wayland). XFCE and i3 are
+dropped from the plan. Package set and session files land first,
+theming afterwards.
 
 5a. Sessions (1 week)
-- SDDM as the only display manager (ADR-0006); autologin to XFCE on the
-  live medium, text console on tty2 as the fallback.
-- Session defaults written by the project, kept short and readable: no
-  borrowed dotfile collections.
+- SDDM as the only display manager (ADR-0006); autologin to KDE Plasma
+  on the live medium, text console on tty2 as the fallback.
+- Hyprland gets a short configuration written by the project; GNOME and
+  KDE keep their own defaults.
 - Exit: each session starts from SDDM and survives a reboot. Hyprland
   needs OpenGL, so it is verified both in QEMU with GL enabled and in
   VirtualBox with 3D acceleration on.
@@ -124,8 +125,8 @@ and session files land first, theming afterwards.
   no third-party names, and no live-medium leftovers.
 - Exit: `make matrix` green over the agreed dimensions, and one manual
   install reviewed end to end. With three sessions the matrix is desktop
-  (XFCE, i3, Hyprland) × toolset (core, extended) and swap and shell
-  fixed, so N = 6 rather than the N = 8 of the Phase 0 report.
+  (KDE Plasma, GNOME, Hyprland) × toolset (core, extended) and swap and
+  shell fixed, so N = 6 rather than the N = 8 of the Phase 0 report.
 
 ## Phase 7 — hardening and release (3 weeks)
 
@@ -170,9 +171,8 @@ twice.
 
 - No GRUB, no LUKS, no btrfs or xfs, no second kernel, no text
   installer, no Secure Boot in v1.0 (ADR-0007 and `docs/BACKLOG.md`).
-- Three sessions in v1.0: XFCE (default, X11), i3 (X11), Hyprland
-  (Wayland). KDE Plasma and GNOME are v1.1 sub-phases with their own
-  acceptance criteria.
+- Three sessions in v1.0: KDE Plasma (default), GNOME and Hyprland, all
+  Wayland. XFCE and i3 are dropped from the plan.
 - Recommended addition: move `linux-omiden` from v1.0 to v1.1 (Phase 3c
   above), because it is cosmetic and the most frequent breakage.
 

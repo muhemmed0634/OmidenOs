@@ -1,0 +1,33 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: OmidenOS project
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Applies the live-medium wallpaper to whichever desktop started the
+# session. Hyprland does not read XDG autostart entries and sets its own
+# background from hyprland.conf, so this covers GNOME and KDE Plasma.
+#
+# Called from ~/.config/autostart/omidenos-session.desktop on login.
+
+set -u
+
+wallpaper=/usr/share/backgrounds/omidenos/wallpaper.png
+desktop=${XDG_CURRENT_DESKTOP:-}
+
+[ -r "$wallpaper" ] || exit 0
+
+case "$desktop" in
+*GNOME*)
+	if command -v gsettings >/dev/null 2>&1; then
+		gsettings set org.gnome.desktop.background picture-uri "file://$wallpaper"
+		gsettings set org.gnome.desktop.background picture-uri-dark "file://$wallpaper"
+		gsettings set org.gnome.desktop.background picture-options "zoom"
+	fi
+	;;
+*KDE*)
+	if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then
+		plasma-apply-wallpaperimage "$wallpaper"
+	fi
+	;;
+esac
+
+exit 0
