@@ -51,6 +51,7 @@ install -d -o omiden -g omiden -m 0755 /home/omiden
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config/i3
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config/hypr
+install -d -o omiden -g omiden -m 0755 /home/omiden/.config/autostart
 
 cat >/home/omiden/.zshrc <<'EOF'
 # OmidenOS live session. The global configuration comes from the shell
@@ -76,6 +77,10 @@ cat >/home/omiden/.config/i3/config <<'EOF'
 
 set $mod Mod4
 font pango:Noto Sans 10
+
+# Wallpaper and session basics
+exec --no-startup-id feh --bg-fill /usr/share/backgrounds/omidenos/wallpaper.png
+exec --no-startup-id nm-applet
 
 # Open a terminal, launcher, file manager
 bindsym $mod+Return exec xfce4-terminal
@@ -147,6 +152,7 @@ $mod = SUPER
 
 exec-once = waybar
 exec-once = nm-applet --indicator
+exec-once = swaybg -i /usr/share/backgrounds/omidenos/wallpaper.png
 
 input {
     kb_layout = us
@@ -188,3 +194,17 @@ bind = , XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 EOF
 
 chown -R omiden:omiden /home/omiden
+
+# XFCE picks its own wallpapers per monitor, and the monitor name differs
+# between hypervisors and hardware, so the image is applied to every
+# backdrop property that exists instead of guessing a monitor name.
+cat >/home/omiden/.config/autostart/omidenos-wallpaper.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=OmidenOS wallpaper
+Exec=sh -c 'p=/usr/share/backgrounds/omidenos/wallpaper.png; for prop in $(xfconf-query -c xfce4-desktop -l | grep last-image); do xfconf-query -c xfce4-desktop -p $prop -s $p; done'
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true
+EOF
+
+chown -R omiden:omiden /home/omiden/.config

@@ -31,6 +31,7 @@ path = [
     "Omiden.png",
     "OmidenOS.png",
     "branding/source/logo.png",
+    "archiso/airootfs/usr/share/backgrounds/omidenos/wallpaper.png",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 muhemmed0634"
