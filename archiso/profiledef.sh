@@ -20,5 +20,7 @@ airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86,arm64' '-b' '1M' '-Xdict-
 file_permissions=(
   ["/etc/shadow"]="0:0:400"
   ["/etc/sudoers.d/live-omiden"]="0:0:440"
+  ["/etc/issue"]="0:0:644"
+  ["/usr/local/bin/boot-report"]="0:0:755"
   ["/root"]="0:0:750"
 )

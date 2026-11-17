@@ -37,3 +37,27 @@ Interim limitations (Phase 2, removed in Phase 3):
   the interim parameters listed in branding/upstream-allowlist.toml;
 - the forensic-mode menu entry exists but its behavior is only wired to
   the omidenos-initcpio hooks in Phase 3.
+
+## Measuring the live system
+
+Boot cost belongs to a build, so it is measured rather than assumed.
+Inside the running live session:
+
+    boot-report
+
+The helper prints `systemd-analyze` totals, the ten slowest units, the
+critical chain, memory use, the live root mount and the enabled unit
+count. Record one block per build that touches the profile, the
+initramfs compression, the package list or the enabled services:
+
+    build: omidenos-YYYY.MM.DD-x86_64.iso, NNN MiB
+    boot:  userspace X.XXs, firmware + loader + userspace Y.YYs
+    slowest: unit (time), unit (time), ...
+    changed: what this build changed
+
+Two knobs have moved boot time so far. The initramfs compression is
+`zstd` (airootfs/etc/mkinitcpio.conf.d/archiso.conf): it decompresses
+faster than the previous `xz -9e` for a slightly larger archive. The
+service set enabled in the airootfs overlay is the other. Squashfs is
+still `xz`; it trades boot-read time for image size, and changing it is
+its own measurement with the ISO size recorded next to the boot number.

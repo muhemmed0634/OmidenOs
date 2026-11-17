@@ -1,1 +1,10 @@
+   /\_/\
+  ( o.o )   OmidenOS live medium  |  UEFI 64-bit only
+   > ^ <    omiden@omidenos, passwordless sudo in this session
+
+  ag:      nmcli device wifi list
+  kabuk:   zsh, tmux, nano
+  ölçüm:   boot-report
+  çıkış:   systemctl poweroff
+
 Yalnızca sahibi olduğun veya yazılı izin aldığın sistemlerde kullan.

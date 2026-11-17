@@ -7,6 +7,11 @@
 
 SHELL := /bin/bash
 
+# Shell sources that get shellcheck and shfmt. profiledef.sh is excluded
+# on purpose: mkarchiso sources it, so every variable in it looks unused
+# to shellcheck, and its spacing follows the upstream profile.
+SHELL_SRCS := $(wildcard scripts/*.sh) archiso/airootfs/usr/local/bin/boot-report
+
 .PHONY: help lint lint-style brand-scan strict tests
 
 # Byte-code never lands in the repo (reuse lint walks the tree and would
@@ -22,12 +27,8 @@ help:
 lint: lint-style brand-scan tests
 	@mkdir -p build/pycache
 	@PYTHONPYCACHEPREFIX=build/pycache python3 -m py_compile scripts/lint-style scripts/brand-scan
-	@if ls scripts/*.sh >/dev/null 2>&1; then \
-		if command -v shellcheck >/dev/null 2>&1; then shellcheck scripts/*.sh; else echo "SKIP: shellcheck not installed"; fi; \
-		if command -v shfmt >/dev/null 2>&1; then shfmt -d scripts; else echo "SKIP: shfmt not installed"; fi; \
-	else \
-		echo "SKIP: no shell scripts present"; \
-	fi
+	@if command -v shellcheck >/dev/null 2>&1; then shellcheck $(SHELL_SRCS); else echo "SKIP: shellcheck not installed"; fi
+	@if command -v shfmt >/dev/null 2>&1; then shfmt -d $(SHELL_SRCS); else echo "SKIP: shfmt not installed"; fi
 	@if command -v ruff >/dev/null 2>&1; then ruff check scripts tests; else echo "SKIP: ruff not installed"; fi
 	@if command -v mypy >/dev/null 2>&1; then mypy --strict tests; else echo "SKIP: mypy not installed"; fi
 	@if command -v reuse >/dev/null 2>&1; then reuse lint; else echo "SKIP: reuse not installed"; fi

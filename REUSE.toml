@@ -13,6 +13,7 @@ path = [
     ".gitignore",
     "README.md",
     "archiso/airootfs/etc/hostname",
+    "archiso/airootfs/etc/issue",
     "archiso/airootfs/etc/locale.conf",
     "archiso/airootfs/etc/motd",
     "archiso/airootfs/etc/group",
