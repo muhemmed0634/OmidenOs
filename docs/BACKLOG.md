@@ -46,10 +46,21 @@ Nothing in this file is claimed to work; these are pending items.
   scoutsuite, checkov, pacu) to `extended` tier if the 6 GiB budget is
   exceeded.
 
-## Phase 6
+## Out of v1.0 scope (owner decision, 2026-11-17)
 
-- Runtime verification of the bootloader × LUKS × filesystem
-  compatibility table in ADR-0007; update the ADR with measured results.
+- GRUB bootloader option and its theme (`omidenos-grub-theme`).
+- LUKS full-disk encryption option.
+- btrfs and xfs filesystem options (ext4 is the default and only
+  first-class v1.0 target).
+
+## Licensing note (to resolve in Phase 1)
+
+- The current `LICENSE` at the repository root is BSD 3-Clause
+  (Copyright (c) 2026, muhemmed0634). The project spec requires
+  GPL-3.0-or-later for code and CC-BY-SA-4.0 for brand assets. The
+  license set (root LICENSE + per-file SPDX headers) must be aligned
+  with the owner before Phase 1 closes; this is the only open licensing
+  question.
 
 ## No placeholder URLs in use
 

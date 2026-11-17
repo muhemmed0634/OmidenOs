@@ -90,3 +90,14 @@ in Phase 6 verify each cell of the compatibility table.
 7. Legacy content (previous iteration's `archiso-profile/`, `dotfiles/`,
    `site/` etc. deleted on disk): removal committed, fresh structure in
    Phase 1.
+
+## Scope simplification (owner confirmed, 2026-11-17, second round)
+
+8. Bootloader: systemd-boot only. GRUB is out of v1.0 scope (ADR-0007).
+9. Disk encryption: no LUKS option in v1.0 at all (ADR-0007).
+10. Filesystem: ext4 is the default (and in practice the v1.0 choice);
+    btrfs/xfs moved to BACKLOG. ADR-0007 records the change; the
+    bootloader × LUKS × filesystem research is kept there for the
+    record.
+11. Pairwise full-install test count revised from N = 12 to N = 8
+    (dimensions reduced to desktop × toolset × swap × shell).
