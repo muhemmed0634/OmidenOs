@@ -198,6 +198,8 @@ setup prompt. Both are recorded in `docs/dev/verification.md`.
 - `docs/adr/` holds the reasoning behind the shape of this system:
   kernel packaging, live hooks, identity files, installer, display
   manager, bootloader and encryption scope, brand scan, licensing.
+- `docs/ROADMAP.md` holds the phase sequence, the exit criterion of each
+  phase, the critical path and the recommended scope cuts.
 - `docs/BACKLOG.md` holds everything still open, including the one
   unresolved licensing question.
 - The brand scan keeps third-party distribution names off user-visible
