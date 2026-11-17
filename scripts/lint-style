@@ -34,9 +34,23 @@ SKIP_FILES = ("scripts/lint-style",)
 
 
 def tracked_files() -> list[str]:
-    out = subprocess.run(
-        ["git", "ls-files"], capture_output=True, text=True, check=True
-    )
+    # `safe.directory=*` keeps the listing usable in a container or on a
+    # bind-mounted checkout, where git refuses the repository because the
+    # directory is owned by another user (CI steps run as root).
+    try:
+        out = subprocess.run(
+            ["git", "-c", "safe.directory=*", "ls-files"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except FileNotFoundError:
+        print("lint-style: FAILED: git is not installed")
+        sys.exit(1)
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or "").strip() or f"exit status {exc.returncode}"
+        print(f"lint-style: FAILED: cannot list tracked files: {detail}")
+        sys.exit(1)
     files = []
     for line in out.stdout.splitlines():
         if any(part in line.split("/") for part in SKIP_DIRS):
