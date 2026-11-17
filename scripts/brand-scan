@@ -49,6 +49,15 @@ def load_toml(path: Path) -> dict:
         return tomllib.load(fh)
 
 
+def is_text_file(path: Path) -> bool:
+    """Follow git's convention: a NUL byte in the first 8 KiB means binary."""
+    try:
+        with open(path, "rb") as fh:
+            return b"\0" not in fh.read(8192)
+    except OSError:
+        return False
+
+
 def scan_file(
     path: Path,
     patterns: list[tuple[str, re.Pattern]],
@@ -118,6 +127,8 @@ def main() -> int:
     all_hits: list[tuple[Path, str, int, str]] = []
     allow_count = 0
     for path in collect_files(scope):
+        if not is_text_file(path):
+            continue
         file_hits, file_allowlisted = scan_file(path, patterns, allowlist)
         for term_id, lineno, line, _ in file_hits:
             all_hits.append((path, term_id, lineno, line))

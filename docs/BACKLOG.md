@@ -9,9 +9,13 @@ Nothing in this file is claimed to work; these are pending items.
 ## Blocked on owner input
 
 - `branding/source/logo.svg`: owner will provide the vector source
-  (decision of 2026-11-17). Until it arrives, `branding/source/logo.png`
-  (1280×720 raster) is the only brand asset; the desktop wallpaper uses
-  the provided logo as-is per owner instruction.
+  (decision of 2026-11-17). Until it arrives,
+  `branding/source/logo.png` (the owner's 2026-11-17 update: cat and
+  crescent emblem) is the current asset; the desktop wallpaper uses the
+  provided logo as-is per owner instruction.
+- Palette adaptation: the emblem introduces purple accent tones;
+  `branding/palette.toml` (Phase 5) must derive the accent color from
+  the logo and record the mapping in an ADR (section 10).
 
 ## v1.0 scope decisions recorded
 
