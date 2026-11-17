@@ -11,6 +11,19 @@ Build (from the repository root):
 
     sudo mkarchiso -v -w build/work -o build/out archiso
 
+Rebuild after a profile change: remove the work directory first.
+
+    sudo rm -rf build/work build/out
+    sudo mkarchiso -v -w build/work -o build/out archiso
+
+`mkarchiso` marks every completed step with a file in the work directory
+(`base._make_packages`, `base._mkairootfs_squashfs`, `base._build_buildmode_iso`, ...)
+and skips any step whose marker exists. Reusing a work directory from a
+previous build therefore produces a run that prints the validation lines,
+says `Done!`, exits 0 and leaves the old ISO in place. `-r` removes the
+work directory at the end of a successful build, which makes the next run
+clean at the cost of re-downloading the package cache.
+
 Outputs: `build/out/omidenos-<version>-x86_64.iso` plus the ISO sha256
 written by mkarchiso. `build/` is gitignored.
 
