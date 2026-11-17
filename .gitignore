@@ -26,3 +26,7 @@ Thumbs.db
 tmp/
 temp/
 .kiro/
+
+# Python byte-code caches
+__pycache__/
+*.pyc
