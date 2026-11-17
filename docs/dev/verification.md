@@ -42,6 +42,23 @@ entries, then auto-selecting the default after its 15 s timeout:
     OmidenOS Live (forensic mode)
     Reboot Into Firmware Interface
 
+## VirtualBox 7.2.22 (headless) verification
+
+A separate VM (`omidenos-verify`, registered under
+`/tmp/opencode/vbox/`) was created with **EFI enabled**, ICH9 chipset,
+4 GiB RAM, VMSVGA, Intel AHCI DVD controller holding the ISO. The
+existing `omiden-os-arch` VM was left untouched.
+
+- Menu screenshot after ~14 s: all four OmidenOS entries and
+  `Reboot Into Firmware Interface`, with the 15 s countdown.
+- Live screenshot after ~80 s: automatic `omiden` login, Turkish MOTD,
+  `omiden@omidenos ~ $` prompt — same result as QEMU/OVMF.
+- The VM is left powered off; start it with
+  `VBoxManage startvm omidenos-verify` (add `--type headless` for
+  headless use). VirtualBox must be set to **EFI** (System →
+  Motherboard → Enable EFI) because the ISO has no BIOS boot path;
+  Secure Boot is not supported by this ISO in any case.
+
 ## Defects found and fixed during verification
 
 1. First boot showed an upstream-branded interactive setup prompt
