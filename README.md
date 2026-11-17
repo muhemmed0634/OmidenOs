@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Omiden.png" width="160" alt="Omiden OS"/>
+<img src="OmidenOS.png" width="160" alt="Omiden OS"/>
 
 # Omiden OS
 
