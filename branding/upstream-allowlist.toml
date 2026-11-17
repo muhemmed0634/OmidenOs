@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: OmidenOS project
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Allowlist for brand-scan. Every row must carry a justification; rows
+# without a reason are rejected in review. Rows are expected to shrink;
+# each row with planned_removal must disappear in the named phase or the
+# scan fails.
+
+[[allowlist]]
+term = "archiso"
+path = "archiso/.*"
+reason = "Interim Phase 2 profile: the live media still uses the stock mkinitcpio-archiso hooks, which only recognize the stock kernel command line parameters. The omidenos-initcpio fork (ADR-0003) renames both hooks and parameters."
+planned_removal = "Phase 3"
+
+[[allowlist]]
+term = "archiso-cmdline"
+path = "archiso/.*"
+reason = "Interim Phase 2 boot entries pass the stock hook parameters (archisobasedir, archisosearchuuid) required by the stock hooks. Replaced by omidenos* parameters in the Phase 3 fork."
+planned_removal = "Phase 3"

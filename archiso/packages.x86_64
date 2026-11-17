@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: OmidenOS project
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Packages for the OmidenOS live medium (x86_64), Phase 2 interim set.
+# Selection rationale:
+# - `linux` is the stock kernel for the Phase 2 boot proof only;
+#   linux-omiden replaces it in Phase 3 (ADR-0002).
+# - `mkinitcpio-archiso` provides the stock live hooks for the interim
+#   boot; omidenos-initcpio replaces it in Phase 3 (ADR-0003).
+# - NetworkManager is the permanent network backend (section 3).
+# - Rescue/installation helpers follow the installer needs (ext4-only,
+#   systemd-boot: dosfstools for the ESP, e2fsprogs for root).
+
+base
+linux
+linux-firmware
+mkinitcpio
+mkinitcpio-archiso
+sudo
+zsh
+grml-zsh-config
+efibootmgr
+dosfstools
+e2fsprogs
+parted
+networkmanager
+nano
+tmux

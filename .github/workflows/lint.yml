@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: OmidenOS project
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Install static check tools
+        run: |
+          pacman -Syu --noconfirm --noprogressbar \
+            git python shellcheck shfmt ruff mypy reuse
+      - uses: actions/checkout@v4
+      - name: Run lint chain
+        run: make lint

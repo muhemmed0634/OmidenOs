@@ -36,6 +36,12 @@ Nothing in this file is claimed to work; these are pending items.
 - `docs/dev/hosting.md`: document GitHub Releases as the `[omidenos]`
   distribution channel (decision of 2026-11-17) and the mirror-use
   policy for upstream repos (S3 exception, no own mirrors).
+- Forensic-mode activation: wire the `omidenosforensic` parameter into
+  the omidenos-initcpio hooks (read-only block devices, no auto-mount,
+  no swap/zram) and verify the entry in `archiso/efiboot/` boots with
+  the expected behavior. The Phase 2 menu entry is a placeholder until
+  then; the allowlist rows in `branding/upstream-allowlist.toml` are
+  removed in the same step.
 
 ## Phase 4
 
