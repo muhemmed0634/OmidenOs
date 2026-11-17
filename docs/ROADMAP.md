@@ -20,7 +20,7 @@ install packages without a password and builds the ISO as root by hand.
 | 2 | UEFI-only live medium | done 2026-11-17 | `docs/dev/verification.md` |
 | 3 | Own repository, own hooks, own kernel | next | not started |
 | 4 | Tool manifest and meta packages | planned | not started |
-| 5 | Brand pipeline, display manager, XFCE | planned | not started |
+| 5 | Desktops (XFCE, i3, Hyprland) and identity | in progress | sessions in tree, no build yet |
 | 6 | Calamares, install matrix | planned | not started |
 | 7 | Hardening, SBOM, signed release | planned | not started |
 
@@ -84,19 +84,32 @@ reason, and `docs/dev/verification.md` records the leak honestly.
 - Exit: `make count` reports at least 100 tools, the manifest validates
   in CI, and the measured ISO size is recorded.
 
-## Phase 5 — brand and desktop (3 weeks)
+## Phase 5 — desktops and identity (4 weeks)
 
-Blocked on the owner's vector crest (`branding/source/logo.svg`); work
-proceeds on the raster asset until it arrives.
+Three sessions in v1.0 over one display manager: XFCE on X11 (default),
+i3 on X11, Hyprland on Wayland. KDE Plasma moves to v1.1. Package set
+and session files land first, theming afterwards.
 
+5a. Sessions (1 week)
+- SDDM as the only display manager (ADR-0006); autologin to XFCE on the
+  live medium, text console on tty2 as the fallback.
+- Session defaults written by the project, kept short and readable: no
+  borrowed dotfile collections.
+- Exit: each session starts from SDDM and survives a reboot. Hyprland
+  needs OpenGL, so it is verified both in QEMU with GL enabled and in
+  VirtualBox with 3D acceleration on.
+
+5b. Identity (2 weeks)
 - `branding/palette.toml` with the accent colour derived from the crest,
   and the mapping recorded in an ADR.
-- Plymouth theme, console identity, wallpaper set.
-- SDDM theme and the lightest default session (ADR-0006; LightDM stays
-  the fallback if the XFCE boot test regresses).
-- XFCE as the only v1.0 desktop; KDE, i3 and GNOME are v1.1 sub-phases.
-- Exit: `brand-scan` in screens mode is green on a fresh install, with no
-  third-party distribution name anywhere a user can see it.
+- Plymouth theme, console identity, one wallpaper set that works for all
+  three sessions.
+- SDDM theme generated from the crest.
+
+5c. Screens (1 week)
+- Exit: `brand-scan` in screens mode is green per session on a fresh
+  install, with no third-party distribution name anywhere a user can see
+  it. GNOME is not planned; a fourth session is added only on request.
 
 ## Phase 6 — installer (4 weeks)
 
@@ -109,9 +122,10 @@ proceeds on the raster asset until it arrives.
   tooling and the installer itself from the target system.
 - `verify --installed`: installed system carries the project identity,
   no third-party names, and no live-medium leftovers.
-- Exit: `make matrix` green over the agreed dimensions (desktop ×
-  toolset × swap × shell, N = 8 as confirmed in the Phase 0 report), and
-  one manual install reviewed end to end.
+- Exit: `make matrix` green over the agreed dimensions, and one manual
+  install reviewed end to end. With three sessions the matrix is desktop
+  (XFCE, i3, Hyprland) × toolset (core, extended) and swap and shell
+  fixed, so N = 6 rather than the N = 8 of the Phase 0 report.
 
 ## Phase 7 — hardening and release (3 weeks)
 
@@ -156,7 +170,8 @@ twice.
 
 - No GRUB, no LUKS, no btrfs or xfs, no second kernel, no text
   installer, no Secure Boot in v1.0 (ADR-0007 and `docs/BACKLOG.md`).
-- XFCE only in v1.0; other desktops are v1.1 sub-phases with their own
+- Three sessions in v1.0: XFCE (default, X11), i3 (X11), Hyprland
+  (Wayland). KDE Plasma and GNOME are v1.1 sub-phases with their own
   acceptance criteria.
 - Recommended addition: move `linux-omiden` from v1.0 to v1.1 (Phase 3c
   above), because it is cosmetic and the most frequent breakage.

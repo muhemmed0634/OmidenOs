@@ -1,10 +1,10 @@
    /\_/\
   ( o.o )   OmidenOS live medium  |  UEFI 64-bit only
-   > ^ <    omiden@omidenos, passwordless sudo in this session
+   > ^ <    sessions: XFCE (default), i3, Hyprland
 
-  ag:      nmcli device wifi list
-  kabuk:   zsh, tmux, nano
-  ölçüm:   boot-report
-  çıkış:   systemctl poweroff
+  network   nmtui
+  sessions  Ctrl+Alt+F2 for the text console
+  measure   boot-report
+  power off systemctl poweroff
 
-Yalnızca sahibi olduğun veya yazılı izin aldığın sistemlerde kullan.
+Only use this system on hardware you own or are authorised to test.

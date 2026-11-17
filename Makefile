@@ -10,7 +10,8 @@ SHELL := /bin/bash
 # Shell sources that get shellcheck and shfmt. profiledef.sh is excluded
 # on purpose: mkarchiso sources it, so every variable in it looks unused
 # to shellcheck, and its spacing follows the upstream profile.
-SHELL_SRCS := $(wildcard scripts/*.sh) archiso/airootfs/usr/local/bin/boot-report
+SHELL_SRCS := $(wildcard scripts/*.sh) archiso/airootfs/usr/local/bin/boot-report \
+              archiso/airootfs/root/customize_airootfs.sh
 
 .PHONY: help lint lint-style brand-scan strict tests
 

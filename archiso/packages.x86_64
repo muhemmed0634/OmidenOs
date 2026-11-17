@@ -26,3 +26,45 @@ parted
 networkmanager
 nano
 tmux
+# Live-session polish, no applications: the login card, a readable console
+# font, and the two shell plugins that make the prompt feel current.
+fastfetch
+terminus-font
+zsh-syntax-highlighting
+zsh-autosuggestions
+
+# Graphical stack: one display manager, three sessions in v1.0 (XFCE, i3,
+# Hyprland). KDE Plasma is a v1.1 sub-phase. Shared plumbing first, then
+# the sessions, then the session helpers. Hyprland needs mesa and the
+# portal; X11 sessions need the X server and the input driver.
+xorg-server
+xf86-input-libinput
+xorg-xwayland
+mesa
+polkit
+xdg-utils
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+xdg-desktop-portal-hyprland
+sddm
+noto-fonts
+ttf-dejavu
+xfce4
+xfce4-terminal
+thunar
+mousepad
+i3-wm
+i3status
+i3lock
+rofi
+hyprland
+waybar
+wofi
+kitty
+pipewire
+pipewire-pulse
+wireplumber
+network-manager-applet
+xfce4-power-manager
+xfce4-pulseaudio-plugin
+xfce4-screenshooter

@@ -5,7 +5,7 @@
 <p align="center">
   A pacman-based live system for security work, built with <code>mkarchiso</code>.
   <br>
-  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; XFCE &middot; Calamares
+  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; XFCE &middot; i3 &middot; Hyprland &middot; Calamares
 </p>
 
 <p align="center">
@@ -32,9 +32,8 @@ Torito UEFI boot image and nothing else.
 
 The current medium is a working live system: it builds, it boots on two
 independent hypervisors, and it drops you into a zsh session as an
-unprivileged user. It does not install to disk yet and it carries no
-graphical session, so it is the second of eight phases rather than a
-release.
+unprivileged user. It does not install to disk yet, so it is the second
+of eight phases rather than a release.
 
 Each phase has an exit criterion, and a phase closes only when that
 criterion is backed by a recorded check. The evidence for the current
@@ -65,7 +64,7 @@ described: `docs/dev/verification.md`.
 | Live root | squashfs plus RAM overlay | verified |
 | Installed root filesystem | ext4 | scope decision, no installer yet |
 | Installer | Calamares | not implemented |
-| Desktop | XFCE | not implemented |
+| Sessions | XFCE (default), i3, Hyprland | in the tree, not yet built |
 | Tool set | curated security tools | not implemented |
 | Disk encryption | none, out of v1.0 scope | not applicable |
 | Secure Boot | unsupported, ISO unsigned | decision recorded |
@@ -80,6 +79,21 @@ described: `docs/dev/verification.md`.
 | `OmidenOS Live (safe graphics)` | adds `nomodeset` for hardware that misbehaves with the default stack |
 | `OmidenOS Live (forensic mode)` | boots, but the parameter is a placeholder: read-only mounting arrives with the Phase 3 hooks |
 
+## Sessions
+
+One display manager (SDDM), three sessions, one console fallback. The
+live medium logs straight into XFCE; the others are one click away.
+
+| Session | Stack | Notes |
+| --- | --- | --- |
+| XFCE | X11 | default, autologin, the session to fall back to |
+| i3 | X11 | tiling, `Mod4` bindings, status bar from `i3status` |
+| Hyprland | Wayland | tiling, needs OpenGL; enable 3D acceleration in a VM |
+| text console | tty2 | `Ctrl+Alt+F2`, no session, no display manager |
+
+Session defaults are written by the project and stay short: a keybinding
+set, a bar, a launcher. No borrowed dotfile collections.
+
 ## Phases
 
 | Phase | Content | State |
@@ -89,7 +103,7 @@ described: `docs/dev/verification.md`.
 | 2 | UEFI-only live medium | done, verified 2026-11-17 |
 | 3 | Own hook set, `[omidenos]` repository, own kernel | planned |
 | 4 | Tool manifest, meta packages | planned |
-| 5 | Brand pipeline, Plymouth, display manager, XFCE | planned |
+| 5 | Desktops (XFCE, i3, Hyprland) and identity | in progress |
 | 6 | Calamares configuration, install test matrix | planned |
 | 7 | Hardening review, SBOM, release pipeline | planned |
 
@@ -158,7 +172,9 @@ newest run.
 
 - No installer. Calamares is not part of the profile, so there is no
   path from the live medium to a disk.
-- No graphical session. The desktop stack arrives in Phase 5.
+- The graphical stack is in the tree but no ISO has been built with it
+  yet, so no session has been verified. Hyprland needs OpenGL: in a
+  virtual machine, enable 3D acceleration or the session will not start.
 - No tool set. The medium ships a shell, `nano`, `tmux` and the rescue
   basics, not the security tool selection.
 - Forensic mode is inert. The entry boots, the parameter is ignored by
