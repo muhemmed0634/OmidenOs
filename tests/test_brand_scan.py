@@ -12,27 +12,28 @@ SCANNER = REPO_ROOT / "scripts" / "brand-scan"
 
 
 class BrandScanCliTests(unittest.TestCase):
-    def run_scan(self, text: str, tmpdir: Path):
+    def run_scan(self, text: str, tmpdir: Path) -> subprocess.CompletedProcess[str]:
         (tmpdir / "sample.txt").write_text(text, encoding="utf-8")
         return subprocess.run(
             [str(SCANNER), "--mode", "strict", "--path", str(tmpdir)],
+            check=False,
             capture_output=True,
             text=True,
         )
 
-    def test_hit_fails(self):
+    def test_hit_fails(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             proc = self.run_scan("welcome to Arch Linux\n", Path(td))
             self.assertEqual(proc.returncode, 1)
             self.assertIn("[arch-linux]", proc.stdout)
 
-    def test_clean_passes(self):
+    def test_clean_passes(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             proc = self.run_scan("OmidenOS live medium\n", Path(td))
             self.assertEqual(proc.returncode, 0)
             self.assertIn("OK", proc.stdout)
 
-    def test_scan_scope_outside_repo_still_applies_allowlist_semantics(self):
+    def test_scan_scope_outside_repo_still_applies_allowlist_semantics(self) -> None:
         # Files outside archiso/ are not allowlisted, so a stock hook
         # name there must fail regardless of allowlist entries.
         with tempfile.TemporaryDirectory() as td:

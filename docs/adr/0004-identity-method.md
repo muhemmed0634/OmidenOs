@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: OmidenOS project
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: BSD-3-Clause
 
 # ADR-0004: Identity files — method comparison pending, placeholder decision
 
