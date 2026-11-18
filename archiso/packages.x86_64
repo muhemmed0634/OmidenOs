@@ -68,6 +68,14 @@ xfce4-screenshooter
 xfce4-taskmanager
 thunar
 thunar-volman
+thunar-archive-plugin
+xfce4-clipman-plugin
+xfce4-docklike-plugin
+xfce4-notifyd
+ttf-jetbrains-mono
+noto-fonts-emoji
+papirus-icon-theme
+materia-gtk-theme
 tumbler
 gvfs
 mousepad

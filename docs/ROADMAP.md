@@ -105,6 +105,11 @@ boot splash land first, theming afterwards.
   the mapping recorded in an ADR-0012; the panel and the greeter take their
   colours from it.
 - Wallpaper set for the single session and the project icon set.
+- Desktop polish beyond the stock look: docklike taskbar with the accent
+  indicator, clipboard and session plugins, compositing, Materia-dark +
+  Papirus-Dark, Noto Sans with JetBrains Mono for terminals, keyboard
+  shortcuts (Super = menu, Ctrl+Alt+T terminal, Ctrl+Alt+L lock, Print
+  screenshot), tidier desktop icons and Thunar defaults.
 - SDDM greeter theme in `usr/share/sddm/themes/omidenos/`, QtQuick
   primitives only, so it loads with the modules SDDM already depends on.
   Its backdrop is composed from the wallpaper by

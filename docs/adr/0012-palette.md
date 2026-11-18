@@ -33,7 +33,7 @@ Mapping, per surface:
 | Boot splash | `usr/share/plymouth/themes/omidenos/` | black window (the artwork fades to black), `accent` dot |
 | Greeter | `usr/share/sddm/themes/omidenos/` | `ink` backdrop scrim, `surface` card, `accent` border and button |
 | Panel | `customize_airootfs.sh` (`xfce4-panel` channel) | `ink` at 94% opacity, `foreground` text |
-| Window titles | `customize_airootfs.sh` (`xfwm4` channel) | stock `Default` theme, no accent in v1.0 |
+| Window titles | `customize_airootfs.sh` (`xfwm4` channel) | `Materia-dark` decoration from `materia-gtk-theme` |
 | Wallpaper | `usr/share/backgrounds/omidenos/wallpaper.png` | owner artwork, dark enough for `foreground` |
 
 Rules that follow from the mapping:
@@ -42,17 +42,20 @@ Rules that follow from the mapping:
   local literal.
 - Text on `accent` is `ink`, never `foreground`; the contrast pair is fixed
   in the file rather than computed per surface.
-- The GTK widget theme stays `Adwaita-dark` (ADR-0010). The palette colours
-  the surfaces the project draws itself; a full GTK theme is a v1.1 item,
-  because it multiplies the number of screens the brand scan has to inspect.
+- Widgets and window decorations come from `materia-gtk-theme`, icons from
+  `papirus-icon-theme`, both packages on the medium. They are neutral dark
+  surfaces: the accent stays on what the project draws itself (panel, card,
+  splash, wallpaper). A palette-derived GTK theme remains a v1.1 item, because
+  it would multiply the screens the brand scan has to inspect.
 
 ## Alternatives
 
 - Hardcode colours per file: rejected, this is the state the record
   replaces.
-- Generate a GTK theme from the palette in v1.0: rejected for scope. It
-  needs a theme engine package and its own screen checks in Phase 5c, and it
-  would be the only reason to ship a non-stock widget theme.
+- Generate a GTK theme from the palette in v1.0: rejected for scope. It needs
+  a theme engine package and its own screen checks in Phase 5c, and it would be
+  the only reason to ship a generated widget theme. Shipping `Materia-dark`
+  gives the same "not stock" impression without owning a theme build.
 - Derive the accent from the wordmark instead of the crest: rejected. The
   wordmark carries white and the same violet, so the crest is the more
   specific sample and it is also what the splash draws.
@@ -69,6 +72,9 @@ Rules that follow from the mapping:
   wallpaper's crest in the left two thirds and darkens the right third for
   the card. The wallpaper stays the only artwork, and a replacement backdrop
   needs no QML change, only the same 1920×1080 frame.
+- The theme packages are a new brand-scan surface: their stock names are
+  visible in Settings dialogs only, which is why `screens` mode must ignore the
+  theme picker rather than flag it.
 - The light variant does not exist. Every surface assumes a dark backdrop,
   which matches the artwork and keeps one screen set to verify.
 - The panel and window-title colours are written into the live user's

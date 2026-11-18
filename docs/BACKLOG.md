@@ -81,6 +81,9 @@ Nothing in this file is claimed to work; these are pending items.
   move to `xfw_monitor_get_identifier()`, which would change the key string
   again; `omidenos-session` writes `monitor0` as a fallback and the behaviour
   is covered by `tests/test_session_monitors.py`.
+- A palette-derived GTK/xfwm4 theme is the v1.1 finish: today the widgets and
+  window decorations come from `materia-gtk-theme`, so the titlebar is neutral
+  dark rather than project violet.
 - Greeter backdrop is generated, not designed: `greeter.png` is composed
   from the wallpaper by `scripts/compose-artwork.py`. If the owner
   provides a hand-made frame, it only has to be 1920×1080 with the right

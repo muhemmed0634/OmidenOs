@@ -99,7 +99,7 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EO
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="length" type="double" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="34"/>
+      <property name="size" type="uint" value="36"/>
       <property name="mode" type="uint" value="0"/>
       <property name="autohide-behavior" type="uint" value="0"/>
       <property name="background-style" type="uint" value="1"/>
@@ -116,6 +116,8 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EO
         <value type="int" value="4"/>
         <value type="int" value="5"/>
         <value type="int" value="6"/>
+        <value type="int" value="7"/>
+        <value type="int" value="8"/>
       </property>
     </property>
   </property>
@@ -125,10 +127,17 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EO
       <property name="button-title" type="string" value="OmidenOS"/>
       <property name="show-button-title" type="bool" value="true"/>
     </property>
-    <property name="plugin-2" type="string" value="tasklist">
-      <property name="show-labels" type="bool" value="true"/>
+    <property name="plugin-2" type="string" value="docklike">
+      <property name="show-labels" type="bool" value="false"/>
+      <property name="show-only-minimized" type="bool" value="false"/>
+      <property name="indicator-style" type="uint" value="1"/>
+      <property name="indicator-color" type="array">
+        <value type="double" value="0.545098"/>
+        <value type="double" value="0.360784"/>
+        <value type="double" value="0.964706"/>
+        <value type="double" value="1.000000"/>
+      </property>
       <property name="grouping" type="bool" value="true"/>
-      <property name="flat-buttons" type="bool" value="true"/>
     </property>
     <property name="plugin-3" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -144,24 +153,45 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EO
     <property name="plugin-6" type="string" value="clock">
       <property name="digital-layout" type="uint" value="3"/>
       <property name="digital-time-format" type="string" value="%H:%M"/>
-      <property name="digital-time-font" type="string" value="Sans 11"/>
+      <property name="digital-date-format" type="string" value="%a %d %b"/>
+      <property name="digital-time-font" type="string" value="Noto Sans 11"/>
+    </property>
+    <property name="plugin-7" type="string" value="clipman">
+      <property name="add-primary-clipboard" type="bool" value="false"/>
+      <property name="max-texts-in-history" type="uint" value="30"/>
+    </property>
+    <property name="plugin-8" type="string" value="actions">
+      <property name="ask-confirmation" type="bool" value="true"/>
+      <property name="items" type="array">
+        <value type="string" value="switch-user"/>
+        <value type="string" value="separator"/>
+        <value type="string" value="lock-screen"/>
+        <value type="string" value="logout"/>
+        <value type="string" value="restart"/>
+        <value type="string" value="shutdown"/>
+      </property>
     </property>
   </property>
 </channel>
 EOF
 
-# Window manager: the stock theme, four named workspaces and centred
-# titles, so the session looks the same on every machine. The titlebar
-# colour is the theme's; accenting it needs a custom xfwm4 theme, which is
-# a v1.1 item (docs/adr/0012-palette.md).
+# Window manager: the Materia-dark decoration (shipped by materia-gtk-theme,
+# like the GTK side), compositing on for the panel's transparency and window
+# shadows, four named workspaces and centred titles. A project-coloured xfwm4
+# theme is still a v1.1 item (docs/adr/0012-palette.md).
 cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 
 <channel name="xfwm4" version="1.0">
   <property name="general" type="empty">
-    <property name="theme" type="string" value="Default"/>
-    <property name="title_font" type="string" value="Sans Bold 10"/>
+    <property name="theme" type="string" value="Materia-dark"/>
+    <property name="title_font" type="string" value="Noto Sans Bold 10"/>
     <property name="title_alignment" type="string" value="center"/>
+    <property name="use_compositing" type="bool" value="true"/>
+    <property name="vblank_mode" type="string" value="auto"/>
+    <property name="button_layout" type="string" value="O|HMC"/>
+    <property name="cycle_preview" type="bool" value="true"/>
+    <property name="workspace_count_rows" type="int" value="1"/>
     <property name="workspace_count" type="int" value="4"/>
     <property name="workspace_names" type="array">
       <value type="string" value="main"/>
@@ -194,25 +224,88 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'
       </property>
     </property>
   </property>
+  <property name="desktop-icons" type="empty">
+    <property name="file-icons" type="empty">
+      <property name="show-home" type="bool" value="false"/>
+      <property name="show-filesystem" type="bool" value="false"/>
+      <property name="show-trash" type="bool" value="true"/>
+      <property name="show-removable" type="bool" value="true"/>
+      <property name="show-network" type="bool" value="false"/>
+    </property>
+    <property name="icon-size" type="uint" value="42"/>
+    <property name="single-click" type="bool" value="false"/>
+  </property>
 </channel>
 EOF
 
-# GTK appearance: the dark variant of the stock theme, the stock icon
-# set, and antialiasing with subpixel hinting. No theme is taken from
-# outside the medium.
+# GTK appearance: Materia-dark for widgets, Papirus-Dark for icons (both come
+# from the medium's own packages, nothing is fetched at runtime), Noto Sans as
+# the UI font, antialiasing with subpixel hinting.
 cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 
 <channel name="xsettings" version="1.0">
   <property name="Net" type="empty">
-    <property name="ThemeName" type="string" value="Adwaita-dark"/>
-    <property name="IconThemeName" type="string" value="Adwaita"/>
+    <property name="ThemeName" type="string" value="Materia-dark"/>
+    <property name="IconThemeName" type="string" value="Papirus-Dark"/>
+    <property name="CursorThemeName" type="string" value="Adwaita"/>
+    <property name="CursorThemeSize" type="int" value="24"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="FontName" type="string" value="Noto Sans 10"/>
+    <property name="MonospaceFontName" type="string" value="JetBrains Mono 10"/>
+    <property name="DecorationLayout" type="string" value="menu:minimize,maximize,close"/>
   </property>
   <property name="Xft" type="empty">
     <property name="Antialias" type="int" value="1"/>
     <property name="HintStyle" type="string" value="hintslight"/>
     <property name="RGBA" type="string" value="rgb"/>
   </property>
+</channel>
+EOF
+
+# Keyboard shortcuts that make the session usable without a mouse. The
+# property names are the literal accelerator strings, so the angle brackets
+# are escaped for XML - xfconf sees `<Super>space`, not `&lt;Super&gt;space`.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-keyboard-shortcuts" version="1.0">
+  <property name="commands" type="empty">
+    <property name="custom" type="empty">
+      <property name="&lt;Super&gt;space" type="string" value="xfce4-popup-whiskermenu"/>
+      <property name="&lt;Primary&gt;&lt;Alt&gt;t" type="string" value="xfce4-terminal"/>
+      <property name="&lt;Primary&gt;&lt;Alt&gt;l" type="string" value="xflock4"/>
+      <property name="Print" type="string" value="xfce4-screenshooter -f"/>
+    </property>
+  </property>
+</channel>
+EOF
+
+# Thunar: a details view, thumbnails only for local files, no hidden files by
+# default. The archive plugin adds "Extract here" to the context menu.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="thunar" version="1.0">
+  <property name="last-view" type="string" value="ThunarDetailsView"/>
+  <property name="last-show-hidden" type="bool" value="false"/>
+  <property name="last-sort-column" type="string" value="THUNAR_COLUMN_NAME"/>
+  <property name="misc-single-click" type="bool" value="false"/>
+  <property name="misc-thumbnail-mode" type="string" value="THUNAR_THUMBNAIL_MODE_ONLY_LOCAL"/>
+  <property name="misc-date-style" type="string" value="THUNAR_DATE_STYLE_SIMPLEDATE"/>
+</channel>
+EOF
+
+# Notifications: the stock daemon with a readable timeout, top right, and no
+# do-not-disturb by default.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-notifyd.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-notifyd" version="1.0">
+  <property name="expire-timeout" type="int" value="8"/>
+  <property name="do-not-disturb" type="bool" value="false"/>
+  <property name="notify-location" type="uint" value="1"/>
 </channel>
 EOF
 
