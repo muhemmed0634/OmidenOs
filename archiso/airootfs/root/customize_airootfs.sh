@@ -229,6 +229,17 @@ EOF
 
 chown -R omiden:omiden /home/omiden
 
+# The sddm package installs a Qt5-linked /usr/bin/sddm-greeter next to the
+# Qt6 one, and this medium carries no Qt5: that binary dies with
+# "libQt5Quick.so.5: cannot open shared object file" and SDDM leaves tty1
+# black instead of a login card (seen on the 2026-11-18 build). Point the
+# unversioned name at the Qt6 build, so whichever name SDDM launches is a
+# greeter that can actually load. The theme itself renders under
+# sddm-greeter-qt6 (test-mode run in the live session).
+if [ -x /usr/bin/sddm-greeter-qt6 ]; then
+	ln -sf /usr/bin/sddm-greeter-qt6 /usr/bin/sddm-greeter
+fi
+
 # The kernel package already built an initramfs, before this script ran,
 # so the Plymouth hook and the theme are missing from it. Rebuild it now
 # that /etc/plymouth/plymouthd.conf points at the theme in the overlay;

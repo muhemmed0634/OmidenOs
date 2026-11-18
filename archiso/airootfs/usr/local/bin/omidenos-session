@@ -2,17 +2,44 @@
 # SPDX-FileCopyrightText: OmidenOS project
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Applies the live-medium wallpaper to the XFCE session. XFCE stores one
-# backdrop per monitor and workspace in the xfce4-desktop channel, and the
-# monitor names only exist after xfdesktop has probed the display, so every
-# last-image property that already exists is filled in, plus the
-# single-monitor default path, which is created when it is missing.
+# Applies the project wallpaper to the XFCE session.
+#
+# xfdesktop 4.20 keys every backdrop on the monitor *connector* name, not on
+# an index: `/backdrop/screen0/monitor<connector>/workspace<n>/last-image`,
+# where the connector is what `xfw_monitor_get_connector()` returns
+# (xfdesktop-backdrop-manager.c). A key written for `monitor0` is never read,
+# so xfdesktop falls back to its own default image - which is why the first
+# builds showed the stock wallpaper while the configuration looked correct.
+#
+# The connector names come from the kernel: /sys/class/drm/<card>-<connector>
+# with status "connected" is the same string XRandR reports, so no extra
+# package is needed and the script works on any GPU.
 #
 # Called from ~/.config/autostart/omidenos-session.desktop on login.
 
 set -u
 
 wallpaper=/usr/share/backgrounds/omidenos/wallpaper.png
+drm_root=${OMIDENOS_DRM_ROOT:-/sys/class/drm}
+workspaces=4
+
+# Print the connected connectors, one per line; nothing when the kernel
+# exposes no DRM entries (a bare X server without KMS).
+outputs() {
+	for status in "$drm_root"/*/status; do
+		[ -r "$status" ] || continue
+		[ "$(cat "$status" 2>/dev/null)" = connected ] || continue
+		name=${status%/status}
+		name=${name##*/}
+		# card0-Virtual-1 -> Virtual-1
+		printf '%s\n' "${name#[a-z]*-}"
+	done
+}
+
+if [ "${1:-}" = "--print-outputs" ]; then
+	outputs
+	exit 0
+fi
 
 [ -r "$wallpaper" ] || exit 0
 command -v xfconf-query >/dev/null 2>&1 || exit 0
@@ -26,12 +53,18 @@ apply() {
 		-n -t int -s 5 >/dev/null 2>&1 || true
 }
 
-xfconf-query -c xfce4-desktop -l 2>/dev/null |
-	sed -n 's|^\(.*\)/last-image$|\1|p' |
-	while read -r backdrop; do
-		apply "$backdrop"
+# `monitor0` stays as the last resort: older xfdesktop builds, and a session
+# where no connector is detectable, fall back to it.
+for monitor in $(outputs) monitor0; do
+	workspace=0
+	while [ "$workspace" -lt "$workspaces" ]; do
+		apply "/backdrop/screen0/monitor$monitor/workspace$workspace"
+		workspace=$((workspace + 1))
 	done
+done
 
-apply /backdrop/screen0/monitor0/workspace0
+# xfdesktop caches the image it painted at startup, so reload once the
+# properties are in place; otherwise the change only shows after a re-login.
+xfdesktop --reload >/dev/null 2>&1 || true
 
 exit 0

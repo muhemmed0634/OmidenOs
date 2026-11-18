@@ -138,3 +138,91 @@ Not covered by these checks: SDDM's real context objects, the autologin skip
 that keeps the card off screen on the live medium, font metrics and scaling
 under Xorg, and Plymouth drawing the splash. All of those need the built
 medium and belong to the first Phase 5 build, not to this section.
+
+## Phase 5 first build (2026-11-18)
+
+ISO: `omidenos-2026.11.18-x86_64.iso` (1.18 GiB, built 13:34 with the XFCE,
+Plymouth and greeter layer in the tree). Booted in VirtualBox 7.2, EFI
+firmware, 6 GiB RAM, 4 vCPU, VMSVGA, headless with
+`controlvm screenshotpng` as the witness.
+
+Works:
+
+- systemd-boot menu, then the project splash: the crest, the wordmark and the
+  three pulsing accent dots are on screen on the quiet entry
+  (frames captured at ~30 s and ~50 s differ only in dot opacity, which is
+  the animation working).
+- SDDM autologin into XFCE: panel with the `OmidenOS` whisker button and the
+  project icon, the dark panel colour from ADR-0012, clock, network and
+  mixer plugins, desktop icons, and the session's own logout dialog with
+  Log Out / Restart / Shut Down.
+
+Defects found on the first boot:
+
+1. The desktop did not get the project wallpaper: xfdesktop paints its own
+   default image (the stock mouse artwork). Cause: the per-monitor backdrop
+   property does not exist until xfdesktop creates it, which happens after
+   the `omidenos-session` autostart entry has run, so the script wrote a
+   path nothing reads. Fix: the script now re-applies to every backdrop path
+   for up to 10 s, stops once a non-`monitor0` backdrop appears, then runs
+   `xfdesktop --reload` and applies once more.
+2. Logging out left tty1 black: no greeter card was painted, and
+   Ctrl+Alt+F2 did not bring the console back (the VT stayed in graphics
+   mode). Not diagnosed yet: the greeter theme passes `qmllint` and renders
+   in a bare QML host, `sddm-greeter-qt6`, the `SddmComponents` module, the
+   `sddm` user, `/var/lib/sddm` and the modesetting driver are all present
+   in the assembled root, so the failure is either the theme under the real
+   greeter or X restarting. The next build is checked from tty2, which stays
+   usable while the greeter is up, and `DisplayServer=x11` is now pinned in
+   `etc/sddm.conf.d/theme.conf` so a Wayland attempt cannot be the cause.
+
+Screenshot files are not committed: they live in the agent workspace
+(`~/.hermes/cache/scratch/omiden/`). Nothing else in this section is
+evidence for a closed phase; Phase 5 remains open.
+
+## Wallpaper root cause (2026-11-18, live session of the first build)
+
+The first build's desktop kept xfdesktop's stock image. The cause was found
+in the running live session, not guessed:
+
+    DBG[xfdesktop-backdrop-renderer.c:644] xfdesktop_backdrop_renderer(): loading image /usr/share/backgrounds/xfce/xfce-x.svg
+
+xfdesktop ignored `/backdrop/screen0/monitor0/workspace0/last-image` (which
+held the project wallpaper, readable, correct type) and painted its own
+default. In `xfdesktop-backdrop-manager.c` the property prefix is built as
+
+    /backdrop/screen%d/monitor%s/workspace%d
+
+with `%s` from `monitor_get_identifier()`, which returns
+`xfw_monitor_get_connector()` - the connector name (`Virtual-1`, `eDP-1`,
+`HDMI-A-1`), never `monitor0`. Older builds did read `monitor0`, which is why
+the overlay files were written that way.
+
+Fix in `usr/local/bin/omidenos-session`: read the connected connectors from
+`/sys/class/drm/*/status`, write `last-image`, `image-path` and `image-style`
+for `/backdrop/screen0/monitor<connector>/workspace0..3`, keep `monitor0` as
+the last-resort fallback for older builds, then `xfdesktop --reload`. The
+lookup is covered by `tests/test_session_monitors.py` (fixture DRM tree,
+connected/disconnected/unknown, empty root, shebang check) and the script is
+clean under `shellcheck` and `shfmt -d`.
+
+This is a static and unit-level check only; the visual result needs a boot of
+a rebuilt medium.
+
+## Phase 5 second build (2026-11-18, 16:43)
+
+ISO: `omidenos-2026.11.18-x86_64.iso` (1.18 GiB), rebuilt after the two fixes
+below. Booted from VirtualBox 7.2 with EFI firmware, 6 GiB RAM, 4 vCPU.
+
+Checked in the assembled root before booting:
+
+- `usr/bin/sddm-greeter` is a symlink to `sddm-greeter-qt6`, so the Qt5
+  greeter that cannot load on this medium is never executed.
+- `usr/local/bin/omidenos-session` carries the `/sys/class/drm` connector
+  lookup that writes the backdrop keys xfdesktop actually reads.
+
+Owner-confirmed on the boot: the medium reaches the XFCE live session.
+
+Not checked in this run: the Plymouth splash frames, and the logout path that
+shows the greeter card (the live medium autologins, so the card is only
+reachable by logging out). Both stay open until someone walks them.

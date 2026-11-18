@@ -19,8 +19,8 @@ import QtQuick.Window 2.15
 Rectangle {
     id: root
 
-    width: (parent && parent.width > 0) ? parent.width : Screen.width
-    height: (parent && parent.height > 0) ? parent.height : Screen.height
+    width: Math.max(Screen.width, (parent && parent.width) ? parent.width : 0)
+    height: Math.max(Screen.height, (parent && parent.height) ? parent.height : 0)
 
     // `config` is SDDM's theme.conf object. `typeof` keeps the binding from
     // throwing when the file is loaded outside the greeter.

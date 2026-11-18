@@ -77,10 +77,22 @@ Nothing in this file is claimed to work; these are pending items.
   `config`, `userModel`, `sessionModel`, `keyboard`) and the autologin
   handoff only exist on the built medium. Check a logout on the first
   build; the live medium autologins and never paints the card.
+- The wallpaper write depends on xfdesktop keying backdrops by monitor
+  connector (`monitor<connector>`). Upstream carries a note that it intends to
+  move to `xfw_monitor_get_identifier()`, which would change the key string
+  again; `omidenos-session` writes `monitor0` as a fallback and the behaviour
+  is covered by `tests/test_session_monitors.py`.
 - Greeter backdrop is generated, not designed: `greeter.png` is composed
   from the wallpaper by `scripts/compose-artwork.py`. If the owner
   provides a hand-made frame, it only has to be 1920×1080 with the right
   third quiet; `theme.conf` then points at it and nothing else changes.
+- `/usr/bin/sddm-greeter` is replaced with a symlink to
+  `sddm-greeter-qt6` by `customize_airootfs.sh`, because the package's
+  unversioned greeter is Qt5-linked and the medium ships no Qt5: it exits
+  127 and SDDM paints a black tty1. This is a package-owned file written by
+  the customize step, the same class of debt as `/usr/lib/os-release`; drop
+  the symlink if the package ever ships a Qt6 unversioned greeter or if a
+  Qt5 greeter theme is added.
 - SDDM greeter matches the palette but has no screenshot in
   `docs/dev/verification.md`; Phase 5c's screens check is what records it.
 - `brand-scan` in screens mode does not exist yet; the phase-5 exit
