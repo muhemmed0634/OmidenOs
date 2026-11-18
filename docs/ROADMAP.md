@@ -72,6 +72,11 @@ reason, and `docs/dev/verification.md` records the leak honestly.
 - `tools/manifest.toml`: id, binary, tier (`core` / `extended`), source
   (official / AUR / upstream), license, and how the tool is verified to
   exist and run.
+- AUR is a **source**, not a channel the medium talks to: every AUR package is
+  built in the release job, signed, and served from `[omidenos]`. No AUR helper
+  and no `base-devel` ships in the image, so a user install is a signed
+  `pacman -S`, not a compile on the live system. The manifest keeps the AUR
+  identity of each entry so a rebuild can be traced to its upstream recipe.
 - Generators from the manifest to meta packages
   (`omidenos-tools-core`, `omidenos-tools-extended`) and to the profile
   package list.
@@ -172,7 +177,8 @@ Phase 4 (3 weeks, can start week 3):
 - `tools/manifest.toml`: id, binary, tier, source, license, verification method.
 - Generators to `omidenos-tools-core` and `omidenos-tools-extended`.
 - Vet the 57 AUR candidates down to about 40 with a documented replacement for
-  each drop, activity bar two years.
+  each drop, activity bar two years. Each survivor gets a build recipe in the
+  release job and an entry in `sources.lock.toml`.
 - Size budget: measure, demote Python-heavy toolsets to `extended` above 6 GiB.
 
 Exit: `make count` reports at least 100 tools, the manifest validates in CI,

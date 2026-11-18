@@ -58,6 +58,8 @@ Nothing in this file is claimed to work; these are pending items.
 
 ## Phase 4
 
+- AUR packages are built in the release job and shipped from `[omidenos]`; the
+  image carries no AUR helper, so nothing is compiled on the target.
 - Verify maintenance status of AUR candidates (`ubertooth` 2020.12.R1,
   `steghide`, `autopsy`, `sigma` packaging identity) and re-select
   replacements where the activity bar (last ~2 years) fails.
