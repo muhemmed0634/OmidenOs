@@ -241,3 +241,32 @@ black tty1 after logout) and the boot-splash item from ADR-0011.
 Screenshots are not committed: they live in the agent workspace
 (`~/.hermes/cache/scratch/omiden/v2-splash2.png`, `v2-late.png`,
 `v2-greeter2.png`). Reproducing them needs only a boot of the ISO above.
+
+## Phase 5 third build (2026-11-18, 17:13) - desktop polish
+
+ISO: `omidenos-2026.11.18-x86_64.iso`, 1.22 GiB (40 MiB larger than the
+identity build: `papirus-icon-theme` and `materia-gtk-theme`). Booted the same
+way as the runs above.
+
+Checks that passed:
+
+- Panel: whisker menu with the project logo left, the docklike taskbar with
+  its accent indicator next to it, notification area, mixer and clock on the
+  right. No plugin-loading dialog - the 17:04 build had one, because the
+  clipman plugin registers as `xfce4-clipman-plugin`, not `clipman`; the id is
+  fixed and `tests/test_xfconf_channels.py` now fails if a configured plugin id
+  has no metadata file in the image.
+- Widgets and window decorations: `Materia-dark` (GTK menus and the titlebar of
+  an opened terminal), icons `Papirus-Dark` on the desktop and in the menu.
+- Desktop: wallpaper crest and only the trash and removable-media icons.
+- Shortcuts: `Ctrl+Alt+T` opened a terminal, which proves the
+  `xfce4-keyboard-shortcuts` channel is applied.
+
+Open on this build:
+
+- `<Super>space` did not open the whisker menu in the VM, while the same file's
+  `Ctrl+Alt+T` binding worked, so the accelerator itself is consumed by the
+  session rather than the file being ignored. An `<Alt>F1` binding is the safe
+  fallback and is queued in `docs/BACKLOG.md`.
+- The panel was left without a session-menu screenshot; the plugin is the
+  stock `actions` plugin, which needs no configuration to be correct.
