@@ -20,8 +20,8 @@ install packages without a password and builds the ISO as root by hand.
 | 2 | UEFI-only live medium | done 2026-11-17 | `docs/dev/verification.md` |
 | 3 | Own repository, own hooks, own kernel | next | not started |
 | 4 | Tool manifest and meta packages | planned | not started |
-| 5 | Desktop (XFCE) and identity | in progress | session, boot splash, greeter and palette in tree, no build yet |
-| 6 | Calamares, install matrix | planned | not started |
+| 5 | Desktop (XFCE) and identity | done for the live medium | `docs/dev/verification.md`, three builds on 2026-11-18 |
+| 6 | Calamares, install matrix | next | not started |
 | 7 | Hardening, SBOM, signed release | planned | not started |
 
 Phase 1 stays formally open on one item: the license choice in
@@ -119,6 +119,94 @@ boot splash land first, theming afterwards.
 - Exit: `brand-scan` in screens mode is green on a fresh boot of the one
   session, with no third-party distribution name anywhere a user can see
   it. A second session returns only on an explicit owner decision.
+
+
+## Next 30 days
+
+Ordered by dependency, not by appeal: the package channel comes first because
+the initramfs fork, the tool metapackages and the installer configuration all
+ship through it.
+
+### Week 1 - close the loose ends and open the channel (Phase 3a, 1 week)
+
+Small items first, they cost hours and stay in every screenshot:
+
+- `<Alt>F1` as a second whisker-menu binding, and re-check `<Super>space` on a
+  fresh boot (`docs/BACKLOG.md`).
+- Greeter: wrong-password path and the caps-lock hint, tested from the greeter
+  by typing a password that cannot work.
+- Forensic entry: either wire `omidenosforensic` in the Phase 3 fork or rename
+  the entry to say it is a placeholder; today the menu promises something the
+  medium does not do.
+- Publish the dated ISO as a GitHub release with its sha256, marked as a Phase 5
+  preview.
+
+Then the channel itself:
+
+- Project GPG key, packaged as `omidenos-keyring`.
+- `[omidenos]` repository on GitHub Releases, `repo-add` in the release job.
+- `pacman.conf` in the profile gains the stanza; `tools/sources.lock.toml` pins
+  the upstream sources.
+- `docs/dev/hosting.md` records the channel and the mirror policy.
+
+Exit: a package installs from `[omidenos]` inside the live medium and
+`pacman -Qkk` reports nothing.
+
+### Weeks 2-3 - own live hooks (Phase 3b, 2 weeks)
+
+- `omidenos-initcpio` derived from the live hooks: hook names, kernel command
+  line parameters, `/run` paths and console strings carry the project name.
+- PXE hooks dropped; they are out of v1.0 scope.
+- `omidenosforensic` made real: read-only block devices, no automount, no swap
+  or zram.
+- The `branding/upstream-allowlist.toml` rows for the interim profile go away
+  with the stock hooks.
+
+Exit: the medium boots with the fork, the forensic entry behaves as documented,
+`brand-scan` in runtime mode is green, the allowlist has no interim rows.
+
+### Weeks 3-4 - tools and the installer, in parallel (Phase 4 and 6)
+
+Phase 4 (3 weeks, can start week 3):
+
+- `tools/manifest.toml`: id, binary, tier, source, license, verification method.
+- Generators to `omidenos-tools-core` and `omidenos-tools-extended`.
+- Vet the 57 AUR candidates down to about 40 with a documented replacement for
+  each drop, activity bar two years.
+- Size budget: measure, demote Python-heavy toolsets to `extended` above 6 GiB.
+
+Exit: `make count` reports at least 100 tools, the manifest validates in CI,
+the ISO size is recorded.
+
+Phase 6 (4 weeks, starts once 3a is green):
+
+- `omidenos-calamares-config`: branding, users, packagechooser, netinstall,
+  partition, bootloader, cleanup, UEFI precheck.
+- Partition and bootloader fixed to ext4 and systemd-boot; summary states both;
+  no encryption option.
+- Cleanup removes the live user, the passwordless sudo rule, the build tooling
+  and the installer from the target.
+- `verify --installed`: project identity present, no third-party names, no
+  live-medium leftovers.
+
+Exit: `make matrix` green over one session x two toolset tiers (N = 2), plus one
+manual install reviewed end to end.
+
+### After v1.0 - the v1.1 list
+
+- `linux-omiden`: package name, localversion and build strings; cosmetic, so it
+  is deliberately not in v1.0.
+- Turkish build of the same medium (translated motd, issue, boot text and
+  session hints) - needs its own decision record before it is built.
+- Palette-derived GTK/xfwm4 theme, so the titlebar is project violet instead of
+  Materia-dark.
+- A second desktop session, only on an explicit owner decision; any Wayland
+  session pulls back `xorg-xwayland` and its portal backend.
+
+### Not planned
+
+Hardware-assisted anything, Secure Boot signing, btrfs/xfs, LUKS, a text
+installer. These stay out until a decision record says otherwise.
 
 ## Phase 6 — installer (4 weeks)
 
