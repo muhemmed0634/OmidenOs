@@ -209,20 +209,35 @@ clean under `shellcheck` and `shfmt -d`.
 This is a static and unit-level check only; the visual result needs a boot of
 a rebuilt medium.
 
-## Phase 5 second build (2026-11-18, 16:43)
+## Phase 5 second build (2026-11-18, 16:43) - all three checks pass
 
-ISO: `omidenos-2026.11.18-x86_64.iso` (1.18 GiB), rebuilt after the two fixes
-below. Booted from VirtualBox 7.2 with EFI firmware, 6 GiB RAM, 4 vCPU.
+ISO: `omidenos-2026.11.18-x86_64.iso` (1.18 GiB). Booted in VirtualBox 7.2 with
+EFI firmware, 6 GiB RAM, 4 vCPU, VMSVGA, headless; `controlvm screenshotpng`
+is the witness for every line below.
 
-Checked in the assembled root before booting:
+Assembled root, before booting:
 
-- `usr/bin/sddm-greeter` is a symlink to `sddm-greeter-qt6`, so the Qt5
-  greeter that cannot load on this medium is never executed.
+- `usr/bin/sddm-greeter` is a symlink to `sddm-greeter-qt6`.
 - `usr/local/bin/omidenos-session` carries the `/sys/class/drm` connector
-  lookup that writes the backdrop keys xfdesktop actually reads.
+  lookup described in the section above.
 
-Owner-confirmed on the boot: the medium reaches the XFCE live session.
+1. Boot splash. The crest, the "OmidenOS" wordmark and the three accent dots
+   are on screen during boot, dots pulsing (two frames captured at different
+   times differ only in dot opacity). The 1920x1080 artwork is scaled down on
+   this 1280x800 VM, which is the intended behaviour of the Plymouth script.
+2. Desktop wallpaper. The session comes up with the project wallpaper -
+   crest and wordmark across the whole screen, dark violet panel with the
+   whisker button, clock and desktop icons. The stock xfdesktop image is gone,
+   which is what the connector-key fix was for.
+3. Greeter. `Ctrl+Alt+Del` then Log Out leaves the session and SDDM paints
+   the theme: crest and wordmark on the left, time and date at the top left,
+   and the card on the right with the project icon, "OmidenOS", the username
+   field pre-filled `omiden`, an empty password field, the "Sign in" button
+   and the Reboot / Power off links. No black screen, no Qt error.
 
-Not checked in this run: the Plymouth splash frames, and the logout path that
-shows the greeter card (the live medium autologins, so the card is only
-reachable by logging out). Both stay open until someone walks them.
+That closes the two defects recorded for the first build (stock wallpaper,
+black tty1 after logout) and the boot-splash item from ADR-0011.
+
+Screenshots are not committed: they live in the agent workspace
+(`~/.hermes/cache/scratch/omiden/v2-splash2.png`, `v2-late.png`,
+`v2-greeter2.png`). Reproducing them needs only a boot of the ISO above.

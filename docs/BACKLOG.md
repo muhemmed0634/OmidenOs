@@ -67,16 +67,15 @@ Nothing in this file is claimed to work; these are pending items.
 
 ## Phase 5
 
-- Boot splash is unverified: no ISO has been built since the Plymouth theme
-  and the `plymouth` hook were added (ADR-0011). The `script` plugin fails
-  quietly when it cannot parse a theme, so the first build has to be
-  checked on QEMU/OVMF and in VirtualBox before Phase 5 can close.
-- Greeter is unverified: the theme in
-  `archiso/airootfs/usr/share/sddm/themes/omidenos/` passes `qmllint` and
-  renders in a bare QML host, but SDDM's own context objects (`sddm`,
-  `config`, `userModel`, `sessionModel`, `keyboard`) and the autologin
-  handoff only exist on the built medium. Check a logout on the first
-  build; the live medium autologins and never paints the card.
+- Boot splash: verified on the 2026-11-18 16:43 build (crest, wordmark and
+  the pulsing dots on screen in VirtualBox/VMSVGA). A QEMU/OVMF run is still
+  worth doing for the `nomodeset` entries, which do not paint the splash by
+  design.
+- Greeter: verified on the 2026-11-18 16:43 build by logging out of the live
+  session - the card, clock and artwork paint, and the username is
+  pre-filled. What is still uncovered: a failed login (wrong password) and the
+  `keyboard.capsLock` hint, because the live user has no password to get
+  wrong.
 - The wallpaper write depends on xfdesktop keying backdrops by monitor
   connector (`monitor<connector>`). Upstream carries a note that it intends to
   move to `xfw_monitor_get_identifier()`, which would change the key string
@@ -93,8 +92,9 @@ Nothing in this file is claimed to work; these are pending items.
   the customize step, the same class of debt as `/usr/lib/os-release`; drop
   the symlink if the package ever ships a Qt6 unversioned greeter or if a
   Qt5 greeter theme is added.
-- SDDM greeter matches the palette but has no screenshot in
-  `docs/dev/verification.md`; Phase 5c's screens check is what records it.
+- Phase 5c's `brand-scan --mode screens` does not exist yet; the greeter and
+  desktop have boot evidence in `docs/dev/verification.md`, but no automated
+  screen check.
 - `brand-scan` in screens mode does not exist yet; the phase-5 exit
   criterion depends on it running against the one session.
 
