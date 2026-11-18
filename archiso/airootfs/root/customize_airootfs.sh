@@ -156,7 +156,7 @@ cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EO
       <property name="digital-date-format" type="string" value="%a %d %b"/>
       <property name="digital-time-font" type="string" value="Noto Sans 11"/>
     </property>
-    <property name="plugin-7" type="string" value="clipman">
+    <property name="plugin-7" type="string" value="xfce4-clipman-plugin">
       <property name="add-primary-clipboard" type="bool" value="false"/>
       <property name="max-texts-in-history" type="uint" value="30"/>
     </property>
