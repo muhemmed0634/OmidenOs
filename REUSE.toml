@@ -25,13 +25,19 @@ precedence = "override"
 SPDX-FileCopyrightText = "OmidenOS project"
 SPDX-License-Identifier = "BSD-3-Clause"
 
-# Brand assets supplied by the owner.
+# Brand assets supplied by the owner, and the artwork derived from them
+# for the boot splash and the panel icon.
 [[annotations]]
 path = [
     "Omiden.png",
     "OmidenOS.png",
     "branding/source/logo.png",
     "archiso/airootfs/usr/share/backgrounds/omidenos/wallpaper.png",
+    "archiso/airootfs/usr/share/backgrounds/omidenos/greeter.png",
+    "archiso/airootfs/usr/share/icons/hicolor/48x48/apps/omidenos-logo.png",
+    "archiso/airootfs/usr/share/icons/hicolor/256x256/apps/omidenos-logo.png",
+    "archiso/airootfs/usr/share/plymouth/themes/omidenos/dot.png",
+    "archiso/airootfs/usr/share/plymouth/themes/omidenos/splash.png",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 muhemmed0634"

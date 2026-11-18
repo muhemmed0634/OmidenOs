@@ -103,3 +103,38 @@ no network device, and ends with **`No bootable device.`**
 `[options]`, `[core]`, `[extra]`; `/etc/pacman.d/` contains only the
 upstream `mirrorlist`. No build-host repository (cachyos, blackarch,
 chaotic, ...) is present in the image.
+## Phase 5 theme layout review (not boot evidence)
+
+Date: 2026-11-18. No ISO has been built with the desktop layer, so this
+section records what was checked without one and nothing more. It does not
+close Phase 5.
+
+Checks run on the build host:
+
+    /usr/lib/qt6/bin/qmllint archiso/airootfs/usr/share/sddm/themes/omidenos/Main.qml
+    python3 scripts/compose-artwork.py greeter \
+        archiso/airootfs/usr/share/backgrounds/omidenos/wallpaper.png \
+        archiso/airootfs/usr/share/backgrounds/omidenos/greeter.png
+    python3 scripts/compose-artwork.py splash \
+        archiso/airootfs/usr/share/backgrounds/omidenos/wallpaper.png \
+        archiso/airootfs/usr/share/plymouth/themes/omidenos/splash.png
+    QT_QPA_PLATFORM=offscreen qmlscene scripts/preview-greeter.qml
+
+Results:
+
+- `qmllint` reports no syntax or type error, only `unqualified access`
+  warnings for the five context objects SDDM injects (`config`, `sddm`,
+  `userModel`, `sessionModel`, `keyboard`), which do not exist outside the
+  greeter.
+- `greeter.png` and `splash.png` regenerate from the wallpaper at 1920x1080;
+  the splash keeps the artwork filling the frame with all four edges faded to
+  black.
+- `build/greeter-preview.png` (1920x1080, untracked) shows the crest in the
+  left two thirds, the clock at the top left, and the login card on the right
+  third with the project icon, the title, username and password fields, the
+  Sign in button and the Reboot / Power off links.
+
+Not covered by these checks: SDDM's real context objects, the autologin skip
+that keeps the card off screen on the live medium, font metrics and scaling
+under Xorg, and Plymouth drawing the splash. All of those need the built
+medium and belong to the first Phase 5 build, not to this section.

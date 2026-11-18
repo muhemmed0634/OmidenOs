@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: OmidenOS project
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Boot splash for the live medium. splash.png carries the crest and the
+# wordmark and fades to black at its own edges, so the artwork sits on the
+# black background without a visible border. It is scaled down when the
+# screen is smaller than the artwork and never scaled up, which keeps the
+# crest sharp. Three dots below it fade in sequence; they are the only
+# moving part, so the screen does not look frozen while the medium boots.
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+window_width = Window.GetWidth();
+window_height = Window.GetHeight();
+
+source_image = Image("splash.png");
+scale = Math.Min(1, Math.Min(window_width / source_image.GetWidth(),
+                             window_height / source_image.GetHeight()));
+splash_image = source_image.Scale(Math.Int(source_image.GetWidth() * scale),
+                                  Math.Int(source_image.GetHeight() * scale));
+
+splash_x = Math.Int(window_width / 2 - splash_image.GetWidth() / 2);
+splash_y = Math.Int(window_height / 2 - splash_image.GetHeight() / 2);
+
+splash_sprite = Sprite(splash_image);
+splash_sprite.SetX(splash_x);
+splash_sprite.SetY(splash_y);
+splash_sprite.SetZ(-1);
+
+dot_image = Image("dot.png");
+dot_spacing = 30;
+dot_center = splash_x + Math.Int(splash_image.GetWidth() / 2);
+dot_y = splash_y + splash_image.GetHeight() - 14;
+dot_offset = Math.Int(dot_image.GetWidth() / 2);
+
+dots = [Sprite(dot_image), Sprite(dot_image), Sprite(dot_image)];
+for (i = 0; i < 3; i++) {
+    dots[i].SetX(dot_center - dot_spacing + i * dot_spacing - dot_offset);
+    dots[i].SetY(dot_y);
+    dots[i].SetZ(0);
+}
+
+frame = 0;
+
+fun pulse() {
+    frame = frame + 1;
+    for (i = 0; i < 3; i++) {
+        wave = (Math.Sin(frame / 16 - i * 1.1) + 1) / 2;
+        dots[i].SetOpacity(0.15 + 0.75 * wave);
+    }
+}
+
+Plymouth.SetRefreshFunction(pulse);

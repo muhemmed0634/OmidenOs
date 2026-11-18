@@ -13,15 +13,19 @@ Nothing in this file is claimed to work; these are pending items.
   `branding/source/logo.png` (the owner's 2026-11-17 update: cat and
   crescent emblem) is the current asset; the desktop wallpaper uses the
   provided logo as-is per owner instruction.
-- Palette adaptation: the emblem introduces purple accent tones;
-  `branding/palette.toml` (Phase 5) must derive the accent color from
-  the logo and record the mapping in an ADR (section 10).
+- Palette adaptation: `branding/palette.toml` is written and the mapping is
+  in `docs/adr/0012-palette.md`; the accent was sampled from the crest
+  rather than generated, so a vector crest only changes the sampling input.
+- Greeter backdrop artwork (optional): the generated frame in
+  `usr/share/backgrounds/omidenos/greeter.png` is the fallback. A hand-made
+  frame is welcome but not blocking; it must be 1920×1080 with the crest in
+  the left two thirds and the right third dark.
 
 ## v1.0 scope decisions recorded
 
-- Desktop scope: three sessions in v1.0 — KDE Plasma (default), GNOME
-  and Hyprland, all Wayland, all launched from SDDM. XFCE and i3 are out
-  of the plan; this supersedes both earlier decisions.
+- Desktop scope: one session in v1.0 — XFCE on X11, autologin behind
+  SDDM (ADR-0010, 2026-11-18). KDE Plasma, GNOME, Hyprland and i3 are out
+  of v1.0; a second session returns only on an explicit owner decision.
 - Language: English is the default and only language of the v1.0 medium.
   A Turkish variant is planned as a separate artefact (translated motd,
   issue, boot text and session hints) and needs its own decision record
@@ -60,6 +64,27 @@ Nothing in this file is claimed to work; these are pending items.
 - Size budget measurement; demote heavy Python toolsets (prowler,
   scoutsuite, checkov, pacu) to `extended` tier if the 6 GiB budget is
   exceeded.
+
+## Phase 5
+
+- Boot splash is unverified: no ISO has been built since the Plymouth theme
+  and the `plymouth` hook were added (ADR-0011). The `script` plugin fails
+  quietly when it cannot parse a theme, so the first build has to be
+  checked on QEMU/OVMF and in VirtualBox before Phase 5 can close.
+- Greeter is unverified: the theme in
+  `archiso/airootfs/usr/share/sddm/themes/omidenos/` passes `qmllint` and
+  renders in a bare QML host, but SDDM's own context objects (`sddm`,
+  `config`, `userModel`, `sessionModel`, `keyboard`) and the autologin
+  handoff only exist on the built medium. Check a logout on the first
+  build; the live medium autologins and never paints the card.
+- Greeter backdrop is generated, not designed: `greeter.png` is composed
+  from the wallpaper by `scripts/compose-artwork.py`. If the owner
+  provides a hand-made frame, it only has to be 1920×1080 with the right
+  third quiet; `theme.conf` then points at it and nothing else changes.
+- SDDM greeter matches the palette but has no screenshot in
+  `docs/dev/verification.md`; Phase 5c's screens check is what records it.
+- `brand-scan` in screens mode does not exist yet; the phase-5 exit
+  criterion depends on it running against the one session.
 
 ## Out of v1.0 scope (owner decision, 2026-11-17)
 

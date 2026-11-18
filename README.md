@@ -5,7 +5,7 @@
 <p align="center">
   A pacman-based live system for security work, built with <code>mkarchiso</code>.
   <br>
-  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; KDE Plasma &middot; GNOME &middot; Hyprland &middot; Calamares
+  UEFI 64-bit only &middot; systemd-boot &middot; ext4 &middot; XFCE &middot; Plymouth splash &middot; Calamares
 </p>
 
 <p align="center">
@@ -64,7 +64,7 @@ described: `docs/dev/verification.md`.
 | Live root | squashfs plus RAM overlay | verified |
 | Installed root filesystem | ext4 | scope decision, no installer yet |
 | Installer | Calamares | not implemented |
-| Sessions | KDE Plasma (default), GNOME, Hyprland | in the tree, not yet built |
+| Sessions | XFCE (X11), autologin | in the tree, not yet built |
 | Tool set | curated security tools | not implemented |
 | Disk encryption | none, out of v1.0 scope | not applicable |
 | Secure Boot | unsupported, ISO unsigned | decision recorded |
@@ -79,21 +79,31 @@ described: `docs/dev/verification.md`.
 | `OmidenOS Live (safe graphics)` | adds `nomodeset` for hardware that misbehaves with the default stack |
 | `OmidenOS Live (forensic mode)` | boots, but the parameter is a placeholder: read-only mounting arrives with the Phase 3 hooks |
 
-## Sessions
+The two quiet entries hand the screen to the Plymouth splash, which carries
+the project crest and wordmark before the session starts (ADR-0011). The
+safe-graphics and forensic entries stay verbose on purpose: `nomodeset`
+leaves Plymouth nothing to draw on, and the forensic entry exists to watch
+device detection.
 
-One display manager (SDDM), three sessions, one console fallback. The
-live medium logs straight into XFCE; the others are one click away.
+## Session
 
-| Session | Stack | Notes |
+One display manager (SDDM), one desktop, one console fallback. The live
+medium logs straight into XFCE on X11 (ADR-0010), so the greeter is never
+a decision point; `Ctrl+Alt+F2` gives a text console on tty2 when a session
+fails to start.
+
+| Piece | Stack | Notes |
 | --- | --- | --- |
-| KDE Plasma | Wayland | default, autologin, the full desktop |
-| GNOME | Wayland | stock session, `Ctrl+Alt+F2` for the console |
-| Hyprland | Wayland | tiling, needs OpenGL; enable 3D acceleration in a VM |
+| XFCE | X11 | autologin, project panel layout, dark stock theme |
+| SDDM | X11 greeter | the only display manager (ADR-0006) |
+| Plymouth | initramfs | project crest and wordmark before the session (ADR-0011) |
 | text console | tty2 | no session, no display manager |
 
-Session defaults are written by the project: one keybinding set and one
-wallpaper hook each. GNOME and KDE keep their own defaults rather than a
-borrowed theme.
+Session defaults are written by the project: one panel with the project
+menu, window list, notification area, mixer and clock; the project
+wallpaper; four named workspaces; and the stock dark theme. No theme is
+taken from outside the medium, and the panel configuration is seeded before
+first login so the medium does not open with XFCE's first-start dialog.
 
 ## Phases
 
@@ -104,7 +114,7 @@ borrowed theme.
 | 2 | UEFI-only live medium | done, verified 2026-11-17 |
 | 3 | Own hook set, `[omidenos]` repository, own kernel | planned |
 | 4 | Tool manifest, meta packages | planned |
-| 5 | Desktops (XFCE, i3, Hyprland) and identity | in progress |
+| 5 | Desktop (XFCE) and identity | in progress |
 | 6 | Calamares configuration, install test matrix | planned |
 | 7 | Hardening review, SBOM, release pipeline | planned |
 
@@ -174,8 +184,9 @@ newest run.
 - No installer. Calamares is not part of the profile, so there is no
   path from the live medium to a disk.
 - The graphical stack is in the tree but no ISO has been built with it
-  yet, so no session has been verified. Hyprland needs OpenGL: in a
-  virtual machine, enable 3D acceleration or the session will not start.
+  yet, so neither the XFCE session nor the Plymouth splash has been seen
+  on a screen. The splash is the part most likely to fail silently: a
+  `script` theme that Plymouth cannot parse leaves a black screen.
 - No tool set. The medium ships a shell, `nano`, `tmux` and the rescue
   basics, not the security tool selection.
 - Forensic mode is inert. The entry boots, the parameter is ignored by
@@ -214,7 +225,8 @@ setup prompt. Both are recorded in `docs/dev/verification.md`.
 
 - `docs/adr/` holds the reasoning behind the shape of this system:
   kernel packaging, live hooks, identity files, installer, display
-  manager, bootloader and encryption scope, brand scan, licensing.
+  manager, bootloader and encryption scope, brand scan, licensing, the
+  single-session desktop and the boot splash.
 - `docs/ROADMAP.md` holds the phase sequence, the exit criterion of each
   phase, the critical path and the recommended scope cuts.
 - `docs/BACKLOG.md` holds everything still open, including the one

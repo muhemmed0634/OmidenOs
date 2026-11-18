@@ -15,6 +15,11 @@ SHELL_SRCS := $(wildcard scripts/*.sh) \
               archiso/airootfs/usr/local/bin/omidenos-session \
               archiso/airootfs/root/customize_airootfs.sh
 
+# QML is checked because the greeter theme ships in the image and a syntax
+# error there is a black login screen, not a failed build.
+QML_SRCS := archiso/airootfs/usr/share/sddm/themes/omidenos/Main.qml \
+            scripts/preview-greeter.qml
+
 .PHONY: help lint lint-style brand-scan strict tests
 
 # Byte-code never lands in the repo (reuse lint walks the tree and would
@@ -29,10 +34,19 @@ help:
 	@echo "  tests       - unit tests (python unittest)"
 lint: lint-style brand-scan tests
 	@mkdir -p build/pycache
-	@PYTHONPYCACHEPREFIX=build/pycache python3 -m py_compile scripts/lint-style scripts/brand-scan
+	@PYTHONPYCACHEPREFIX=build/pycache python3 -m py_compile \
+		scripts/lint-style scripts/brand-scan scripts/compose-artwork.py
 	@if command -v shellcheck >/dev/null 2>&1; then shellcheck $(SHELL_SRCS); else echo "SKIP: shellcheck not installed"; fi
 	@if command -v shfmt >/dev/null 2>&1; then shfmt -d $(SHELL_SRCS); else echo "SKIP: shfmt not installed"; fi
 	@if command -v ruff >/dev/null 2>&1; then ruff check scripts tests; else echo "SKIP: ruff not installed"; fi
+	@found=0; for bin in qmllint6 qmllint /usr/lib/qt6/bin/qmllint; do \
+		if command -v $$bin >/dev/null 2>&1; then \
+			found=1; \
+			$$bin --ignore-settings --unqualified disable $(QML_SRCS) || exit 1; \
+			break; \
+		fi; \
+	done; [ $$found = 1 ] || echo "SKIP: qmllint not installed"
+
 	@if command -v mypy >/dev/null 2>&1; then mypy --strict tests; else echo "SKIP: mypy not installed"; fi
 	@if command -v reuse >/dev/null 2>&1; then reuse lint; else echo "SKIP: reuse not installed"; fi
 	@echo "lint: done (skipped tools are listed above)"

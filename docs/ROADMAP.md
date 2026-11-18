@@ -20,7 +20,7 @@ install packages without a password and builds the ISO as root by hand.
 | 2 | UEFI-only live medium | done 2026-11-17 | `docs/dev/verification.md` |
 | 3 | Own repository, own hooks, own kernel | next | not started |
 | 4 | Tool manifest and meta packages | planned | not started |
-| 5 | Desktops (KDE Plasma, GNOME, Hyprland) and identity | in progress | sessions in tree, no build yet |
+| 5 | Desktop (XFCE) and identity | in progress | session, boot splash, greeter and palette in tree, no build yet |
 | 6 | Calamares, install matrix | planned | not started |
 | 7 | Hardening, SBOM, signed release | planned | not started |
 
@@ -84,33 +84,36 @@ reason, and `docs/dev/verification.md` records the leak honestly.
 - Exit: `make count` reports at least 100 tools, the manifest validates
   in CI, and the measured ISO size is recorded.
 
-## Phase 5 — desktops and identity (4 weeks)
+## Phase 5 — desktop and identity (3 weeks)
 
-Three sessions in v1.0 over one display manager: KDE Plasma (Wayland,
-default), GNOME (Wayland) and Hyprland (Wayland). XFCE and i3 are
-dropped from the plan. Package set and session files land first,
-theming afterwards.
+One session in v1.0: XFCE on X11 behind SDDM (ADR-0010). GNOME, KDE
+Plasma and Hyprland are out of v1.0. Package set, session defaults and the
+boot splash land first, theming afterwards.
 
-5a. Sessions (1 week)
-- SDDM as the only display manager (ADR-0006); autologin to KDE Plasma
-  on the live medium, text console on tty2 as the fallback.
-- Hyprland gets a short configuration written by the project; GNOME and
-  KDE keep their own defaults.
-- Exit: each session starts from SDDM and survives a reboot. Hyprland
-  needs OpenGL, so it is verified both in QEMU with GL enabled and in
-  VirtualBox with 3D acceleration on.
+5a. Session (1 week)
+- SDDM as the only display manager (ADR-0006); autologin to XFCE on the
+  live medium, text console on tty2 as the fallback.
+- Project defaults for the panel, the window manager, the wallpaper and
+  the GTK appearance, written into the live user's xfconf channels, so the
+  session starts configured and without the panel's first-start dialog.
+- Exit: the session starts from SDDM and survives a reboot.
 
 5b. Identity (2 weeks)
-- `branding/palette.toml` with the accent colour derived from the crest,
-  and the mapping recorded in an ADR.
-- Plymouth theme, console identity, one wallpaper set that works for all
-  three sessions.
-- SDDM theme generated from the crest.
+- Boot splash: Plymouth theme built from the crest (ADR-0011), enabled on
+  the two quiet boot entries.
+- `branding/palette.toml` with the accent colour derived from the crest and
+  the mapping recorded in an ADR-0012; the panel and the greeter take their
+  colours from it.
+- Wallpaper set for the single session and the project icon set.
+- SDDM greeter theme in `usr/share/sddm/themes/omidenos/`, QtQuick
+  primitives only, so it loads with the modules SDDM already depends on.
+  Its backdrop is composed from the wallpaper by
+  `scripts/compose-artwork.py`, so no second artwork is needed.
 
 5c. Screens (1 week)
-- Exit: `brand-scan` in screens mode is green per session on a fresh
-  install, with no third-party distribution name anywhere a user can see
-  it. GNOME is not planned; a fourth session is added only on request.
+- Exit: `brand-scan` in screens mode is green on a fresh boot of the one
+  session, with no third-party distribution name anywhere a user can see
+  it. A second session returns only on an explicit owner decision.
 
 ## Phase 6 — installer (4 weeks)
 
@@ -124,9 +127,9 @@ theming afterwards.
 - `verify --installed`: installed system carries the project identity,
   no third-party names, and no live-medium leftovers.
 - Exit: `make matrix` green over the agreed dimensions, and one manual
-  install reviewed end to end. With three sessions the matrix is desktop
-  (KDE Plasma, GNOME, Hyprland) × toolset (core, extended) and swap and
-  shell fixed, so N = 6 rather than the N = 8 of the Phase 0 report.
+  install reviewed end to end. With one session the matrix is toolset
+  (core, extended) with desktop, swap and shell fixed, so N = 2 rather
+  than the N = 8 of the Phase 0 report.
 
 ## Phase 7 — hardening and release (3 weeks)
 
@@ -171,8 +174,9 @@ twice.
 
 - No GRUB, no LUKS, no btrfs or xfs, no second kernel, no text
   installer, no Secure Boot in v1.0 (ADR-0007 and `docs/BACKLOG.md`).
-- Three sessions in v1.0: KDE Plasma (default), GNOME and Hyprland, all
-  Wayland. XFCE and i3 are dropped from the plan.
+- One session in v1.0: XFCE on X11, autologin behind SDDM (ADR-0010).
+  KDE Plasma, GNOME and Hyprland are out of v1.0, and no session in this
+  profile is a Wayland compositor.
 - Recommended addition: move `linux-omiden` from v1.0 to v1.1 (Phase 3c
   above), because it is cosmetic and the most frequent breakage.
 

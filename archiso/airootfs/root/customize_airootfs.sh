@@ -5,7 +5,8 @@
 # Runs inside the airootfs after package installation. Files owned by
 # packages cannot be placed in the airootfs overlay (mkarchiso copies
 # the overlay before pacman runs and pacman rejects the file conflict),
-# so the identity files and the live user's dotfiles are written here.
+# so the identity files, the Plymouth theme selection and the live
+# user's dotfiles are written here.
 # mkarchiso 92 still executes this script, but marks it deprecated;
 # revisit this mechanism when archiso removes support for it.
 
@@ -43,14 +44,27 @@ EOF
 # visible in /etc/passwd on the live system.
 sed -E -i 's/^(alpm:x:970:970:)[^:]*:/\1Package Management:/' /etc/passwd
 
+# Boot splash (ADR-0011). The theme itself is part of the airootfs
+# overlay; the daemon has to be told which theme to load, and that file
+# belongs to the plymouth package, so it is written here. ShowDelay=0
+# puts the artwork on screen at once instead of after the default delay.
+cat >/etc/plymouth/plymouthd.conf <<'EOF'
+[Daemon]
+Theme=omidenos
+ShowDelay=0
+EOF
+
 # Live user home. mkarchiso does not create per-user homes, and
 # /etc/skel belongs to the shell configuration package, so the session
-# files are written directly. GNOME and KDE Plasma carry their own
-# defaults; only the shell and the Wayland compositor need files.
+# files are written directly. XFCE keeps its defaults in xfconf channels
+# under ~/.config; the files below pre-seed the panel, the window manager
+# and the wallpaper so the session starts configured and without the
+# first-start dialog.
 install -d -o omiden -g omiden -m 0755 /home/omiden
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config
-install -d -o omiden -g omiden -m 0755 /home/omiden/.config/hypr
 install -d -o omiden -g omiden -m 0755 /home/omiden/.config/autostart
+install -d -o omiden -g omiden -m 0755 \
+	/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml
 
 cat >/home/omiden/.zshrc <<'EOF'
 # OmidenOS live session. The global configuration comes from the shell
@@ -70,68 +84,153 @@ if [[ -o login ]] && (( $+commands[fastfetch] )); then
 fi
 EOF
 
-cat >/home/omiden/.config/hypr/hyprland.conf <<'EOF'
-# OmidenOS live session, Hyprland defaults.
-# Purple accent follows the crest; everything else stays close to stock
-# so the session is readable for someone who has never seen Hyprland.
+# One top panel: the project menu, the window list, the notification
+# area, the mixer and the clock. Providing the channel file is also what
+# suppresses the panel's first-start dialog on a medium where the live
+# user has never logged in before.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
 
-monitor=,preferred,auto,1
-
-$mod = SUPER
-
-exec-once = waybar
-exec-once = nm-applet --indicator
-exec-once = swaybg -i /usr/share/backgrounds/omidenos/wallpaper.png
-
-input {
-    kb_layout = us
-    follow_mouse = 1
-    touchpad {
-        natural_scroll = true
-    }
-}
-
-general {
-    gaps_in = 5
-    gaps_out = 10
-    border_size = 2
-    col.active_border = rgba(8b5cf6ee) rgba(5eead4ee) 45deg
-    col.inactive_border = rgba(595959aa)
-    layout = dwindle
-}
-
-decoration {
-    rounding = 8
-}
-
-bind = $mod, Return, exec, kitty
-bind = $mod, D, exec, wofi --show drun
-bind = $mod, Q, killactive
-bind = $mod, F, fullscreen
-bind = $mod, E, exec, nautilus
-bind = $mod SHIFT, E, exit
-bind = $mod, 1, workspace, 1
-bind = $mod, 2, workspace, 2
-bind = $mod, 3, workspace, 3
-bind = $mod SHIFT, 1, movetoworkspace, 1
-bind = $mod SHIFT, 2, movetoworkspace, 2
-bind = $mod SHIFT, 3, movetoworkspace, 3
-bind = $mod SHIFT, P, exec, systemctl poweroff
-bind = , XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
-bind = , XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-bind = , XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+<channel name="xfce4-panel" version="1.0">
+  <property name="configdir" type="string" value=""/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="double" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="34"/>
+      <property name="mode" type="uint" value="0"/>
+      <property name="autohide-behavior" type="uint" value="0"/>
+      <property name="background-style" type="uint" value="1"/>
+      <property name="background-rgba" type="array">
+        <value type="double" value="0.023529"/>
+        <value type="double" value="0.007843"/>
+        <value type="double" value="0.058824"/>
+        <value type="double" value="0.94"/>
+      </property>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+      </property>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="whiskermenu">
+      <property name="button-icon" type="string" value="/usr/share/icons/hicolor/48x48/apps/omidenos-logo.png"/>
+      <property name="button-title" type="string" value="OmidenOS"/>
+      <property name="show-button-title" type="bool" value="true"/>
+    </property>
+    <property name="plugin-2" type="string" value="tasklist">
+      <property name="show-labels" type="bool" value="true"/>
+      <property name="grouping" type="bool" value="true"/>
+      <property name="flat-buttons" type="bool" value="true"/>
+    </property>
+    <property name="plugin-3" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-4" type="string" value="systray">
+      <property name="square-icons" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="22"/>
+    </property>
+    <property name="plugin-5" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+    </property>
+    <property name="plugin-6" type="string" value="clock">
+      <property name="digital-layout" type="uint" value="3"/>
+      <property name="digital-time-format" type="string" value="%H:%M"/>
+      <property name="digital-time-font" type="string" value="Sans 11"/>
+    </property>
+  </property>
+</channel>
 EOF
 
-# GNOME and KDE Plasma read XDG autostart entries; the helper decides
-# what the running desktop needs for the wallpaper.
+# Window manager: the stock theme, four named workspaces and centred
+# titles, so the session looks the same on every machine. The titlebar
+# colour is the theme's; accenting it needs a custom xfwm4 theme, which is
+# a v1.1 item (docs/adr/0012-palette.md).
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Default"/>
+    <property name="title_font" type="string" value="Sans Bold 10"/>
+    <property name="title_alignment" type="string" value="center"/>
+    <property name="workspace_count" type="int" value="4"/>
+    <property name="workspace_names" type="array">
+      <value type="string" value="main"/>
+      <value type="string" value="web"/>
+      <value type="string" value="tools"/>
+      <value type="string" value="notes"/>
+    </property>
+    <property name="snap_to_border" type="bool" value="true"/>
+    <property name="snap_to_windows" type="bool" value="true"/>
+  </property>
+</channel>
+EOF
+
+# Wallpaper on the single-monitor path. Multi-monitor layouts create
+# their own backdrop entries at runtime; omidenos-session fills those in
+# on every login, because their names are only known once xfdesktop has
+# probed the display.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/omidenos/wallpaper.png"/>
+          <property name="image-path" type="string" value="/usr/share/backgrounds/omidenos/wallpaper.png"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF
+
+# GTK appearance: the dark variant of the stock theme, the stock icon
+# set, and antialiasing with subpixel hinting. No theme is taken from
+# outside the medium.
+cat >/home/omiden/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Adwaita-dark"/>
+    <property name="IconThemeName" type="string" value="Adwaita"/>
+  </property>
+  <property name="Xft" type="empty">
+    <property name="Antialias" type="int" value="1"/>
+    <property name="HintStyle" type="string" value="hintslight"/>
+    <property name="RGBA" type="string" value="rgb"/>
+  </property>
+</channel>
+EOF
+
+# The session helper fills in the wallpaper properties XFCE creates at
+# runtime; XFCE is the only session, so the entry is unconditional.
 cat >/home/omiden/.config/autostart/omidenos-session.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Name=OmidenOS session setup
 Exec=/usr/local/bin/omidenos-session
-OnlyShowIn=GNOME;KDE;
-X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;
 NoDisplay=true
 EOF
 
 chown -R omiden:omiden /home/omiden
+
+# The kernel package already built an initramfs, before this script ran,
+# so the Plymouth hook and the theme are missing from it. Rebuild it now
+# that /etc/plymouth/plymouthd.conf points at the theme in the overlay;
+# mkarchiso copies /boot out of the airootfs after this step.
+mkinitcpio -P
