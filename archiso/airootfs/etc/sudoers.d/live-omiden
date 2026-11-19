@@ -1,5 +1,0 @@
-# SPDX-FileCopyrightText: OmidenOS project
-# SPDX-License-Identifier: BSD-3-Clause
-# Live session only: the installed system is configured by the
-# installer's users module and has no default passwordless account.
-omiden ALL=(root:root) NOPASSWD:ALL
