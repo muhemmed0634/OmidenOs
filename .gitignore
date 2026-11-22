@@ -1,0 +1,6 @@
+/assets
+/node_modules
+build.mjs
+index.html
+package-lock.json
+package.json
