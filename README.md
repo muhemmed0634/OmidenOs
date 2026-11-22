@@ -11,7 +11,7 @@
 [![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/muhemmed0634/OmidenOs)
 [![Tools](https://img.shields.io/badge/tools-112-orange.svg)]()
 [![Categories](https://img.shields.io/badge/categories-13-purple.svg)]()
-[![Omiden][https://img.shields.io/badge/omidenos-cyberos-purple]](.)
+[!(https://img.shields.io/badge/omidenos-cyberos-purple)](.)
 
 </div>
 
